@@ -21,20 +21,19 @@ class FilerExplorer(Explorer):
         self._cwd = None
 
     def getContent(self, *args, **kwargs):
+        # because it is singleton
         self._cwd = None
         return self.getFreshContent()
 
     def getFreshContent(self, *args, **kwargs):
-        path = self._cwd or os.getcwd()
-        # １回取得すれば、それを使えるようになる
-        self._cwd = path
+        self._cwd = self._cwd or os.getcwd()
 
         self._contents = {
             f: {
-                "isdir": os.path.isdir(os.path.join(path, f)),
-                "fullpath": os.path.join(path, f),
+                "isdir": os.path.isdir(os.path.join(self._cwd, f)),
+                "fullpath": os.path.join(self._cwd, f),
             }
-            for f in os.listdir(path)
+            for f in os.listdir(self._cwd)
         }
 
         # . => current directory
@@ -75,13 +74,12 @@ class FilerExplManager(Manager):
         help.append('" ---------------------------------------------------------')
         return help
 
-    def _beforeEnter(self):
-        super(FilerExplManager, self)._beforeEnter()
-        self._getExplorer()._cwd = None
-
     def _cmdExtension(self, cmd):
+        # XXX: category ごとにマッピングできるようにしたいな...
         if equal(cmd, '<C-y>'):
             self.down()
+        if equal(cmd, '<C-g>'):
+            self.up()
         return True
 
     def down(self):
@@ -97,13 +95,28 @@ class FilerExplManager(Manager):
             return
 
         self._getExplorer()._cwd = os.path.abspath(file_info["fullpath"])
-        # 入力値をクリアする
+        self._refresh()
+
+    def up(self):
+        if len(self._getInstance()._cli._cmdline) > 0:
+            self._refresh()
+            return
+        cwd = self._getExplorer()._cwd or os.getcwd()
+        self._getExplorer()._cwd = os.path.abspath(os.path.join(cwd, '..'))
+        self._refresh()
+
+    def _refresh(self):
+        # initialize like startExplorer()
+        self._index = 0
+        self._result_content = []
+        self._cb_content = []
+
+        # clear input pattern
         self._getInstance()._cli.clear()
+        # is not work normal_mode??
         self.refresh()
         self.input()
 
-    def up(self, *args, **kwargs):
-        pass
 
 # *****************************************************
 # filerExplManager is a singleton
