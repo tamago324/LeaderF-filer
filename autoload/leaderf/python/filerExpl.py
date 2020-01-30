@@ -66,7 +66,10 @@ class FilerExplManager(Manager):
         lfCmd("call leaderf#Filer#Maps()")
 
     def _acceptSelection(self, *args, **kwargs):
-        pass
+        path = args[0]
+        if path == ".":
+            path = self._getExplorer()._cwd
+        super(FilerExplManager, self)._acceptSelection(path, *args[1:], **kwargs)
 
     def _createHelp(self):
         help = []
