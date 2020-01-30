@@ -27,14 +27,20 @@ class FilerExplorer(Explorer):
 
     def getFreshContent(self, *args, **kwargs):
         self._cwd = self._cwd or os.getcwd()
+        self._contents = dict()
 
-        self._contents = {
+        contents = {
             f: {
                 "isdir": os.path.isdir(os.path.join(self._cwd, f)),
                 "fullpath": os.path.join(self._cwd, f),
             }
             for f in os.listdir(self._cwd)
         }
+
+        for k, v in contents.items():
+            if v["isdir"]:
+                k += "/"
+            self._contents[k] = v
 
         # . => current directory
         return ["."] + [f for f in self._contents.keys()]
@@ -44,9 +50,6 @@ class FilerExplorer(Explorer):
 
     def getStlCurDir(self):
         return escQuote(lfEncode(self._cwd))
-
-    def supportsNameOnly(self):
-        return True
 
 
 # *****************************************************
@@ -76,11 +79,41 @@ class FilerExplManager(Manager):
 
     def _cmdExtension(self, cmd):
         # XXX: category ごとにマッピングできるようにしたいな...
-        if equal(cmd, '<C-y>'):
+        if equal(cmd, "<C-y>"):
             self.down()
-        if equal(cmd, '<C-g>'):
+        if equal(cmd, "<C-g>"):
             self.up()
         return True
+
+    def _getDigest(self, line, mode):
+        if not line:
+            return ""
+
+        return line
+
+    def _getDigestStartPos(self, line, mode):
+        return 0
+
+    def _afterEnter(self):
+        super(FilerExplManager, self)._afterEnter()
+        if self._getInstance().getWinPos() == "popup":
+            lfCmd(
+                """call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerFile'', ''^[^\/]\+\(\/\)\@!$'')')"""
+                % self._getInstance().getPopupWinId()
+            )
+            id = int(lfEval("matchid"))
+            self._match_ids.append(id)
+            lfCmd(
+                """call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerDir'', ''^[^\/]\+\/$'')')"""
+                % self._getInstance().getPopupWinId()
+            )
+            id = int(lfEval("matchid"))
+            self._match_ids.append(id)
+        else:
+            id = int(lfEval("matchadd('Lf_hl_filerFile', '^[^\/]\+\(\/\)\@!$')"))
+            self._match_ids.append(id)
+            id = int(lfEval("matchadd('Lf_hl_filerDir', '^[^\/]\+\/$')"))
+            self._match_ids.append(id)
 
     def down(self):
         line = self._getInstance().currentLine
@@ -89,7 +122,7 @@ class FilerExplManager(Manager):
             return
 
         file_info = self._getExplorer()._contents[line]
-        if not file_info['isdir']:
+        if not file_info["isdir"]:
             # file
             # super(FilerExplManager, self)._acceptSelection()
             return
@@ -102,7 +135,7 @@ class FilerExplManager(Manager):
             self._refresh()
             return
         cwd = self._getExplorer()._cwd or os.getcwd()
-        self._getExplorer()._cwd = os.path.abspath(os.path.join(cwd, '..'))
+        self._getExplorer()._cwd = os.path.abspath(os.path.join(cwd, ".."))
         self._refresh()
 
     def _refresh(self):
