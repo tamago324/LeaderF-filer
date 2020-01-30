@@ -161,6 +161,9 @@ class FilerExplManager(Manager):
         self._result_content = []
         self._cb_content = []
 
+        # add history
+        self._cli.writeHistory(self._getExplorer().getStlCategory())
+
         # clear input pattern
         self._getInstance()._cli.clear()
         self.refresh(normal_mode=False)
