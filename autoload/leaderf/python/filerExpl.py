@@ -3,6 +3,7 @@
 
 import os
 import os.path
+import json
 from leaderf.utils import *
 from leaderf.explorer import *
 from leaderf.manager import *
@@ -59,6 +60,10 @@ class FilerExplManager(Manager):
     def __init__(self):
         super(FilerExplManager, self).__init__()
 
+        # customize mapping
+        key_dict = {"<C-H>": "<F9>", "<C-L>": "<F10>"}
+        self._getInstance()._cli._key_dict.update(key_dict)
+
     def _getExplClass(self):
         return FilerExplorer
 
@@ -85,10 +90,9 @@ class FilerExplManager(Manager):
         this function can be overridden to add new cmd
         if return true, exit the input loop
         """
-        # XXX: category ごとにマッピングできるようにしたいな...
-        if equal(cmd, "<C-y>"):
+        if equal(cmd, "<F10>"):     # <C-H>
             self.down()
-        elif equal(cmd, "<C-g>"):
+        elif equal(cmd, "<F9>"):    # <C-L>
             self.up()
         else:
             return True
