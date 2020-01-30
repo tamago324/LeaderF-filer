@@ -3,7 +3,6 @@
 
 import os
 import os.path
-import json
 from leaderf.utils import *
 from leaderf.explorer import *
 from leaderf.manager import *
@@ -61,6 +60,8 @@ class FilerExplManager(Manager):
         super(FilerExplManager, self).__init__()
 
         # customize mapping
+        # example:
+        #   inoremap <C-H> <F9>
         key_dict = {"<C-H>": "<F9>", "<C-L>": "<F10>"}
         self._getInstance()._cli._key_dict.update(key_dict)
 

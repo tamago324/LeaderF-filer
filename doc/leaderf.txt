@@ -1,0 +1,55 @@
+*LeaderF-filer*
+
+INTRODUCTION~
+
+This plugin is an extension of LeaderF, it is used to navigate the files in
+directory.
+
+==============================================================================
+REQUIREMENTS~
+
+- vim7.4.330 or higher.
+- vim compiled with Python support, you can check by using `echo has('python')`
+  or `echo has('python3')` to see if the result is 1.
+==============================================================================
+OPTIONS~
+
+
+==============================================================================
+USAGE~
+
+------------------------------------------------------------------------------
+COMMANDS~
+
+:LeaderfFiler                                *:LeaderfFiler*
+    TODO:
+
+
+------------------------------------------------------------------------------
+MAPPINGS~
+
+INERT MODE:
+Key                     Action~
+-----------  -------------------------------
+`<C-h>`      Show files in parent directory
+`<C-l>`      Show files in directory under cursor
+`~/`         Show files in home directory NOTE: Not yet implemented
+
+NORMAL MODE:
+Key                     Action~
+-----------  -------------------------------
+`h`/`<C-h>`  Show files in parent directory
+`l`/`<C-l>`  Show files in directory under cursor
+
+
+------------------------------------------------------------------------------
+HIGHLIGHTS~
+
+Lf_hl_filerPath                                 *Lf_hl_filerPath*
+    default: `highlight def link Lf_hl_filerPath Normal`
+
+Lf_hl_filerDir                                  *Lf_hl_filerDir*
+    default: `highlight def link Lf_hl_filerDir Identifier`
+
+==============================================================================
+vim:tw=78:ts=4:ft=help:norl

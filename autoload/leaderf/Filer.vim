@@ -18,12 +18,16 @@ exec g:Lf_py "from filerExpl import *"
 
 function! leaderf#Filer#Maps()
     nmapclear <buffer>
-    " nnoremap <buffer> <silent> <CR>          :exec g:Lf_py "filerExplManager.accept()"<CR>
-    " nnoremap <buffer> <silent> o             :exec g:Lf_py "filerExplManager.accept()"<CR>
-    " nnoremap <buffer> <silent> <2-LeftMouse> :exec g:Lf_py "filerExplManager.accept()"<CR>
+    nnoremap <buffer> <silent> <CR>          :exec g:Lf_py "filerExplManager.accept()"<CR>
+    nnoremap <buffer> <silent> o             :exec g:Lf_py "filerExplManager.accept()"<CR>
+    nnoremap <buffer> <silent> <2-LeftMouse> :exec g:Lf_py "filerExplManager.accept()"<CR>
     nnoremap <buffer> <silent> q             :exec g:Lf_py "filerExplManager.quit()"<CR>
     nnoremap <buffer> <silent> <Tab>         :exec g:Lf_py "filerExplManager.input()"<CR>
     nnoremap <buffer> <silent> <F1>          :exec g:Lf_py "filerExplManager.toggleHelp()"<CR>
+    nnoremap <buffer> <silent> h             :exec g:Lf_py "filerExplManager.up()"<CR>
+    nnoremap <buffer> <silent> <C-h>         :exec g:Lf_py "filerExplManager.up()"<CR>
+    nnoremap <buffer> <silent> l             :exec g:Lf_py "filerExplManager.down()"<CR>
+    nnoremap <buffer> <silent> <C-l>         :exec g:Lf_py "filerExplManager.down()"<CR>
     if has_key(g:Lf_NormalMap, "Filer")
         for i in g:Lf_NormalMap["Filer"]
             exec 'nnoremap <buffer> <silent> '.i[0].' '.i[1]
