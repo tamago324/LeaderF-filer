@@ -140,6 +140,11 @@ class FilerExplManager(Manager):
             # super(FilerExplManager, self)._acceptSelection()
             return
 
+        if self._getInstance().isReverseOrder():
+            lfCmd("normal! G")
+        else:
+            self._gotoFirstLine()
+
         abspath = os.path.abspath(file_info["fullpath"])
         self._getExplorer()._cwd = abspath
         self._refresh(cwd=abspath)
@@ -152,6 +157,13 @@ class FilerExplManager(Manager):
         abspath = os.path.abspath(os.path.join(cwd, ".."))
         self._getExplorer()._cwd = abspath
         self._refresh(cwd=abspath)
+
+        # TODO: move cursor
+
+        if self._getInstance().isReverseOrder():
+            lfCmd("normal! G")
+        else:
+            self._gotoFirstLine()
 
     def _refresh(self, cwd=None):
         if cwd:
