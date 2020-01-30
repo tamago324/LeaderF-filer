@@ -78,12 +78,17 @@ class FilerExplManager(Manager):
         return help
 
     def _cmdExtension(self, cmd):
+        """
+        this function can be overridden to add new cmd
+        if return true, exit the input loop
+        """
         # XXX: category ごとにマッピングできるようにしたいな...
         if equal(cmd, "<C-y>"):
             self.down()
-        if equal(cmd, "<C-g>"):
+        elif equal(cmd, "<C-g>"):
             self.up()
-        return True
+        else:
+            return True
 
     def _getDigest(self, line, mode):
         if not line:
@@ -151,9 +156,7 @@ class FilerExplManager(Manager):
 
         # clear input pattern
         self._getInstance()._cli.clear()
-        # is not work normal_mode??
-        self.refresh()
-        self.input()
+        self.refresh(normal_mode=False)
 
 
 # *****************************************************
