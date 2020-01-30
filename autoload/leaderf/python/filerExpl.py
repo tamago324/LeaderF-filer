@@ -127,18 +127,24 @@ class FilerExplManager(Manager):
             # super(FilerExplManager, self)._acceptSelection()
             return
 
-        self._getExplorer()._cwd = os.path.abspath(file_info["fullpath"])
-        self._refresh()
+        abspath = os.path.abspath(file_info["fullpath"])
+        self._getExplorer()._cwd = abspath
+        self._refresh(cwd=abspath)
 
     def up(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return
         cwd = self._getExplorer()._cwd or os.getcwd()
-        self._getExplorer()._cwd = os.path.abspath(os.path.join(cwd, ".."))
-        self._refresh()
+        abspath = os.path.abspath(os.path.join(cwd, ".."))
+        self._getExplorer()._cwd = abspath
+        self._refresh(cwd=abspath)
 
-    def _refresh(self):
+    def _refresh(self, cwd=None):
+        if cwd:
+            self._getInstance().setStlCwd(cwd)
+            self._getInstance()._setStatusline()
+
         # initialize like startExplorer()
         self._index = 0
         self._result_content = []
