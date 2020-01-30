@@ -143,7 +143,6 @@ class FilerExplManager(Manager):
     def _refresh(self, cwd=None):
         if cwd:
             self._getInstance().setStlCwd(cwd)
-            self._getInstance()._setStatusline()
 
         # initialize like startExplorer()
         self._index = 0
