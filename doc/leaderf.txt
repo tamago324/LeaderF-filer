@@ -17,7 +17,12 @@ OPTIONS~
 g:Lf_FilerShowHiddenFiles                          *g:Lf_FilerShowHiddenFiles*
     If enabled, shows hidden files by default.
 
-    Default value: `0`
+    Default value: 0
+
+g:Lf_FilerAcceptDirSelectionCmd              *g:Lf_FilerAcceptDirSelectionCmd*
+    Command to execute when accepting selection if directory.
+
+    Default value: 'lcd'
 
 
 ==============================================================================

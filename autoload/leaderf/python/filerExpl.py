@@ -80,7 +80,16 @@ class FilerExplManager(Manager):
         path = args[0]
         if path == ".":
             path = self._getExplorer()._cwd
-        path = os.path.abspath(path)
+
+        if os.path.isabs(path):
+            path = os.path.join(self._getInstance().getCwd(), lfDecode(path))
+            path = os.path.normpath(lfEncode(path))
+
+        if os.path.isdir(path):
+            cmd = lfEval("get(g:, 'Lf_FilerAcceptDirSelectionCmd', 'lcd')")
+            lfCmd("%s %s" % (cmd, escSpecial(path)))
+            return
+
         super(FilerExplManager, self)._acceptSelection(path, *args[1:], **kwargs)
 
     def _createHelp(self):
@@ -186,6 +195,7 @@ class FilerExplManager(Manager):
     def _refresh(self, cwd=None):
         if cwd:
             self._getInstance().setStlCwd(cwd)
+            self._getInstance().setCwd(cwd)
 
         # initialize like startExplorer()
         self._index = 0
