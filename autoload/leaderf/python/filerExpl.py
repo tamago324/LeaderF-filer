@@ -67,7 +67,7 @@ class FilerExplManager(Manager):
         # customize mapping
         # example:
         #   inoremap <C-H> <F9>
-        key_dict = {"<C-H>": "<F9>", "<C-L>": "<F10>", "<C-F>": "<F8>"}
+        key_dict = {"<C-H>": "<F9>", "<C-L>": "<F10>", "<C-F>": "<F8>", "<C-G>": "<F7>"}
         self._getInstance()._cli._key_dict.update(key_dict)
 
     def _getExplClass(self):
@@ -99,6 +99,7 @@ class FilerExplManager(Manager):
         help.append('" <C-h>/h : Show files in parent directory')
         help.append('" <C-l>/l : Show files in directory under cursor')
         help.append('" I : Toggle show hidden files')
+        help.append('" <C-g> : Show files of directory where g:Lf_RootMarkers exists')
         help.append('" q : quit')
         help.append('" <F1> : toggle this help')
         help.append('" ---------------------------------------------------------')
@@ -113,8 +114,10 @@ class FilerExplManager(Manager):
             self.down()
         elif equal(cmd, "<F9>"):  # <C-L>
             self.up()
-        elif equal(cmd, "<F8>"):  # <C-g>
+        elif equal(cmd, "<F8>"):  # <C-F>
             self.toggleHiddenFiles()
+        elif equal(cmd, "<F7>"):  # <C-G>
+            self.gotoRootMarkersDir()
         else:
             return True
 
@@ -192,6 +195,16 @@ class FilerExplManager(Manager):
         )
         self.refresh(normal_mode=False)
 
+    def gotoRootMarkersDir(self):
+        root_markers = lfEval("g:Lf_RootMarkers")
+        rootMarkersDir = self._nearestAncestor(
+            root_markers, self._getInstance().getCwd()
+        )
+        if rootMarkersDir:
+            # exists root_markers
+            self._getExplorer()._cwd = os.path.abspath(rootMarkersDir)
+            self._refresh(rootMarkersDir)
+
     def _refresh(self, cwd=None):
         if cwd:
             self._getInstance().setStlCwd(cwd)
@@ -208,6 +221,33 @@ class FilerExplManager(Manager):
         # clear input pattern
         self._getInstance()._cli.clear()
         self.refresh(normal_mode=False)
+
+    def _nearestAncestor(self, markers, path):
+        """
+        return the nearest ancestor path(including itself) of `path` that contains
+        one of files or directories in `markers`.
+        `markers` is a list of file or directory names.
+
+        XXX: from LeaderF fileExpl.py
+        """
+        if os.name == "nt":
+            # e.g. C:\\
+            root = os.path.splitdrive(os.path.abspath(path))[0] + os.sep
+        else:
+            root = "/"
+
+        path = os.path.abspath(path)
+        while path != root:
+            for name in markers:
+                if os.path.exists(os.path.join(path, name)):
+                    return path
+            path = os.path.abspath(os.path.join(path, ".."))
+
+        for name in markers:
+            if os.path.exists(os.path.join(path, name)):
+                return path
+
+        return ""
 
 
 # *****************************************************
