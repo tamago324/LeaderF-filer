@@ -19,7 +19,7 @@ class FilerExplorer(Explorer):
         # }
         self._contents = dict()
         self._cwd = None
-        self._show_hidden_files = lfEval("get(g:, 'Lf_show_hidden_files', 0)") == "1"
+        self._show_hidden_files = lfEval("get(g:, 'Lf_FilerShowHiddenFiles', 0)") == "1"
 
     def getContent(self, *args, **kwargs):
         # because it is singleton
