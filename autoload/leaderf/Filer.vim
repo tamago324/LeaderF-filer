@@ -28,6 +28,7 @@ function! leaderf#Filer#Maps()
     nnoremap <buffer> <silent> <C-h>         :exec g:Lf_py "filerExplManager.up()"<CR>
     nnoremap <buffer> <silent> l             :exec g:Lf_py "filerExplManager.down()"<CR>
     nnoremap <buffer> <silent> <C-l>         :exec g:Lf_py "filerExplManager.down()"<CR>
+    nnoremap <buffer> <silent> I             :exec g:Lf_py "filerExplManager.toggleHiddenFiles()"<CR>
     if has_key(g:Lf_NormalMap, "Filer")
         for i in g:Lf_NormalMap["Filer"]
             exec 'nnoremap <buffer> <silent> '.i[0].' '.i[1]
@@ -116,6 +117,12 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager.accept()"
     elseif key ==? "<F1>"
         exec g:Lf_py "filerExplManager.toggleHelp()"
+    elseif key ==? "h" || key ==? "<C-L>"
+        exec g:Lf_py "filerExplManager.up()"
+    elseif key ==? "l" || key ==? "<C-L>"
+        exec g:Lf_py "filerExplManager.down()"
+    elseif key ==? "I"
+        exec g:Lf_py "filerExplManager.toggleHiddenFiles()"
     endif
 
     return 1

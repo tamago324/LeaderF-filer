@@ -14,6 +14,11 @@ REQUIREMENTS~
 ==============================================================================
 OPTIONS~
 
+g:Lf_show_hidden_files                          *g:Lf_show_hidden_files*
+    If enabled, shows hidden files by default.
+
+    Default value: `0`
+
 
 ==============================================================================
 USAGE~
@@ -22,7 +27,7 @@ USAGE~
 COMMANDS~
 
 :LeaderfFiler                                *:LeaderfFiler*
-    TODO:
+    navigate the files in directory.
 
 
 ------------------------------------------------------------------------------

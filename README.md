@@ -21,6 +21,7 @@ INSERT MODE:
 |---------|--------------------------------------|
 | `<C-h>` | Show files in parent directory       |
 | `<C-l>` | Show files in directory under cursor |
+| `<C-f>` | Toggle show hidden files             |
 | `~/`    | Show files in home directory         |
 
 NORMAL MODE:
@@ -29,3 +30,4 @@ NORMAL MODE:
 |---------------|--------------------------------------|
 | `<C-h>` / `h` | Show files in parent directory       |
 | `<C-l>` / `l` | Show files in directory under cursor |
+| `I`           | Toggle show hidden files             |

@@ -19,6 +19,7 @@ class FilerExplorer(Explorer):
         # }
         self._contents = dict()
         self._cwd = None
+        self._show_hidden_files = lfEval("get(g:, 'Lf_show_hidden_files', 0)") == "1"
 
     def getContent(self, *args, **kwargs):
         # because it is singleton
@@ -36,6 +37,10 @@ class FilerExplorer(Explorer):
             }
             for f in os.listdir(self._cwd)
         }
+
+        # hide dotfiles
+        if not self._show_hidden_files:
+            contents = {k: v for k, v in contents.items() if not k.startswith(".")}
 
         for k, v in contents.items():
             if v["isdir"]:
@@ -62,7 +67,7 @@ class FilerExplManager(Manager):
         # customize mapping
         # example:
         #   inoremap <C-H> <F9>
-        key_dict = {"<C-H>": "<F9>", "<C-L>": "<F10>"}
+        key_dict = {"<C-H>": "<F9>", "<C-L>": "<F10>", "<C-F>": "<F8>"}
         self._getInstance()._cli._key_dict.update(key_dict)
 
     def _getExplClass(self):
@@ -75,12 +80,16 @@ class FilerExplManager(Manager):
         path = args[0]
         if path == ".":
             path = self._getExplorer()._cwd
+        path = os.path.abspath(path)
         super(FilerExplManager, self)._acceptSelection(path, *args[1:], **kwargs)
 
     def _createHelp(self):
         help = []
         help.append('" <CR>/<double-click>/o : execute command under cursor')
-        help.append('" i : switch to input mode')
+        help.append('" <TAB> : switch to input mode')
+        help.append('" <C-h>/h : Show files in parent directory')
+        help.append('" <C-l>/l : Show files in directory under cursor')
+        help.append('" I : Toggle show hidden files')
         help.append('" q : quit')
         help.append('" <F1> : toggle this help')
         help.append('" ---------------------------------------------------------')
@@ -91,10 +100,12 @@ class FilerExplManager(Manager):
         this function can be overridden to add new cmd
         if return true, exit the input loop
         """
-        if equal(cmd, "<F10>"):     # <C-H>
+        if equal(cmd, "<F10>"):  # <C-H>
             self.down()
-        elif equal(cmd, "<F9>"):    # <C-L>
+        elif equal(cmd, "<F9>"):  # <C-L>
             self.up()
+        elif equal(cmd, "<F8>"):  # <C-g>
+            self.toggleHiddenFiles()
         else:
             return True
 
@@ -109,6 +120,7 @@ class FilerExplManager(Manager):
 
     def _afterEnter(self):
         super(FilerExplManager, self)._afterEnter()
+
         if self._getInstance().getWinPos() == "popup":
             lfCmd(
                 """call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerFile'', ''^[^\/]\+\(\/\)\@!$'')')"""
@@ -164,6 +176,12 @@ class FilerExplManager(Manager):
             lfCmd("normal! G")
         else:
             self._gotoFirstLine()
+
+    def toggleHiddenFiles(self):
+        self._getExplorer()._show_hidden_files = (
+            not self._getExplorer()._show_hidden_files
+        )
+        self.refresh(normal_mode=False)
 
     def _refresh(self, cwd=None):
         if cwd:
