@@ -47,8 +47,12 @@ class FilerExplorer(Explorer):
                 k += "/"
             self._contents[k] = v
 
+        # Sort directories and files by each
+        files = sorted([k for k, v in self._contents.items() if not v["isdir"]])
+        dirs = sorted([k for k, v in self._contents.items() if v["isdir"]])
+
         # . => current directory
-        return ["."] + [f for f in self._contents.keys()]
+        return ["."] + dirs + files
 
     def getStlCategory(self):
         return "Filer"
@@ -65,8 +69,6 @@ class FilerExplManager(Manager):
         super(FilerExplManager, self).__init__()
 
         # customize mapping
-        # example:
-        #   inoremap <C-H> <F9>
         key_dict = {"<C-H>": "<F9>", "<C-L>": "<F10>", "<C-F>": "<F8>", "<C-G>": "<F7>"}
         self._getInstance()._cli._key_dict.update(key_dict)
 
