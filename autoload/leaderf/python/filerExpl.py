@@ -22,12 +22,23 @@ class FilerExplorer(Explorer):
         self._show_hidden_files = lfEval("get(g:, 'Lf_FilerShowHiddenFiles', 0)") == "1"
 
     def getContent(self, *args, **kwargs):
-        # because it is singleton
-        self._cwd = None
+        if kwargs.get("arguments", {}).get("directory"):
+            # from fileExpl.py
+            _dir = kwargs.get("arguments", {}).get("directory")[0]
+            _dir = os.path.expanduser(lfDecode(_dir))
+            if os.path.exists(_dir):
+                self._cwd = os.path.abspath(_dir)
+            else:
+                lfCmd(
+                    "echohl ErrorMsg | redraw | echon "
+                    "'Unknown directory `%s`' | echohl NONE" % _dir
+                )
+                return None
+        else:
+            self._cwd = os.getcwd()
         return self.getFreshContent()
 
     def getFreshContent(self, *args, **kwargs):
-        self._cwd = self._cwd or os.getcwd()
         self._contents = dict()
 
         contents = {
