@@ -195,12 +195,7 @@ class FilerExplManager(Manager):
         self._getExplorer()._cwd = abspath
         self._refresh(cwd=abspath)
 
-        # TODO: move cursor
-
-        if self._getInstance().isReverseOrder():
-            lfCmd("normal! G")
-        else:
-            self._gotoFirstLine()
+        lfCmd('call search("%s")' % os.path.basename(cwd))
 
     def toggleHiddenFiles(self):
         self._getExplorer()._show_hidden_files = (
