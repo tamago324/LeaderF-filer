@@ -7,11 +7,11 @@ Inspired by [vim-clap's filer provider](https://github.com/liuchengxu/vim-clap/p
 
 Buffer
 
-![](https://raw.githubusercontent.com/tamago324/LeaderF-filer/master/buffer.png)
+<img src="./images/buffer.png" alt="buffer" />
 
 Popup Window
 
-![](https://raw.githubusercontent.com/tamago324/LeaderF-filer/master/popup.png)
+<img src="./images/popup.png" alt="popup" />
 
 ## Installation
 
