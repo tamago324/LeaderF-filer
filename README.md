@@ -4,6 +4,15 @@ This Plugin use [LeaderF](https://github.com/Yggdroot/LeaderF) to navigate the f
 
 Inspired by [vim-clap's filer provider](https://github.com/liuchengxu/vim-clap/pull/272), [helm's find-files](https://github.com/emacs-helm/helm).
 
+
+Buffer
+
+![](https://raw.githubusercontent.com/tamago324/LeaderF-filer/master/buffer.png)
+
+Popup Window
+
+![](https://raw.githubusercontent.com/tamago324/LeaderF-filer/master/popup.png)
+
 ## Installation
 
 ```
