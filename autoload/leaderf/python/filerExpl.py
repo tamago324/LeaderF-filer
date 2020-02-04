@@ -20,6 +20,10 @@ class FilerExplorer(Explorer):
         self._contents = dict()
         self._cwd = None
         self._show_hidden_files = lfEval("get(g:, 'Lf_FilerShowHiddenFiles', 0)") == "1"
+        self._show_devicons = (
+            lfEval("exists('*WebDevIconsGetFileTypeSymbol')") == "1"
+            and lfEval("get(g:, 'Lf_FilerShowDevIcons', 0)") == "1"
+        )
 
     def getContent(self, *args, **kwargs):
         if kwargs.get("arguments", {}).get("directory"):
@@ -54,6 +58,10 @@ class FilerExplorer(Explorer):
             contents = {k: v for k, v in contents.items() if not k.startswith(".")}
 
         for k, v in contents.items():
+            if self._show_devicons:
+                isdir = "1" if v["isdir"] else "0"
+                icon = lfEval('WebDevIconsGetFileTypeSymbol("%s", %s)' % (k, isdir))
+                k = icon + k
             if v["isdir"]:
                 k += "/"
             self._contents[k] = v
@@ -93,6 +101,9 @@ class FilerExplManager(Manager):
         path = args[0]
         if path == ".":
             path = self._getExplorer()._cwd
+
+        if self._getExplorer()._show_devicons:
+            path = path[2:]
 
         if os.path.isabs(path):
             path = os.path.join(self._getInstance().getCwd(), lfDecode(path))

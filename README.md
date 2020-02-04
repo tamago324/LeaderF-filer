@@ -1,7 +1,18 @@
 # LeaderF-filer
 
 This Plugin use [LeaderF](https://github.com/Yggdroot/LeaderF) to navigate the files in directory.
+
 Inspired by [vim-clap's filer provider](https://github.com/liuchengxu/vim-clap/pull/272), [helm's find-files](https://github.com/emacs-helm/helm).
+
+## Installation
+
+```
+Plug 'Yggdroot/LeaderF'
+Plug 'tamago324/LeaderF-filer'
+
+" optional
+Plug 'ryanoasis/vim-devicons'
+```
 
 ## Usage
 
@@ -34,3 +45,13 @@ NORMAL MODE:
 | `I`           | Toggle show hidden files                         |
 | `<C-g>`       | Show files of directory where root marker exists |
 | `I`           | Toggle show hidden files                         |
+
+
+## Settings
+
+Show icons.
+
+```vim
+" Plug 'ryanoasis/vim-devicons'
+let g:Lf_FilerShowDevIcons = 1
+```
