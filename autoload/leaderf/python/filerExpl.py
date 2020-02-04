@@ -207,6 +207,7 @@ class FilerExplManager(Manager):
         self._refresh(cwd=abspath)
 
         lfCmd('call search("%s")' % os.path.basename(cwd))
+        lfCmd('normal! 0')
 
     def toggleHiddenFiles(self):
         self._getExplorer()._show_hidden_files = (
