@@ -37,23 +37,24 @@ or
 
 INSERT MODE:
 
-| Key     | Action                                                  |
-|---------|---------------------------------------------------------|
-| `<C-h>` | Show files in parent directory                          |
-| `<C-l>` | Show files in directory under cursor                    |
-| `<C-f>` | Toggle show hidden files                                |
-| `<C-g>` | Show files of directory where `g:Lf_RootMarkers` exists |
-| `~/`    | Show files in home directory                            |
+| Key     | Action                                                                                            |
+|---------|---------------------------------------------------------------------------------------------------|
+| `<C-h>` | Show files in parent directory                                                                    |
+| `<C-l>` | Show files in directory under cursor                                                              |
+| `<C-f>` | Toggle show hidden files                                                                          |
+| `<C-g>` | Show files of directory where `g:Lf_RootMarkers` exists                                           |
+| `<CR>`  | Open the file under cursor or create a file with the input pattern file name (when empty results) |
 
 NORMAL MODE:
 
-| Key           | Action                                           |
-|---------------|--------------------------------------------------|
-| `<C-h>` / `h` | Show files in parent directory                   |
-| `<C-l>` / `l` | Show files in directory under cursor             |
-| `I`           | Toggle show hidden files                         |
-| `<C-g>`       | Show files of directory where root marker exists |
-| `I`           | Toggle show hidden files                         |
+| Key           | Action                                                                                            |
+|---------------|---------------------------------------------------------------------------------------------------|
+| `<C-h>` / `h` | Show files in parent directory                                                                    |
+| `<C-l>` / `l` | Show files in directory under cursor                                                              |
+| `I`           | Toggle show hidden files                                                                          |
+| `<C-g>`       | Show files of directory where root marker exists                                                  |
+| `I`           | Toggle show hidden files                                                                          |
+| `<CR>` / `o`  | Open the file under cursor or create a file with the input pattern file name (when empty results) |
 
 
 ## Settings

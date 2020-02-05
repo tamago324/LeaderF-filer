@@ -53,7 +53,8 @@ Key                     Action~
 `<C-l>`      Show files in directory under cursor
 `<C-f>`      Toggle show hidden files
 `<C-g>`      Show files of directory where |g:Lf_RootMarkers| exists
-`~/`         Show files in home directory NOTE: Not yet implemented
+`<CR>`       Open the file under cursor or create a file with the input pattern
+             file name (when empty results)
 
 NORMAL MODE:
 Key                     Action~
@@ -62,6 +63,8 @@ Key                     Action~
 `l`/`<C-l>`  Show files in directory under cursor
 `I`          Toggle show hidden files
 `<C-g>`      Show files of directory where |g:Lf_RootMarkers| exists
+`o`/`<CR>`   Open the file under cursor or create a file with the input pattern
+             file name (when empty results)
 
 
 ------------------------------------------------------------------------------
