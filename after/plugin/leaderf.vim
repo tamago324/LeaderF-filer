@@ -15,6 +15,7 @@ let s:extension = {
             \   "manager_id": "leaderf#Filer#managerId",
             \   "arguments": [
             \       {"name": ["directory"], "nargs": "?", "help": "show files under <directory>"},
+            \       {"name": ["--auto-cd"], "nargs": "0", "help": "change the working directory while navigating with LeaderF-filer"},
             \   ]
             \ }
 

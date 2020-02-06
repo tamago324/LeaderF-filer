@@ -42,6 +42,11 @@ COMMANDS~
 :LeaderfFiler                                *:LeaderfFiler*
     navigate the files in directory.
 
+ARGUMENTS~
+
+`--auto-cd`
+    Change the working directory while navigating with LeaderF-filer.
+
 
 ------------------------------------------------------------------------------
 MAPPINGS~

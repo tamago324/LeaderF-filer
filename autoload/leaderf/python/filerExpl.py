@@ -204,9 +204,7 @@ class FilerExplManager(Manager):
         else:
             self._gotoFirstLine()
 
-        abspath = os.path.abspath(file_info["fullpath"])
-        self._getExplorer()._cwd = abspath
-        self._refresh(cwd=abspath)
+        self._chcwd(os.path.abspath(file_info["fullpath"]))
 
     def up(self):
         if len(self._getInstance()._cli._cmdline) > 0:
@@ -214,8 +212,7 @@ class FilerExplManager(Manager):
             return
         cwd = self._getExplorer()._cwd or os.getcwd()
         abspath = os.path.abspath(os.path.join(cwd, ".."))
-        self._getExplorer()._cwd = abspath
-        self._refresh(cwd=abspath)
+        self._chcwd(abspath)
 
         lfCmd('call search("%s")' % os.path.basename(cwd))
         lfCmd('normal! 0')
@@ -233,8 +230,14 @@ class FilerExplManager(Manager):
         )
         if rootMarkersDir:
             # exists root_markers
-            self._getExplorer()._cwd = os.path.abspath(rootMarkersDir)
-            self._refresh(rootMarkersDir)
+            self._chcwd(os.path.abspath(rootMarkersDir))
+
+    def cd(self, path):
+        # XXX: from defx.nvim
+        if lfEval("exists('*chdir')") == "1":
+            lfCmd("call chdir('%s')" % path)
+        else:
+            lfCmd("silent execute (haslocaldir() ? 'lcd' : 'cd') '%s'" % path)
 
     def _refresh(self, cwd=None):
         if cwd:
@@ -259,8 +262,8 @@ class FilerExplManager(Manager):
         one of files or directories in `markers`.
         `markers` is a list of file or directory names.
 
-        XXX: from LeaderF fileExpl.py
         """
+        # XXX: from LeaderF fileExpl.py
         if os.name == "nt":
             # e.g. C:\\
             root = os.path.splitdrive(os.path.abspath(path))[0] + os.sep
@@ -284,6 +287,13 @@ class FilerExplManager(Manager):
         path = os.path.join(self._getInstance().getCwd(), name)
         self._getInstance().exitBuffer()
         lfCmd('edit %s' % path)
+
+    def _chcwd(self, path):
+        self._getExplorer()._cwd = path
+        self._refresh(cwd=path)
+        if '--auto-cd' in self.getArguments():
+            self.cd(path)
+
 
 # *****************************************************
 # filerExplManager is a singleton
