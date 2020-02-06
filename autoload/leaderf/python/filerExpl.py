@@ -46,7 +46,7 @@ class FilerExplorer(Explorer):
         self._contents = dict()
 
         contents = {
-            f: {
+            lfEncode(f): {
                 "isdir": os.path.isdir(os.path.join(self._cwd, f)),
                 "fullpath": os.path.join(self._cwd, f),
             }
