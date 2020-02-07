@@ -65,3 +65,13 @@ Show icons.
 " Plug 'ryanoasis/vim-devicons'
 let g:Lf_FilerShowDevIcons = 1
 ```
+
+## Screenshots
+
+`Leaderf filer`
+
+<img src="./images/buffer.png" alt="buffer" />
+
+`Leaderf filer --popup`
+
+<img src="./images/popup.png" alt="popup" />
