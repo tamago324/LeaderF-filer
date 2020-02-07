@@ -214,7 +214,12 @@ class FilerExplManager(Manager):
         abspath = os.path.abspath(os.path.join(cwd, ".."))
         self._chcwd(abspath)
 
-        lfCmd('call search("%s")' % os.path.basename(cwd))
+        if self._getExplorer()._show_devicons:
+            dir_icon = lfEval('WebDevIconsGetFileTypeSymbol("", 1)')
+            pattern = r'\v^{}{}/$'.format(dir_icon, os.path.basename(cwd))
+        else:
+            pattern = r'\v^{}/$'.format(os.path.basename(cwd))
+        lfCmd("call search('%s')" % pattern)
         lfCmd('normal! 0')
 
     def toggleHiddenFiles(self):
