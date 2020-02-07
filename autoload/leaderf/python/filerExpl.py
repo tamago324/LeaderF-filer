@@ -70,8 +70,11 @@ class FilerExplorer(Explorer):
         files = sorted([k for k, v in self._contents.items() if not v["isdir"]])
         dirs = sorted([k for k, v in self._contents.items() if v["isdir"]])
 
-        # . => current directory
-        return ["."] + dirs + files
+        if lfEval("get(g:, 'Lf_FilerShowCurrentDirDot', 0)") == "1":
+            # . => current directory
+            return ["."] + dirs + files
+        else:
+            return dirs + files
 
     def getStlCategory(self):
         return "Filer"

@@ -32,6 +32,11 @@ g:Lf_FilerShowDevIcons                         *g:Lf_FilerShowDevIcons*
 
     Default value: 0
 
+g:Lf_FilerShowCurrentDirDot                     *g:Lf_FilerShowCurrentDirDot*
+    Whether to display `.` for the current directory.
+
+    Default value: 0
+
 
 ==============================================================================
 USAGE~
