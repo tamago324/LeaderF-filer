@@ -53,8 +53,17 @@ g:Lf_FilerCommandMap                            *g:Lf_FilerCommandMap*
 g:Lf_FilerNormalMap                             *g:Lf_FilerNormalMap*
     Customize normal mode mappings.
 
-    NOTE: not implements
->>>>>>> Support customize insert mode:doc/leaderf.txt
+    Default value:
+>
+    let g:Lf_FilerNormalMap = {
+    \   'h':        'goto_parent',
+    \   '<C-h>':    'goto_parent',
+    \   'l':        'goto_child',
+    \   '<C-l>':    'goto_child',
+    \   'I':        'toggle_hidden_files',
+    \   '<C-g>':    'goto_root_markers_dir',
+    \}
+<
 
 
 ==============================================================================
@@ -103,11 +112,11 @@ The key is a key and the value is a dictionary of action names.
 
 Example:
 >
-    let g:Lf_FilerCommandMap = {
-    \   '<C-h>': 'goto_parent',
-    \   '<C-l>': 'goto_child',
-    \   '<C-f>': 'toggle_hidden_files',
-    \   '<C-g>': 'goto_root_marker_dir',
+    let g:Lf_FilerNormalMap = {
+    \   'h': 'goto_parent',
+    \   'l': 'goto_child',
+    \   '.': 'toggle_hidden_files',
+    \   '~': 'goto_root_marker_dir',
     \}
 <
 

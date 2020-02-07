@@ -15,6 +15,8 @@ exec g:Lf_py "import vim, sys, os.path"
 exec g:Lf_py "cwd = vim.eval('expand(\"<sfile>:p:h\")')"
 exec g:Lf_py "sys.path.insert(0, os.path.join(cwd, 'python'))"
 exec g:Lf_py "from filerExpl import *"
+exec g:Lf_py "from keymaps import KeyMaps"
+
 
 function! leaderf#Filer#Maps()
     nmapclear <buffer>
@@ -33,17 +35,25 @@ function! leaderf#Filer#Maps()
     nnoremap <buffer> <silent> <PageUp>      <PageUp>:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
     nnoremap <buffer> <silent> <PageDown>    <PageDown>:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
     nnoremap <buffer> <silent> <LeftMouse>   <LeftMouse>:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
-    nnoremap <buffer> <silent> h             :exec g:Lf_py "filerExplManager.up()"<CR>
-    nnoremap <buffer> <silent> <C-h>         :exec g:Lf_py "filerExplManager.up()"<CR>
-    nnoremap <buffer> <silent> l             :exec g:Lf_py "filerExplManager.down()"<CR>
-    nnoremap <buffer> <silent> <C-l>         :exec g:Lf_py "filerExplManager.down()"<CR>
-    nnoremap <buffer> <silent> I             :exec g:Lf_py "filerExplManager.toggleHiddenFiles()"<CR>
-    nnoremap <buffer> <silent> <C-g>         :exec g:Lf_py "filerExplManager.gotoRootMarkersDir()"<CR>
     if has("nvim")
         nnoremap <buffer> <silent> <C-Up>    :exec g:Lf_py "filerExplManager._toUpInPopup()"<CR>
         nnoremap <buffer> <silent> <C-Down>  :exec g:Lf_py "filerExplManager._toDownInPopup()"<CR>
         nnoremap <buffer> <silent> <Esc>     :exec g:Lf_py "filerExplManager._closePreviewPopup()"<CR>
     endif
+
+    let s:default_map = {
+    \   'h':        'goto_parent',
+    \   '<C-h>':    'goto_parent',
+    \   'l':        'goto_child',
+    \   '<C-l>':    'goto_child',
+    \   'I':        'toggle_hidden_files',
+    \   '<C-g>':    'goto_root_markers_dir',
+    \}
+    let l:normal_map = get(g:, 'Lf_FilerNormalMap', s:default_map)
+
+    for [l:key, l:func] in items(l:normal_map)
+        exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "filerExplManager.%s()"<CR>', l:key, l:func)
+    endfor
 
     if has_key(g:Lf_NormalMap, "Filer")
         for i in g:Lf_NormalMap["Filer"]

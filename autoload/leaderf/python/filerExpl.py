@@ -110,7 +110,7 @@ class FilerExplManager(Manager):
             "<C-f>": ["toggle_hidden_files", "<F8>"],
             "<C-g>": ["goto_root_marker_dir", "<F7>"],
         }
-        insert_map = lfEval('get(g:, "Lf_FilerInsertMap", {})')
+        insert_map = lfEval('get(g:, "Lf_FilerCommandMap", {})')
 
         self.keymaps = KeyMaps(insert_keymap_dict, insert_map)
         self.keymaps.updateKeyDict(self._getInstance()._cli)
