@@ -25,6 +25,12 @@ or
 :Leaderf filer
 ```
 
+Popup
+
+```
+:Leaderf filer --popup
+```
+
 ## Mappings
 
 INSERT MODE:
@@ -48,7 +54,6 @@ NORMAL MODE:
 | `I`           | Toggle show hidden files                                                                          |
 | `<CR>` / `o`  | Open the file under cursor or create a file with the input pattern file name (when empty results) |
 
-
 ## Settings
 
 Show icons.
@@ -57,6 +62,8 @@ Show icons.
 " Plug 'ryanoasis/vim-devicons'
 let g:Lf_FilerShowDevIcons = 1
 ```
+
+Customize mappings.
 
 ## Screenshots
 
