@@ -47,7 +47,7 @@ function! leaderf#Filer#Maps()
     \   'l':        'goto_child',
     \   '<C-l>':    'goto_child',
     \   'I':        'toggle_hidden_files',
-    \   '<C-g>':    'goto_root_markers_dir',
+    \   '<C-g>':    'goto_root_marker_dir',
     \}
     let l:normal_map = get(g:, 'Lf_FilerNormalMap', s:default_map)
 
