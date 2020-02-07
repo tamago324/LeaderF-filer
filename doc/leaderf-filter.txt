@@ -26,7 +26,7 @@ g:Lf_FilerAcceptDirSelectionCmd              *g:Lf_FilerAcceptDirSelectionCmd*
 
     Default value: 'lcd'
 
-g:Lf_FilerShowDevIcons                         *g:Lf_FilerShowDevIcons*
+g:Lf_FilerShowDevIcons                          *g:Lf_FilerShowDevIcons*
     Use vim-devicons to display icons.
     NOTE: https://github.com/ryanoasis/vim-devicons is required.
 
@@ -36,6 +36,25 @@ g:Lf_FilerShowCurrentDirDot                     *g:Lf_FilerShowCurrentDirDot*
     Whether to display `.` for the current directory.
 
     Default value: 0
+
+g:Lf_FilerCommandMap                            *g:Lf_FilerCommandMap*
+    Customize insert mode mappings.
+
+    Default value:
+>
+    let g:Lf_FilerCommandMap = {
+    \   '<C-h>': 'goto_parent',
+    \   '<C-l>': 'goto_child',
+    \   '<C-f>': 'toggle_hidden_files',
+    \   '<C-g>': 'goto_root_marker_dir',
+    \}
+<
+
+g:Lf_FilerNormalMap                             *g:Lf_FilerNormalMap*
+    Customize normal mode mappings.
+
+    NOTE: not implements
+>>>>>>> Support customize insert mode:doc/leaderf.txt
 
 
 ==============================================================================
@@ -77,6 +96,38 @@ Key                     Action~
              file name (when empty results)
 `p`          Preview the file.
 
+Customizable key mapping using |g:Lf_FilerCommandMap| and
+|g:Lf_FilerNormalMap|.
+
+The key is a key and the value is a dictionary of action names.
+
+Example:
+>
+    let g:Lf_FilerCommandMap = {
+    \   '<C-h>': 'goto_parent',
+    \   '<C-l>': 'goto_child',
+    \   '<C-f>': 'toggle_hidden_files',
+    \   '<C-g>': 'goto_root_marker_dir',
+    \}
+<
+
+Action list:
+
+`goto_parent`
+    Show files in parent directory
+
+`goto_child`
+    Show files in directory under cursor
+
+`toggle_hidden_files`
+    Toggle show hidden files
+
+`goto_root_marker_dir`
+    Show files of directory where |g:Lf_RootMarkers| exists
+
+
+NOTE: Other mappings can be customized with option |g:Lf_CommandMap| or
+      |g:Lf_NormalMap| in LeaderF.
 
 ------------------------------------------------------------------------------
 HIGHLIGHTS~

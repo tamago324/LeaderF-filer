@@ -18,6 +18,7 @@ exec g:Lf_py "from filerExpl import *"
 
 function! leaderf#Filer#Maps()
     nmapclear <buffer>
+
     nnoremap <buffer> <silent> <CR>          :exec g:Lf_py "filerExplManager.accept()"<CR>
     nnoremap <buffer> <silent> o             :exec g:Lf_py "filerExplManager.accept()"<CR>
     nnoremap <buffer> <silent> <2-LeftMouse> :exec g:Lf_py "filerExplManager.accept()"<CR>
@@ -43,11 +44,13 @@ function! leaderf#Filer#Maps()
         nnoremap <buffer> <silent> <C-Down>  :exec g:Lf_py "filerExplManager._toDownInPopup()"<CR>
         nnoremap <buffer> <silent> <Esc>     :exec g:Lf_py "filerExplManager._closePreviewPopup()"<CR>
     endif
+
     if has_key(g:Lf_NormalMap, "Filer")
         for i in g:Lf_NormalMap["Filer"]
             exec 'nnoremap <buffer> <silent> '.i[0].' '.i[1]
         endfor
     endif
+
 endfunction
 
 function! leaderf#Filer#managerId()
@@ -132,11 +135,11 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
     elseif key ==? "<F1>"
         exec g:Lf_py "filerExplManager.toggleHelp()"
     elseif key ==? "h" || key ==? "<C-L>"
-        exec g:Lf_py "filerExplManager.up()"
+        exec g:Lf_py "filerExplManager.goto_parent()"
     elseif key ==? "l" || key ==? "<C-L>"
-        exec g:Lf_py "filerExplManager.down()"
+        exec g:Lf_py "filerExplManager.goto_child()"
     elseif key ==? "I"
-        exec g:Lf_py "filerExplManager.toggleHiddenFiles()"
+        exec g:Lf_py "filerExplManager.toggle_hidden_files()"
     elseif key ==? "<C-G>"
         exec g:Lf_py "filerExplManager.gotoRootMarkersDir()"
     elseif key ==# "p"
