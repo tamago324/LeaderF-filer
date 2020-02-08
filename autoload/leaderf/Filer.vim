@@ -41,17 +41,7 @@ function! leaderf#Filer#Maps()
         nnoremap <buffer> <silent> <Esc>     :exec g:Lf_py "filerExplManager._closePreviewPopup()"<CR>
     endif
 
-    let s:default_map = {
-    \   'h':        'goto_parent',
-    \   '<C-h>':    'goto_parent',
-    \   'l':        'goto_child',
-    \   '<C-l>':    'goto_child',
-    \   'I':        'toggle_hidden_files',
-    \   '<C-g>':    'goto_root_marker_dir',
-    \}
-    let l:normal_map = get(g:, 'Lf_FilerNormalMap', s:default_map)
-
-    for [l:key, l:func] in items(l:normal_map)
+    for [l:key, l:func] in items(s:normal_map())
         exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "filerExplManager.%s()"<CR>', l:key, l:func)
     endfor
 
@@ -61,6 +51,18 @@ function! leaderf#Filer#Maps()
         endfor
     endif
 
+endfunction
+
+function! s:normal_map() abort
+    let l:default_map = {
+    \   'h':        'open_parent',
+    \   '<C-h>':    'open_parent',
+    \   'l':        'open_current',
+    \   '<C-l>':    'open_current',
+    \   'I':        'toggle_hidden_files',
+    \   '<C-g>':    'goto_root_marker_dir',
+    \}
+    return get(g:, 'Lf_FilerNormalMap', l:default_map)
 endfunction
 
 function! leaderf#Filer#managerId()
@@ -144,20 +146,19 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager.accept()"
     elseif key ==? "<F1>"
         exec g:Lf_py "filerExplManager.toggleHelp()"
-    elseif key ==? "h" || key ==? "<C-L>"
-        exec g:Lf_py "filerExplManager.goto_parent()"
-    elseif key ==? "l" || key ==? "<C-L>"
-        exec g:Lf_py "filerExplManager.goto_child()"
-    elseif key ==? "I"
-        exec g:Lf_py "filerExplManager.toggle_hidden_files()"
-    elseif key ==? "<C-G>"
-        exec g:Lf_py "filerExplManager.gotoRootMarkersDir()"
     elseif key ==# "p"
         exec g:Lf_py "filerExplManager._previewResult(True)"
     elseif key ==? "<C-Up>"
         exec g:Lf_py "filerExplManager._toUpInPopup()"
     elseif key ==? "<C-Down>"
         exec g:Lf_py "filerExplManager._toDownInPopup()"
+    else
+        " customize key mappings
+        for [l:custom_key, l:func] in items(s:normal_map())
+            if key ==? l:custom_key
+                exec printf('exec g:Lf_py "filerExplManager.%s()"', l:func)
+            endif
+        endfor
     endif
 
     return 1

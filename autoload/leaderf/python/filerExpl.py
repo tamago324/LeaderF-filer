@@ -105,8 +105,8 @@ class FilerExplManager(Manager):
 
         # customize mapping
         insert_keymap_dict = {
-            "<C-h>": ["goto_parent", "<F10>"],
-            "<C-l>": ["goto_child", "<F9>"],
+            "<C-h>": ["open_parent", "<F10>"],
+            "<C-l>": ["open_current", "<F9>"],
             "<C-f>": ["toggle_hidden_files", "<F8>"],
             "<C-g>": ["goto_root_marker_dir", "<F7>"],
         }
@@ -173,7 +173,7 @@ class FilerExplManager(Manager):
         this function can be overridden to add new cmd
         if return true, exit the input loop
         """
-        # getFuncKeyDict: { "goto_parent": "<F10>" }
+        # getFuncKeyDict: { "open_parent": "<F10>" }
         if cmd in self.keymaps.getFuncKeyDict().values():
             for func, key in self.keymaps.getFuncKeyDict().items():
                 if key == cmd:
@@ -223,7 +223,7 @@ class FilerExplManager(Manager):
             id = int(lfEval("matchadd('Lf_hl_filerNoContent', '^%s$')" % NO_CONTENT_MSG))
             self._match_ids.append(id)
 
-    def goto_child(self):
+    def open_current(self):
         line = self._getInstance().currentLine
 
         if line in (".", NO_CONTENT_MSG):
@@ -249,7 +249,7 @@ class FilerExplManager(Manager):
 
         self._chcwd(os.path.abspath(file_info["fullpath"]))
 
-    def goto_parent(self):
+    def open_parent(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return

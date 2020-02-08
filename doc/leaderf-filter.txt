@@ -43,8 +43,8 @@ g:Lf_FilerCommandMap                            *g:Lf_FilerCommandMap*
     Default value:
 >
     let g:Lf_FilerCommandMap = {
-    \   '<C-h>': 'goto_parent',
-    \   '<C-l>': 'goto_child',
+    \   '<C-h>': 'open_parent',
+    \   '<C-l>': 'open_current',
     \   '<C-f>': 'toggle_hidden_files',
     \   '<C-g>': 'goto_root_marker_dir',
     \}
@@ -56,10 +56,10 @@ g:Lf_FilerNormalMap                             *g:Lf_FilerNormalMap*
     Default value:
 >
     let g:Lf_FilerNormalMap = {
-    \   'h':        'goto_parent',
-    \   '<C-h>':    'goto_parent',
-    \   'l':        'goto_child',
-    \   '<C-l>':    'goto_child',
+    \   'h':        'open_parent',
+    \   '<C-h>':    'open_parent',
+    \   'l':        'open_current',
+    \   '<C-l>':    'open_current',
     \   'I':        'toggle_hidden_files',
     \   '<C-g>':    'goto_root_marker_dir',
     \}
@@ -113,8 +113,8 @@ The key is a key and the value is a dictionary of action names.
 Example:
 >
     let g:Lf_FilerNormalMap = {
-    \   'h': 'goto_parent',
-    \   'l': 'goto_child',
+    \   'h': 'open_parent',
+    \   'l': 'open_current',
     \   '.': 'toggle_hidden_files',
     \   '~': 'goto_root_marker_dir',
     \}
@@ -122,10 +122,10 @@ Example:
 
 Action list:
 
-`goto_parent`
+`open_parent`
     Show files in parent directory
 
-`goto_child`
+`open_current`
     Show files in directory under cursor
 
 `toggle_hidden_files`
