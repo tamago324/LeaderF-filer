@@ -9,6 +9,15 @@ from leaderf.manager import *
 
 NO_CONTENT_MSG = ' No content!'
 
+
+def accessable(path):
+    try:
+        os.utime(path)
+        return True
+    except PermissionError:
+        return False
+
+
 # *****************************************************
 # FilerExplorer
 # *****************************************************
@@ -218,6 +227,13 @@ class FilerExplManager(Manager):
             # super(FilerExplManager, self)._acceptSelection()
             return
 
+        if accessable(file_info["fullpath"]):
+            lfCmd(
+                "echohl ErrorMsg | redraw | echon "
+                "' Permission denied `%s`' | echohl NONE" % file_info["fullpath"]
+            )
+            return
+
         if self._getInstance().isReverseOrder():
             lfCmd("normal! G")
         else:
@@ -317,6 +333,18 @@ class FilerExplManager(Manager):
         self._refresh(cwd=path)
         if '--auto-cd' in self.getArguments():
             self.cd(path)
+
+    def startExplorer(self, win_pos, *args, **kwargs):
+        _dir = kwargs.get("arguments", {}).get("directory")[0]
+        _dir = os.path.expanduser(lfDecode(_dir))
+        if not accessable(lfDecode(_dir)):
+            lfCmd(
+                "echohl ErrorMsg | redraw | echon "
+                "' Permission denied `%s`' | echohl NONE" % _dir
+            )
+            return
+
+        super(FileExplManager, self).startExplorer(win_pos, *args, **kwargs)
 
 
 # *****************************************************
