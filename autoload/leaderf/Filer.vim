@@ -15,7 +15,8 @@ exec g:Lf_py "import vim, sys, os.path"
 exec g:Lf_py "cwd = vim.eval('expand(\"<sfile>:p:h\")')"
 exec g:Lf_py "sys.path.insert(0, os.path.join(cwd, 'python'))"
 exec g:Lf_py "from filerExpl import *"
-exec g:Lf_py "from keymaps import KeyMaps"
+exec g:Lf_py "from leaderf.utils import *"
+
 
 
 function! leaderf#Filer#Maps()
@@ -42,7 +43,8 @@ function! leaderf#Filer#Maps()
     endif
 
     for [l:key, l:func] in items(s:normal_map())
-        exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "filerExplManager.%s()"<CR>', l:key, l:func)
+        exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "keymaps.doCommand(''%s'')"<CR>', l:key, l:func)
+        echomsg printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "keymaps.doCommand(''%s'')"<CR>', l:key, l:func)
     endfor
 
     if has_key(g:Lf_NormalMap, "Filer")
@@ -156,7 +158,7 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         " customize key mappings
         for [l:custom_key, l:func] in items(s:normal_map())
             if key ==? l:custom_key
-                exec printf('exec g:Lf_py "filerExplManager.%s()"', l:func)
+                exec printf('exec g:Lf_py "keymaps.doCommand(''%s'')"', l:func)
             endif
         endfor
     endif
