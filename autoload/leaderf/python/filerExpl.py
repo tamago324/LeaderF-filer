@@ -108,7 +108,7 @@ class FilerExplManager(Manager):
         line = instance.currentLine
         pattern = ''.join(instance._cli._cmdline)
 
-        if line == "":
+        if line in ("", NO_CONTENT_MSG):
             self._edit(pattern)
             return
 
