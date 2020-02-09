@@ -103,17 +103,16 @@ class FilerExplManager(Manager):
     def _defineMaps(self):
         lfCmd("call leaderf#Filer#Maps()")
 
-    # XXX: better to use commands.
-    # def accept(self, mode=''):
-    #     instance = self._getInstance()
-    #     line = instance.currentLine
-    #     pattern = ''.join(instance._cli._cmdline)
-    #
-    #     if line == "":
-    #         self._edit(pattern)
-    #         return
-    #
-    #     super(FilerExplManager, self).accept(mode)
+    def accept(self, mode=''):
+        instance = self._getInstance()
+        line = instance.currentLine
+        pattern = ''.join(instance._cli._cmdline)
+
+        if line == "":
+            self._edit(pattern)
+            return
+
+        super(FilerExplManager, self).accept(mode)
 
     def _acceptSelection(self, *args, **kwargs):
         path = args[0]
@@ -308,10 +307,10 @@ class FilerExplManager(Manager):
 
         return ""
 
-    # def _edit(self, name):
-    #     path = os.path.join(self._getInstance().getCwd(), name)
-    #     self._getInstance().exitBuffer()
-    #     lfCmd('edit %s' % path)
+    def _edit(self, name):
+        path = os.path.join(self._getInstance().getCwd(), name)
+        self._getInstance().exitBuffer()
+        lfCmd('edit %s' % path)
 
     def _chcwd(self, path):
         self._getExplorer()._cwd = path
