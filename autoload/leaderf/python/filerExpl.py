@@ -7,6 +7,7 @@ from leaderf.utils import *
 from leaderf.explorer import *
 from leaderf.manager import *
 
+NO_CONTENT_MSG = ' No content!'
 
 # *****************************************************
 # FilerExplorer
@@ -74,6 +75,8 @@ class FilerExplorer(Explorer):
             # . => current directory
             return ["."] + dirs + files
         else:
+            if len(dirs + files) == 0:
+                return [NO_CONTENT_MSG]
             return dirs + files
 
     def getStlCategory(self):
@@ -113,6 +116,9 @@ class FilerExplManager(Manager):
 
     def _acceptSelection(self, *args, **kwargs):
         path = args[0]
+        if path == NO_CONTENT_MSG:
+            return
+
         if path == ".":
             path = self._getExplorer()._cwd
 
@@ -178,9 +184,17 @@ class FilerExplManager(Manager):
             )
             id = int(lfEval("matchid"))
             self._match_ids.append(id)
+
             lfCmd(
                 """call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerDir'', ''^[^\/]\+\/$'')')"""
                 % self._getInstance().getPopupWinId()
+            )
+            id = int(lfEval("matchid"))
+            self._match_ids.append(id)
+
+            lfCmd(
+                """call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerNoContent'', ''^%s$'')')"""
+                % (self._getInstance().getPopupWinId(), NO_CONTENT_MSG)
             )
             id = int(lfEval("matchid"))
             self._match_ids.append(id)
@@ -189,11 +203,13 @@ class FilerExplManager(Manager):
             self._match_ids.append(id)
             id = int(lfEval("matchadd('Lf_hl_filerDir', '^[^\/]\+\/$')"))
             self._match_ids.append(id)
+            id = int(lfEval("matchadd('Lf_hl_filerNoContent', '^%s$')" % NO_CONTENT_MSG))
+            self._match_ids.append(id)
 
     def down(self):
         line = self._getInstance().currentLine
 
-        if line == ".":
+        if line in (".", NO_CONTENT_MSG):
             return
 
         file_info = self._getExplorer()._contents[line]
