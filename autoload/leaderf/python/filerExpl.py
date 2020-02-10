@@ -134,8 +134,7 @@ class FilerExplManager(Manager):
         if self._getExplorer()._show_devicons:
             path = path[2:]
 
-        if os.path.isabs(path):
-            path = os.path.join(self._getInstance().getCwd(), lfDecode(path))
+        if not os.path.isabs(path):
             path = os.path.normpath(lfEncode(path))
 
         if os.path.isdir(path):
@@ -336,10 +335,12 @@ class FilerExplManager(Manager):
             self.cd(path)
 
     def startExplorer(self, win_pos, *args, **kwargs):
+        _dir = ''
         if kwargs.get("arguments", {}).get("directory"):
             _dir = kwargs.get("arguments", {}).get("directory")[0]
             _dir = os.path.expanduser(lfDecode(_dir))
-            if not accessable(lfDecode(_dir)):
+
+            if not accessable(_dir):
                 lfCmd(
                     "echohl ErrorMsg | redraw | echon "
                     "' Permission denied `%s`' | echohl NONE" % _dir
@@ -347,6 +348,9 @@ class FilerExplManager(Manager):
                 return
 
         super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
+        # super().startExplorer() updates cwd to os.getcwd()
+        if _dir != '':
+            self._getInstance().setCwd(_dir)
 
     def _previewInPopup(self, *args, **kwargs):
         line = args[0]
