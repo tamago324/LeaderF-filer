@@ -12,7 +12,7 @@ NO_CONTENT_MSG = ' No content!'
 
 def accessable(path):
     try:
-        os.utime(path)
+        os.listdir(path)
         return True
     except PermissionError:
         return False
