@@ -147,12 +147,13 @@ class FilerExplManager(Manager):
 
     def _createHelp(self):
         help = []
-        help.append('" <CR>/<double-click>/o : execute command under cursor')
+        help.append('" <CR>/<double-click>/o : open file/dir under cursor')
         help.append('" <TAB> : switch to input mode')
         help.append('" <C-h>/h : Show files in parent directory')
         help.append('" <C-l>/l : Show files in directory under cursor')
         help.append('" I : Toggle show hidden files')
         help.append('" <C-g> : Show files of directory where g:Lf_RootMarkers exists')
+        help.append('" p : preview the file')
         help.append('" q : quit')
         help.append('" <F1> : toggle this help')
         help.append('" ---------------------------------------------------------')
@@ -227,7 +228,7 @@ class FilerExplManager(Manager):
             # super(FilerExplManager, self)._acceptSelection()
             return
 
-        if accessable(file_info["fullpath"]):
+        if not accessable(file_info["fullpath"]):
             lfCmd(
                 "echohl ErrorMsg | redraw | echon "
                 "' Permission denied `%s`' | echohl NONE" % file_info["fullpath"]
@@ -335,14 +336,17 @@ class FilerExplManager(Manager):
             self.cd(path)
 
     def startExplorer(self, win_pos, *args, **kwargs):
-        _dir = kwargs.get("arguments", {}).get("directory")[0]
-        _dir = os.path.expanduser(lfDecode(_dir))
-        if not accessable(lfDecode(_dir)):
-            lfCmd(
-                "echohl ErrorMsg | redraw | echon "
-                "' Permission denied `%s`' | echohl NONE" % _dir
-            )
-            return
+        if kwargs.get("arguments", {}).get("directory"):
+            _dir = kwargs.get("arguments", {}).get("directory")[0]
+            _dir = os.path.expanduser(lfDecode(_dir))
+            if not accessable(lfDecode(_dir)):
+                lfCmd(
+                    "echohl ErrorMsg | redraw | echon "
+                    "' Permission denied `%s`' | echohl NONE" % _dir
+                )
+                return
+
+        super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
 
         super(FileExplManager, self).startExplorer(win_pos, *args, **kwargs)
 
