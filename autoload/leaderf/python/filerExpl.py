@@ -24,8 +24,8 @@ def accessable(path):
 class FilerExplorer(Explorer):
     def __init__(self):
         # filename: {
-        #   "isdir": ディレクトリかどうか,
-        #   "fullpath": パス
+        #   "isdir": bool,
+        #   "fullpath": str
         # }
         self._contents = dict()
         self._cwd = None
@@ -135,6 +135,7 @@ class FilerExplManager(Manager):
             path = path[2:]
 
         if not os.path.isabs(path):
+            path = os.path.join(self._getInstance().getCwd(), lfDecode(path))
             path = os.path.normpath(lfEncode(path))
 
         if os.path.isdir(path):
