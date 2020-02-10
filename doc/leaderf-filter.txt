@@ -75,6 +75,7 @@ Key                     Action~
 `<C-g>`      Show files of directory where |g:Lf_RootMarkers| exists
 `o`/`<CR>`   Open the file under cursor or create a file with the input pattern
              file name (when empty results)
+`p`          Preview the file.
 
 
 ------------------------------------------------------------------------------

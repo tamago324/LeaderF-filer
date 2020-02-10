@@ -24,12 +24,25 @@ function! leaderf#Filer#Maps()
     nnoremap <buffer> <silent> q             :exec g:Lf_py "filerExplManager.quit()"<CR>
     nnoremap <buffer> <silent> <Tab>         :exec g:Lf_py "filerExplManager.input()"<CR>
     nnoremap <buffer> <silent> <F1>          :exec g:Lf_py "filerExplManager.toggleHelp()"<CR>
+    nnoremap <buffer> <silent> p             :exec g:Lf_py "filerExplManager._previewResult(True)"<CR>
+    nnoremap <buffer> <silent> j             j:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
+    nnoremap <buffer> <silent> k             k:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
+    nnoremap <buffer> <silent> <Up>          <Up>:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
+    nnoremap <buffer> <silent> <Down>        <Down>:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
+    nnoremap <buffer> <silent> <PageUp>      <PageUp>:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
+    nnoremap <buffer> <silent> <PageDown>    <PageDown>:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
+    nnoremap <buffer> <silent> <LeftMouse>   <LeftMouse>:exec g:Lf_py "filerExplManager._previewResult(False)"<CR>
     nnoremap <buffer> <silent> h             :exec g:Lf_py "filerExplManager.up()"<CR>
     nnoremap <buffer> <silent> <C-h>         :exec g:Lf_py "filerExplManager.up()"<CR>
     nnoremap <buffer> <silent> l             :exec g:Lf_py "filerExplManager.down()"<CR>
     nnoremap <buffer> <silent> <C-l>         :exec g:Lf_py "filerExplManager.down()"<CR>
     nnoremap <buffer> <silent> I             :exec g:Lf_py "filerExplManager.toggleHiddenFiles()"<CR>
     nnoremap <buffer> <silent> <C-g>         :exec g:Lf_py "filerExplManager.gotoRootMarkersDir()"<CR>
+    if has("nvim")
+        nnoremap <buffer> <silent> <C-Up>    :exec g:Lf_py "filerExplManager._toUpInPopup()"<CR>
+        nnoremap <buffer> <silent> <C-Down>  :exec g:Lf_py "filerExplManager._toDownInPopup()"<CR>
+        nnoremap <buffer> <silent> <Esc>     :exec g:Lf_py "filerExplManager._closePreviewPopup()"<CR>
+    endif
     if has_key(g:Lf_NormalMap, "Filer")
         for i in g:Lf_NormalMap["Filer"]
             exec 'nnoremap <buffer> <silent> '.i[0].' '.i[1]
@@ -126,6 +139,12 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager.toggleHiddenFiles()"
     elseif key ==? "<C-G>"
         exec g:Lf_py "filerExplManager.gotoRootMarkersDir()"
+    elseif key ==# "p"
+        exec g:Lf_py "filerExplManager._previewResult(True)"
+    elseif key ==? "<C-Up>"
+        exec g:Lf_py "filerExplManager._toUpInPopup()"
+    elseif key ==? "<C-Down>"
+        exec g:Lf_py "filerExplManager._toDownInPopup()"
     endif
 
     return 1

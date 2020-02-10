@@ -348,7 +348,13 @@ class FilerExplManager(Manager):
 
         super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
 
-        super(FileExplManager, self).startExplorer(win_pos, *args, **kwargs)
+    def _previewInPopup(self, *args, **kwargs):
+        line = args[0]
+        if line == ".":
+            return
+        fullpath = self._getExplorer()._contents[line]["fullpath"]
+        buf_number = lfEval("bufadd('{}')".format(escQuote(fullpath)))
+        self._createPopupPreview(line, buf_number, 0)
 
 
 # *****************************************************
