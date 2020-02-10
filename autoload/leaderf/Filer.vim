@@ -18,7 +18,6 @@ exec g:Lf_py "from filerExpl import *"
 exec g:Lf_py "from leaderf.utils import *"
 
 
-
 function! leaderf#Filer#Maps()
     nmapclear <buffer>
 
@@ -42,9 +41,8 @@ function! leaderf#Filer#Maps()
         nnoremap <buffer> <silent> <Esc>     :exec g:Lf_py "filerExplManager._closePreviewPopup()"<CR>
     endif
 
-    for [l:key, l:func] in items(s:normal_map())
-        exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "keymaps.doCommand(''%s'')"<CR>', l:key, l:func)
-        echomsg printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "keymaps.doCommand(''%s'')"<CR>', l:key, l:func)
+    for [l:key, l:func] in items(leaderf#Filer#NormalMap())
+        exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "filerExplManager.%s()"<CR>', l:key, l:func)
     endfor
 
     if has_key(g:Lf_NormalMap, "Filer")
@@ -55,7 +53,7 @@ function! leaderf#Filer#Maps()
 
 endfunction
 
-function! s:normal_map() abort
+function! leaderf#Filer#NormalMap() abort
     let l:default_map = {
     \   'h':        'open_parent',
     \   '<C-h>':    'open_parent',
@@ -65,6 +63,16 @@ function! s:normal_map() abort
     \   '<C-g>':    'goto_root_marker_dir',
     \}
     return get(g:, 'Lf_FilerNormalMap', l:default_map)
+endfunction
+
+function! leaderf#Filer#InsertMap() abort
+    let l:default_map = {
+    \   '<C-h>':    'open_parent',
+    \   '<C-l>':    'open_current',
+    \   '<C-f>':    'toggle_hidden_files',
+    \   '<C-g>':    'goto_root_marker_dir',
+    \}
+    return get(g:, 'Lf_FilerInsertMap', l:default_map)
 endfunction
 
 function! leaderf#Filer#managerId()
@@ -156,9 +164,9 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager._toDownInPopup()"
     else
         " customize key mappings
-        for [l:custom_key, l:func] in items(s:normal_map())
+        for [l:custom_key, l:func] in items(leaderf#Filer#NormalMap())
             if key ==? l:custom_key
-                exec printf('exec g:Lf_py "keymaps.doCommand(''%s'')"', l:func)
+                exec printf('exec g:Lf_py "filerExplManager.%s()"', l:func)
             endif
         endfor
     endif

@@ -6,7 +6,6 @@ import os.path
 from leaderf.utils import *
 from leaderf.explorer import *
 from leaderf.manager import *
-from keymaps import KeyMaps
 
 NO_CONTENT_MSG = ' No content!'
 
@@ -19,8 +18,22 @@ def accessable(path):
         return False
 
 
-# customize mapping
-keymaps = KeyMaps(lfEval('get(g:, "Lf_FilerCommandMap", {})'))
+_commands = []
+
+
+def command(func):
+    """
+        Only functions without arguments
+
+        @command
+        def func(self):
+            pass
+    """
+    _commands.append(func.__name__)
+
+    def inner_func(*args, **kwargs):
+        return func(*args, **kwargs)
+    return inner_func
 
 
 # *****************************************************
@@ -106,7 +119,14 @@ class FilerExplorer(Explorer):
 class FilerExplManager(Manager):
     def __init__(self):
         super(FilerExplManager, self).__init__()
-        keymaps.updateKeyDict(self._getInstance()._cli)
+        self._update_insert_maps()
+
+    def _update_insert_maps(self):
+        insert_map = lfEval('leaderf#Filer#InsertMap()')
+        maps = {
+            key.upper(): func_name for key, func_name in insert_map.items()
+        }
+        self._getInstance()._cli._key_dict.update(maps)
 
     def _getExplClass(self):
         return FilerExplorer
@@ -166,8 +186,10 @@ class FilerExplManager(Manager):
         this function can be overridden to add new cmd
         if return true, exit the input loop
         """
-        if command_name in keymaps.getMaps().values():
-            keymaps.doCommand(command_name)
+
+        if command_name in _commands:
+            # Only functions without arguments
+            eval('self.%s()' % command_name)
         else:
             return True
 
@@ -212,8 +234,8 @@ class FilerExplManager(Manager):
             id = int(lfEval("matchadd('Lf_hl_filerNoContent', '^%s$')" % NO_CONTENT_MSG))
             self._match_ids.append(id)
 
-    @keymaps.command(name="open_current", default_key="<C-L>")
-    def open_current(self, *args, **kwargs):
+    @command
+    def open_current(self):
         line = self._getInstance().currentLine
 
         if line in (".", NO_CONTENT_MSG):
@@ -239,8 +261,8 @@ class FilerExplManager(Manager):
 
         self._chcwd(os.path.abspath(file_info["fullpath"]))
 
-    @keymaps.command(name="open_parent", default_key="<C-H>")
-    def open_parent(self, *args, **kwargs):
+    @command
+    def open_parent(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return
@@ -256,15 +278,15 @@ class FilerExplManager(Manager):
         lfCmd("call search('%s')" % pattern)
         lfCmd('normal! 0')
 
-    @keymaps.command(name="toggle_hidden_files", default_key="<C-F>")
-    def toggle_hidden_files(self, *args, **kwargs):
+    @command
+    def toggle_hidden_files(self):
         self._getExplorer()._show_hidden_files = (
             not self._getExplorer()._show_hidden_files
         )
         self.refresh(normal_mode=False)
 
-    @keymaps.command(name="goto_root_marker_dir", default_key="<C-G>")
-    def goto_root_marker_dir(self, *args, **kwargs):
+    @command
+    def goto_root_marker_dir(self):
         root_markers = lfEval("g:Lf_RootMarkers")
         rootMarkersDir = self._nearestAncestor(
             root_markers, self._getInstance().getCwd()
@@ -367,7 +389,4 @@ class FilerExplManager(Manager):
 # *****************************************************
 filerExplManager = FilerExplManager()
 
-# set self
-keymaps.setSelf(filerExplManager)
-
-__all__ = ["filerExplManager", "keymaps"]
+__all__ = ["filerExplManager"]
