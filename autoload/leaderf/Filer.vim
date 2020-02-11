@@ -54,25 +54,31 @@ function! leaderf#Filer#Maps()
 endfunction
 
 function! leaderf#Filer#NormalMap() abort
-    let l:default_map = {
-    \   'h':        'open_parent',
-    \   '<C-h>':    'open_parent',
-    \   'l':        'open_current',
-    \   '<C-l>':    'open_current',
-    \   'I':        'toggle_hidden_files',
-    \   '<C-g>':    'goto_root_marker_dir',
-    \}
-    return get(g:, 'Lf_FilerNormalMap', l:default_map)
+    let l:default_map = {}
+    if get(g:, 'Lf_FilerUseDefaultNormalMap', v:true)
+        let l:default_map = {
+        \   'h':        'open_parent',
+        \   '<C-h>':    'open_parent',
+        \   'l':        'open_current',
+        \   '<C-l>':    'open_current',
+        \   'I':        'toggle_hidden_files',
+        \   '<C-g>':    'goto_root_marker_dir',
+        \}
+    endif
+    return extend(get(g:, 'Lf_FilerNormalMap', {}), l:default_map)
 endfunction
 
 function! leaderf#Filer#InsertMap() abort
-    let l:default_map = {
-    \   '<C-h>':    'open_parent',
-    \   '<C-l>':    'open_current',
-    \   '<C-f>':    'toggle_hidden_files',
-    \   '<C-g>':    'goto_root_marker_dir',
-    \}
-    return get(g:, 'Lf_FilerInsertMap', l:default_map)
+    let l:default_map = {}
+    if get(g:, 'Lf_FilerUseDefaultInsertMap', v:true)
+        let l:default_map = {
+        \   '<C-h>': 'open_parent',
+        \   '<C-l>': 'open_current',
+        \   '<C-f>': 'toggle_hidden_files',
+        \   '<C-g>': 'goto_root_marker_dir',
+        \}
+    endif
+    return extend(get(g:, 'Lf_FilerInsertMap', {}), l:default_map)
 endfunction
 
 function! leaderf#Filer#managerId()

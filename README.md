@@ -51,8 +51,8 @@ NORMAL MODE:
 | `<C-l>` / `l` | Show files in directory under cursor                                                              |
 | `I`           | Toggle show hidden files                                                                          |
 | `<C-g>`       | Show files of directory where root marker exists                                                  |
-| `I`           | Toggle show hidden files                                                                          |
 | `<CR>` / `o`  | Open the file under cursor or create a file with the input pattern file name (when empty results) |
+| `p`           | Preview the file                                                                                  |
 
 ## Settings
 
