@@ -46,7 +46,7 @@ function! leaderf#Filer#NormalMap() abort
         " \   '<PageDown>':    'page_down',
         " \   '<LeftMouse>':   'left_mouse',
     endif
-    return extend(get(g:, 'Lf_FilerNormalMap', {}), l:default_map)
+    return extend(l:default_map, get(g:, 'Lf_FilerNormalMap', {}))
 endfunction
 
 let s:normal_map = leaderf#Filer#NormalMap()
@@ -99,7 +99,7 @@ function! leaderf#Filer#InsertMap() abort
         \}
     endif
 
-    let l:custom_map = extend(get(g:, 'Lf_FilerInsertMap', {}), l:default_map)
+    let l:custom_map = extend(l:default_map, get(g:, 'Lf_FilerInsertMap', {}))
 
     " from cli.py
     let l:cli_map = {
@@ -131,12 +131,12 @@ function! leaderf#Filer#InsertMap() abort
     let l:ret = {}
     for [l:key, l:cmd] in items(l:custom_map)
         if has_key(l:cli_map, l:cmd)
-            let l:ret[l:key] = l:cli_map[l:cmd]
+            let l:ret[toupper(l:key)] = l:cli_map[l:cmd]
         else
-            let l:ret[l:key] = l:cmd
+            let l:ret[toupper(l:key)] = l:cmd
         endif
     endfor
-    echomsg l:ret
+
     return l:ret
 endfunction
 
@@ -150,6 +150,7 @@ function! leaderf#Filer#managerId()
 endfunction
 
 function! leaderf#Filer#NormalModeFilter(winid, key) abort
+    " Converted to uppercase just in case
     let l:key = get(g:Lf_KeyMap, a:key, a:key)
     let l:cmd = get(s:normal_map, l:key, '')
 

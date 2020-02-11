@@ -31,15 +31,42 @@ Popup
 :Leaderf filer --popup
 ```
 
-## Mappings
+## Configuration
 
 see `:h LeaderF-filer-mapping`
 
-### Show devicons
+### Example
 
 ```vim
-" Plug 'ryanoasis/vim-devicons'
+" ====================
+" show devicons
+" ====================
+call plug#begin('~/vimfiles/plugged')
+
+Plug 'Yggdroot/LeaderF'
+Plug 'tamago324/LeaderF-filer'
+Plug 'ryanoasis/vim-devicons'
+
+call plug#end()
+
 let g:Lf_FilerShowDevIcons = 1
+
+" ====================
+" customize mappings
+" ====================
+
+" Default value 1
+let g:Lf_FilerNormalMap = 1
+
+let g:Lf_FilerNormalMap = {
+\   '<C-h>': 'nop',
+\   '<C-l>': 'nop',
+\   'i':     'switch_insert_mode',
+\   'I':     'nop',
+\   '.':     'toggle_hidden_files',
+\   '<C-g>': 'nop',
+\   '~':     'goto_root_marker_dir',
+\}
 ```
 
 ## Screenshots

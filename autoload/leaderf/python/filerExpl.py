@@ -45,7 +45,8 @@ def setSelf(self):
 
 
 def do_command(name):
-    commands[name]()
+    if name in commands:
+        commands[name]()
 
 # *****************************************************
 # FilerExplorer
@@ -137,7 +138,7 @@ class FilerExplManager(Manager):
         maps = {
             key.upper(): cmd for key, cmd in insert_map.items()
         }
-        self._getInstance()._cli._key_dict.update(maps)
+        self._getInstance()._cli._key_dict = maps
 
     def _getExplClass(self):
         return FilerExplorer
@@ -202,8 +203,6 @@ class FilerExplManager(Manager):
             do_command(cmd_name)
         elif equal(cmd_name, "nop"):
             pass
-        else:
-            return True
 
     def _getDigest(self, line, mode):
         if not line:

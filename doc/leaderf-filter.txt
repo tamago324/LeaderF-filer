@@ -170,6 +170,8 @@ For example, to customize while using the default mappings:
     \   '<C-h>': 'nop',
     \   '<C-l>': 'nop',
     \   'i':     'switch_insert_mode',
+    \   '.':     'toggle_hidden_files',
+    \   '~':     'goto_root_marker_dir',
     \}
 <
 
