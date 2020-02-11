@@ -1,20 +1,24 @@
 *LeaderF-filer*
 
-INTRODUCTION~
+
+==============================================================================
+INTRODUCTION                                     *LeaderF-filer-instroduction*
 
 This plugin is an extension of LeaderF, it is used to navigate the files in
 directory.
 
+
 ==============================================================================
-REQUIREMENTS~
+REQUIREMENTS                                      *LeaderF-filer-requirements*
 
 - vim7.4.330 or higher.
 - vim compiled with Python support, you can check by using `echo has('python')`
   or `echo has('python3')` to see if the result is 1.
 - Support vim-devicons (https://github.com/ryanoasis/vim-devicons)
 
+
 ==============================================================================
-OPTIONS~
+OPTIONS                                                *LeaderF-filer-options*
 
 g:Lf_FilerShowHiddenFiles                          *g:Lf_FilerShowHiddenFiles*
     If enabled, shows hidden files by default.
@@ -26,125 +30,253 @@ g:Lf_FilerAcceptDirSelectionCmd              *g:Lf_FilerAcceptDirSelectionCmd*
 
     Default value: 'lcd'
 
-g:Lf_FilerShowDevIcons                          *g:Lf_FilerShowDevIcons*
+g:Lf_FilerShowDevIcons                                *g:Lf_FilerShowDevIcons*
     Use vim-devicons to display icons.
     NOTE: https://github.com/ryanoasis/vim-devicons is required.
 
     Default value: 0
 
-g:Lf_FilerShowCurrentDirDot                     *g:Lf_FilerShowCurrentDirDot*
+g:Lf_FilerShowCurrentDirDot                      *g:Lf_FilerShowCurrentDirDot*
     Whether to display `.` for the current directory.
 
     Default value: 0
 
 g:Lf_FilerUseDefaultInsertMap                  *g:Lf_FilerUseDefaultInsertMap*
-    Use the following key mapping
-    Default value: 1
->
-    let l:default_insert_map = {
-    \   '<C-h>': 'open_parent',
-    \   '<C-l>': 'open_current',
-    \   '<C-f>': 'toggle_hidden_files',
-    \   '<C-g>': 'goto_root_marker_dir',
-    \}
-<
+    Use the default key mapping
 
-g:Lf_FilerUseDefaultNormalMap                  *g:Lf_FilerUseDefaultInsertMap*
-    Use the following key mapping
     Default value: 1
->
-    let l:default_normal_map = {
-    \   'h':        'open_parent',
-    \   '<C-h>':    'open_parent',
-    \   'l':        'open_current',
-    \   '<C-l>':    'open_current',
-    \   'I':        'toggle_hidden_files',
-    \   '<C-g>':    'goto_root_marker_dir',
-    \}
-<
 
-g:Lf_FilerInsertMap                            *g:Lf_FilerInsertMap*
+g:Lf_FilerUseDefaultNormalMap                  *g:Lf_FilerUseDefaultNormalMap*
+    Use the default key mapping
+
+    Default value: 1
+
+g:Lf_FilerInsertMap                                      *g:Lf_FilerInsertMap*
     Customize insert mode mappings.
 
     Default value: `{}`
 
-g:Lf_FilerNormalMap                             *g:Lf_FilerNormalMap*
+g:Lf_FilerNormalMap                                      *g:Lf_FilerNormalMap*
     Customize normal mode mappings.
 
     Default value: `{}`
 
 
 ==============================================================================
-USAGE~
+USAGE                                                    *LeaderF-filer-usage*
 
 ------------------------------------------------------------------------------
-COMMANDS~
+COMMANDS                                              *LeaderF-filer-commands*
 
-:LeaderfFiler                                *:LeaderfFiler*
+:LeaderfFiler                                                  *:LeaderfFiler*
     navigate the files in directory.
 
-ARGUMENTS~
 
-`--auto-cd`
+------------------------------------------------------------------------------
+OPTIONS                                                *LeaderF-filer-options*
+
+`--auto-cd`                                            *LeaderF-filer-auto-cd*
     Change the working directory while navigating with LeaderF-filer.
 
 
+==============================================================================
+CUSTOMIZATION                                    *LeaderF-filer-customization*
+
 ------------------------------------------------------------------------------
-MAPPINGS~
+MAPPINGS                                               *LeaderF-filer-mapping*
 
-INERT MODE:
-Key                     Action~
------------  -------------------------------
-`<C-h>`      Show files in parent directory
-`<C-l>`      Show files in directory under cursor
-`<C-f>`      Toggle show hidden files
-`<C-g>`      Show files of directory where |g:Lf_RootMarkers| exists
-`<CR>`       Open the file under cursor or create a file with the input pattern
-             file name (when empty results)
+You need to define the mapping in normal mode and insert mode respectively.
+See |LeaderF-filer-map-commands| for a list of available commands.
 
-NORMAL MODE:
-Key                     Action~
------------  -------------------------------
-`h`/`<C-h>`  Show files in parent directory
-`l`/`<C-l>`  Show files in directory under cursor
-`I`          Toggle show hidden files
-`<C-g>`      Show files of directory where |g:Lf_RootMarkers| exists
-`o`/`<CR>`   Open the file under cursor or create a file with the input pattern
-             file name (when empty results)
-`p`          Preview the file.
+Default mappings:                              *LeaderF-filer-default-mapping*
 
-Customizable key mapping using |g:Lf_FilerCommandMap| and
-|g:Lf_FilerNormalMap|.
-
-The key is a key and the value is a dictionary of action names.
-
-Example:
 >
-    let g:Lf_FilerNormalMap = {
-    \   'h': 'open_parent',
-    \   'l': 'open_current',
-    \   '.': 'toggle_hidden_files',
-    \   '~': 'goto_root_marker_dir',
+    " insert mode:
+    let l:default_insert_map = {
+    \   '<C-h>':        'open_parent',
+    \   '<C-l>':        'open_current',
+    \   '<C-f>':        'toggle_hidden_files',
+    \   '<C-g>':        'goto_root_marker_dir',
+    \   '<Esc>':        'quit',
+    \   '<C-c>':        'quit',
+    \   '<CR>':         'accept',
+    \   '<2-LeftMouse>': 'accept',
+    \   '<C-r>':        'toggle_regex',
+    \   '<BS>':         'backspace',
+    \   '<C-u>':        'clear_line',
+    \   '<C-w>':        'delete_left_word',
+    \   '<Del>':        'delete',
+    \   '<C-v>':        'paste',
+    \   '<S-Insert>':   'paste',
+    \   '<Home>':       'home',
+    \   '<C-b>':        'home',
+    \   '<End>':        'end',
+    \   '<C-e>':        'end',
+    \   '<Left>':       'left',
+    \   '<Right>':      'right',
+    \   '<C-j>':        'down',
+    \   '<C-k>':        'up',
+    \   '<Up>':         'prev_history',
+    \   '<Down>':       'next_history',
+    \   '<C-p>':        'preview',
+    \   '<Tab>':        'switch_normal_mode',
+    \   '<C-Up>':       'page_up_in_preview',
+    \   '<C-Down>':     'page_down_in_preview',
+    \   '<ScroollWhellUp>': 'up3',
+    \   '<ScroollWhellDown>': 'down3',
+    \}
+
+    " normal mode:
+    let l:default_normal_map = {
+    \   'h':             'open_parent',
+    \   'l':             'open_current',
+    \   '<C-h>':         'open_parent',
+    \   '<C-l>':         'open_current',
+    \   '<C-g>':         'goto_root_marker_dir',
+    \   'I':             'toggle_hidden_files',
+    \   'j':             'down',
+    \   'k':             'up',
+    \   '<Down>':        'down',
+    \   '<Up>':          'up',
+    \   '<F1>':          'toggle_help',
+    \   '<Tab>':         'switch_insert_mode',
+    \   'p':             'preview',
+    \   'q':             'quit',
+    \   'o':             'accept',
+    \   '<CR>':          'accept',
+    \   '<2-LeftMouse>': 'accept',
+    \   '<C-Up>':        'page_up_in_preview',
+    \   '<C-Down>':      'page_down_in_preview',
+    \   '<Esc>':         'close_preview_popup',
     \}
 <
 
-Action list:
+The settings for these mappings are activated in |g:Lf_FilerUseDefaultInsertMap|
+and |g:Lf_FilerUseDefaultNormalMap|.
 
-`open_parent`
-    Show files in parent directory
+Customizable key mapping using |g:Lf_FilerInsertMap| and |g:Lf_FilerNormalMap|.
 
-`open_current`
-    Show files in directory under cursor
+The setting method is the same as nnoremap.
+When `{"<C-h>": "nop"}` is set, it performs the same operation as
+`:nnoremap <C-h> <Nop>`.
+That is, you can remove the default `<C-h>` mapping.
 
-`toggle_hidden_files`
-    Toggle show hidden files
+For example, to customize while using the default mappings:
+>
+    " Default value 1
+    "let g:Lf_FilerNormalMap = 1
 
-`goto_root_marker_dir`
-    Show files of directory where |g:Lf_RootMarkers| exists
+    let g:Lf_FilerNormalMap = {
+    \   '<C-h>': 'nop',
+    \   '<C-l>': 'nop',
+    \   'i':     'switch_insert_mode',
+    \}
+<
 
 
-NOTE: Other mappings can be customized with option |g:Lf_CommandMap| or
-      |g:Lf_NormalMap| in LeaderF.
+NOTE: Affected by |g:Lf_NormalMap| and |g:Lf_CommandMap| settings.
+
+
+------------------------------------------------------------------------------
+MAP COMMANDS                                      *LeaderF-filer-map-commands*
+
+List of command names that can be used in |g:Lf_FilerInsertMap| and
+|g:Lf_FilerNormalMap|.
+
+
+BOTH MODE                                    *LeaderF-filer-map-commands-both*
+
+List of command names that can be used in both |g:Lf_FilerInsertMap| and
+|g:Lf_FilerNormalMap|.
+
+    nop
+        Does nothing like |<Nop>|.
+
+    quit
+        Quit from LeaderF.
+
+    up
+        move the cursor downward in the result window.
+
+    down
+        move the cursor upward in the result window.
+
+    accept
+        Open the file under cursor or create a file with the input pattern
+        file name (when empty results).
+
+    preview
+        Preview the result.
+
+    page_up_in_preview
+        Scroll up in the popup preview window.
+
+    page_down_in_preview
+        Scroll down in the popup preview window.
+
+    open_parent
+        Show files in parent directory.
+
+    open_current
+        Show files in directory under cursor.
+
+    toggle_hidden_files
+        Toggle show hidden files.
+
+    goto_root_marker_dir
+        Show files of directory where |g:Lf_RootMarkers| exists.
+
+
+NORMAL MODE ONLY                           *LeaderF-filer-map-commands-normal*
+
+List of command names that can be used only by |g:Lf_FilerNormalMap|.
+
+    toggle_help
+        Toggle this help.
+
+    switch_insert_mode
+        Switch to insert mode.
+
+
+INSERT MODE ONLY                           *LeaderF-filer-map-commands-insert*
+
+List of command names that can be used only by |g:Lf_FilerInsertMap|.
+
+    toggle_regex
+        Switch between fuzzy search mode and regex mode.
+
+    switch_normal_mode
+        Switch to normal mode.
+
+    paste
+        Paste from clipboard.
+
+    clear_line
+        Clear the prompt.
+
+    delete_left_word
+        Delete the word before the cursor in the prompt.
+
+    prev_history`/`next_history
+        Recall last/next input pattern from history.
+
+    backspace
+        Delete the preceding character in the prompt.
+
+    delete
+        Delete the current character in the prompt.
+
+    home
+        Move the cursor to the begin of the prompt.
+
+    end
+        Move the cursor to the end of the prompt.
+
+    left
+        Move the cursor one character to the left.
+
+    right
+        Move the cursor one character to the right.
 
 ------------------------------------------------------------------------------
 HIGHLIGHTS~
@@ -156,7 +288,7 @@ Lf_hl_filerDir                                  *Lf_hl_filerDir*
     default: `highlight def link Lf_hl_filerDir Identifier`
 
 Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
-    default: `highlight def link Lf_hl_filerNoContent Lf_hl_filerNoContent`
+    default: `highlight def link Lf_hl_filerNoContent Comment`
 
 ==============================================================================
 vim:tw=78:ts=4:ft=help:norl

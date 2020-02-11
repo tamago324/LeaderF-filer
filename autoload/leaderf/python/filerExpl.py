@@ -200,7 +200,7 @@ class FilerExplManager(Manager):
 
         if cmd_name in commands:
             do_command(cmd_name)
-        elif equal(cmd_name, "<Nop>"):
+        elif equal(cmd_name, "nop"):
             pass
         else:
             return True
@@ -345,7 +345,7 @@ class FilerExplManager(Manager):
         self.quit()
 
     @_command
-    def command_input(self):
+    def command_switch_insert_mode(self):
         self.input()
 
     @_command

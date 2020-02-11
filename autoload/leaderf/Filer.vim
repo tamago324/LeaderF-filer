@@ -32,7 +32,7 @@ function! leaderf#Filer#NormalMap() abort
         \   '<Down>':        'down',
         \   '<Up>':          'up',
         \   '<F1>':          'toggle_help',
-        \   '<Tab>':         'input',
+        \   '<Tab>':         'switch_insert_mode',
         \   'p':             'preview',
         \   'q':             'quit',
         \   'o':             'accept',
@@ -53,8 +53,11 @@ let s:normal_map = leaderf#Filer#NormalMap()
 
 function! leaderf#Filer#Maps()
     nmapclear <buffer>
-    for [l:key, l:func] in items(s:normal_map)
-        exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "do_command(''%s'')"<CR>', l:key, l:func)
+    for [l:key, l:cmd] in items(s:normal_map)
+        if l:cmd ==? 'nop'
+            exec printf('nnoremap <buffer> <silent> %s <Nop>', l:key)
+        endif
+        exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "do_command(''%s'')"<CR>', l:key, l:cmd)
     endfor
 endfunction
 
@@ -68,6 +71,8 @@ function! leaderf#Filer#InsertMap() abort
         \   '<C-g>':        'goto_root_marker_dir',
         \   '<Esc>':        'quit',
         \   '<C-c>':        'quit',
+        \   '<CR>':         'accept',
+        \   '<2-LeftMouse>': 'accept',
         \   '<C-r>':        'toggle_regex',
         \   '<BS>':         'backspace',
         \   '<C-u>':        'clear_line',
@@ -81,6 +86,14 @@ function! leaderf#Filer#InsertMap() abort
         \   '<C-e>':        'end',
         \   '<Left>':       'left',
         \   '<Right>':      'right',
+        \   '<C-j>':        'down',
+        \   '<C-k>':        'up',
+        \   '<Up>':         'prev_history',
+        \   '<Down>':       'next_history',
+        \   '<C-p>':        'preview',
+        \   '<Tab>':        'switch_normal_mode',
+        \   '<C-Up>':       'page_up_in_preview',
+        \   '<C-Down>':     'page_down_in_preview',
         \   '<ScroollWhellUp>': 'up3',
         \   '<ScroollWhellDown>': 'down3',
         \}
@@ -91,6 +104,7 @@ function! leaderf#Filer#InsertMap() abort
     " from cli.py
     let l:cli_map = {
     \   'quit': '<Esc>',
+    \   'accept': '<CR>',
     \   'toggle_regex': '<C-r>',
     \   'backspace': '<BS>',
     \   'clear_line': '<C-u>',
@@ -101,8 +115,16 @@ function! leaderf#Filer#InsertMap() abort
     \   'end': '<End>',
     \   'left': '<Left>',
     \   'right': '<Right>',
+    \   'up': '<C-k>',
+    \   'down': '<C-j>',
+    \   'prev_history': '<Up>',
+    \   'next_history': '<Down>',
     \   'up3': '<ScroollWhellUp>',
     \   'down3': '<ScroollWhellDown>',
+    \   'switch_normal_mode': '<Tab>',
+    \   'preview': '<C-p>',
+    \   'page_up_in_preview': '<C-Up>',
+    \   'page_down_in_preview': '<C-Down>',
     \}
 
     " { '<C-e>': 'end' } => { '<C-e>': '<End>' }
@@ -193,7 +215,7 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
     elseif l:cmd ==? "quit"
         exec g:Lf_py "filerExplManager.quit()"
-    elseif l:cmd ==? "input"
+    elseif l:cmd ==? "switch_insert_mode"
         call leaderf#ResetPopupOptions(a:winid, 'filter', 'leaderf#PopupFilter')
         exec g:Lf_py "filerExplManager.input()"
     elseif l:cmd ==? "accept"
