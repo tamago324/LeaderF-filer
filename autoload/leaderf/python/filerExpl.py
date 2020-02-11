@@ -3,6 +3,8 @@
 
 import os
 import os.path
+from functools import partial
+from functools import wraps
 from leaderf.utils import *
 from leaderf.explorer import *
 from leaderf.manager import *
@@ -18,23 +20,32 @@ def accessable(path):
         return False
 
 
-_commands = []
+commands = {}
 
 
-def command(func):
+def _command(func):
     """
         Only functions without arguments
 
-        @command
-        def func(self):
+        @_command
+        def _func(self):
             pass
     """
-    _commands.append(func.__name__)
+    commands[func.__name__[len("command_"):]] = func
 
+    @wraps(func)
     def inner_func(*args, **kwargs):
         return func(*args, **kwargs)
     return inner_func
 
+
+def setSelf(self):
+    global commands
+    commands = {name: partial(func, self) for name, func in commands.items()}
+
+
+def do_command(name):
+    commands[name]()
 
 # *****************************************************
 # FilerExplorer
@@ -124,7 +135,7 @@ class FilerExplManager(Manager):
     def _update_insert_maps(self):
         insert_map = lfEval('leaderf#Filer#InsertMap()')
         maps = {
-            key.upper(): func_name for key, func_name in insert_map.items()
+            key.upper(): cmd for key, cmd in insert_map.items()
         }
         self._getInstance()._cli._key_dict.update(maps)
 
@@ -181,16 +192,15 @@ class FilerExplManager(Manager):
         help.append('" ---------------------------------------------------------')
         return help
 
-    def _cmdExtension(self, command_name):
+    def _cmdExtension(self, cmd_name):
         """
         this function can be overridden to add new cmd
         if return true, exit the input loop
         """
 
-        if command_name in _commands:
-            # Only functions without arguments
-            eval('self.%s()' % command_name)
-        elif equal(command_name, "<Nop>"):
+        if cmd_name in commands:
+            do_command(cmd_name)
+        elif equal(cmd_name, "<Nop>"):
             pass
         else:
             return True
@@ -236,8 +246,8 @@ class FilerExplManager(Manager):
             id = int(lfEval("matchadd('Lf_hl_filerNoContent', '^%s$')" % NO_CONTENT_MSG))
             self._match_ids.append(id)
 
-    @command
-    def open_current(self):
+    @_command
+    def command_open_current(self):
         line = self._getInstance().currentLine
 
         if line in (".", NO_CONTENT_MSG):
@@ -263,8 +273,8 @@ class FilerExplManager(Manager):
 
         self._chcwd(os.path.abspath(file_info["fullpath"]))
 
-    @command
-    def open_parent(self):
+    @_command
+    def command_open_parent(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return
@@ -280,15 +290,15 @@ class FilerExplManager(Manager):
         lfCmd("call search('%s')" % pattern)
         lfCmd('normal! 0')
 
-    @command
-    def toggle_hidden_files(self):
+    @_command
+    def command_toggle_hidden_files(self):
         self._getExplorer()._show_hidden_files = (
             not self._getExplorer()._show_hidden_files
         )
         self.refresh(normal_mode=False)
 
-    @command
-    def goto_root_marker_dir(self):
+    @_command
+    def command_goto_root_marker_dir(self):
         root_markers = lfEval("g:Lf_RootMarkers")
         rootMarkersDir = self._nearestAncestor(
             root_markers, self._getInstance().getCwd()
@@ -296,6 +306,66 @@ class FilerExplManager(Manager):
         if rootMarkersDir:
             # exists root_markers
             self._chcwd(os.path.abspath(rootMarkersDir))
+
+    @_command
+    def command_down(self):
+        lfCmd('normal! j')
+        self._previewResult(False)
+
+    @_command
+    def command_up(self):
+        lfCmd('normal! k')
+        self._previewResult(False)
+
+    # @_command
+    # def _page_up(self):
+    #     lfCmd('normal! <PageUp>')
+    #     self._previewResult(False)
+
+    # @_command
+    # def _page_down(self):
+    #     lfCmd('normal! <PageDown>')
+    #     self._previewResult(False)
+
+    # @_command
+    # def _left_mouse(self):
+    #     lfCmd('normal! <LeftMouse>')
+    #     self._previewResult(False)
+
+    @_command
+    def command_preview(self):
+        self._previewResult(True)
+
+    @_command
+    def command_toggle_help(self):
+        self.toggleHelp()
+
+    @_command
+    def command_quit(self):
+        self.quit()
+
+    @_command
+    def command_input(self):
+        self.input()
+
+    @_command
+    def command_accept(self):
+        self.accept()
+
+    @_command
+    def command_page_up_in_preview(self):
+        if lfEval("has('nvim')"):
+            self._toUpInPopup()
+
+    @_command
+    def command_page_down_in_preview(self):
+        if lfEval("has('nvim')"):
+            self._toDownInPopup()
+
+    @_command
+    def command_close_preview_popup(self):
+        if lfEval("has('nvim')"):
+            self._closePreviewPopup()
 
     def cd(self, path):
         # XXX: from defx.nvim
@@ -391,4 +461,6 @@ class FilerExplManager(Manager):
 # *****************************************************
 filerExplManager = FilerExplManager()
 
-__all__ = ["filerExplManager"]
+setSelf(filerExplManager)
+
+__all__ = ["filerExplManager", "do_command"]
