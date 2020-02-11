@@ -190,6 +190,8 @@ class FilerExplManager(Manager):
         if command_name in _commands:
             # Only functions without arguments
             eval('self.%s()' % command_name)
+        elif equal(command_name, "<Nop>"):
+            pass
         else:
             return True
 
