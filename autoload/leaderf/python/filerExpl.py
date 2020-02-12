@@ -169,7 +169,7 @@ class FilerExplManager(Manager):
             path = path[2:]
 
         if not os.path.isabs(path):
-            path = os.path.join(self._getInstance().getCwd(), lfDecode(path))
+            path = os.path.join(self._getExplorer()._cwd, lfDecode(path))
             path = os.path.normpath(lfEncode(path))
 
         if os.path.isdir(path):
@@ -418,7 +418,7 @@ class FilerExplManager(Manager):
         return ""
 
     def _edit(self, name):
-        path = os.path.join(self._getInstance().getCwd(), name)
+        path = os.path.join(self._getExplorer().getCwd(), name)
         self._getInstance().exitBuffer()
         lfCmd("edit %s" % path)
 
