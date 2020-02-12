@@ -124,6 +124,10 @@ class FilerExplorer(Explorer):
     def getStlCurDir(self):
         return escQuote(lfEncode(self._cwd))
 
+    def getCwd(self):
+        return self._cwd
+
+
 
 # *****************************************************
 # FilerExplManager
@@ -163,13 +167,13 @@ class FilerExplManager(Manager):
             return
 
         if path == ".":
-            path = self._getExplorer()._cwd
+            path = self._getExplorer().getCwd()
 
         if self._getExplorer()._show_devicons:
             path = path[2:]
 
         if not os.path.isabs(path):
-            path = os.path.join(self._getExplorer()._cwd, lfDecode(path))
+            path = os.path.join(self._getExplorer().getCwd(), lfDecode(path))
             path = os.path.normpath(lfEncode(path))
 
         if os.path.isdir(path):
@@ -309,7 +313,7 @@ class FilerExplManager(Manager):
     def command_goto_root_marker_dir(self):
         root_markers = lfEval("g:Lf_RootMarkers")
         rootMarkersDir = self._nearestAncestor(
-            root_markers, self._getInstance().getCwd()
+            root_markers, self._getExplorer().getCwd()
         )
         if rootMarkersDir:
             # exists root_markers
