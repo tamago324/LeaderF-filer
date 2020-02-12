@@ -283,11 +283,20 @@ class FilerExplManager(Manager):
 
         if self._getExplorer()._show_devicons:
             dir_icon = lfEval('WebDevIconsGetFileTypeSymbol("", 1)')
-            pattern = r'\v^{}{}/$'.format(dir_icon, os.path.basename(cwd))
+            pattern = r"\v^{}{}/$".format(dir_icon, os.path.basename(cwd))
         else:
-            pattern = r'\v^{}/$'.format(os.path.basename(cwd))
-        lfCmd("call search('%s')" % pattern)
-        lfCmd('normal! 0')
+            pattern = r"\v^{}/$".format(os.path.basename(cwd))
+
+        if self._getInstance().getWinPos() == "popup":
+            lfCmd(
+                """call win_execute(%d, 'call search(''%s'')')"""
+                % (self._getInstance().getPopupWinId(), pattern)
+            )
+            self._getInstance().mimicCursor()
+            # keep cursor pos
+            lfCmd("call win_execute(%d, 'normal! jk')" % self._getInstance().getPopupWinId())
+        else:
+            lfCmd("call search('%s')" % pattern)
 
     @_command
     def command_toggle_hidden_files(self):
@@ -377,6 +386,8 @@ class FilerExplManager(Manager):
         if cwd:
             self._getInstance().setStlCwd(cwd)
             self._getInstance().setCwd(cwd)
+            if self._getInstance().getWinPos() in ('popup', 'floatwin'):
+                self._getInstance().setPopupStl(self._current_mode)
 
         # initialize like startExplorer()
         self._index = 0
