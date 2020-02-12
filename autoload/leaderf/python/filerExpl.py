@@ -365,6 +365,18 @@ class FilerExplManager(Manager):
         self.accept()
 
     @_command
+    def command_accept_horizontal(self):
+        self.accept('h')
+
+    @_command
+    def command_accept_vertical(self):
+        self.accept('v')
+
+    @_command
+    def command_accept_tab(self):
+        self.accept('t')
+
+    @_command
     def command_page_up_in_preview(self):
         if lfEval("has('nvim')"):
             self._toUpInPopup()

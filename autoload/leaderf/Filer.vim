@@ -38,6 +38,9 @@ function! leaderf#Filer#NormalMap() abort
         \   'o':             'accept',
         \   '<CR>':          'accept',
         \   '<2-LeftMouse>': 'accept',
+        \   'x':             'accept_horizontal',
+        \   'v':             'accept_vertical',
+        \   't':             'accept_tab',
         \   '<C-Up>':        'page_up_in_preview',
         \   '<C-Down>':      'page_down_in_preview',
         \   '<Esc>':         'close_preview_popup',
@@ -73,6 +76,9 @@ function! leaderf#Filer#InsertMap() abort
         \   '<C-c>':        'quit',
         \   '<CR>':         'accept',
         \   '<2-LeftMouse>': 'accept',
+        \   '<C-x>':        'accept_horizontal',
+        \   '<C-]>':        'accept_vertical',
+        \   '<C-t>':        'accept_tab',
         \   '<C-r>':        'toggle_regex',
         \   '<BS>':         'backspace',
         \   '<C-u>':        'clear_line',
@@ -105,6 +111,9 @@ function! leaderf#Filer#InsertMap() abort
     let l:cli_map = {
     \   'quit': '<Esc>',
     \   'accept': '<CR>',
+    \   'accept_horizontal': '<C-x>',
+    \   'accept_vertical': '<C-]>',
+    \   'accept_tab': '<C-t>',
     \   'toggle_regex': '<C-r>',
     \   'backspace': '<BS>',
     \   'clear_line': '<C-u>',
@@ -221,6 +230,12 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager.input()"
     elseif l:cmd ==? "accept"
         exec g:Lf_py "filerExplManager.accept()"
+    elseif l:cmd ==? "accept_horizontal"
+        exec g:Lf_py "fileExplManager.accept('h')"
+    elseif l:cmd ==? "accept_vertical"
+        exec g:Lf_py "fileExplManager.accept('v')"
+    elseif l:cmd ==? "accept_tab"
+        exec g:Lf_py "fileExplManager.accept('t')"
     elseif l:cmd ==? 'toggle_help'
         exec g:Lf_py "filerExplManager.toggleHelp()"
     elseif l:cmd ==? 'preview'

@@ -109,6 +109,9 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   'q':             'quit',
     \   'o':             'accept',
     \   '<CR>':          'accept',
+    \   'x':             'accept_horizontal',
+    \   'v':             'accept_vertical',
+    \   't':             'accept_tab',
     \   '<2-LeftMouse>': 'accept',
     \   '<C-Up>':        'page_up_in_preview',
     \   '<C-Down>':      'page_down_in_preview',
@@ -125,6 +128,9 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   '<C-c>':        'quit',
     \   '<CR>':         'accept',
     \   '<2-LeftMouse>': 'accept',
+    \   '<C-x>':        'accept_horizontal',
+    \   '<C-]>':        'accept_vertical',
+    \   '<C-t>':        'accept_tab',
     \   '<C-r>':        'toggle_regex',
     \   '<BS>':         'backspace',
     \   '<C-u>':        'clear_line',
@@ -197,6 +203,9 @@ For example, to map everything yourself without using the default mapping:
     \   '<C-q>':         'quit',
     \   'o':             'accept',
     \   '<CR>':          'accept',
+    \   'x':             'accept_horizontal',
+    \   'v':             'accept_vertical',
+    \   't':             'accept_tab',
     \   '<C-Up>':        'page_up_in_preview',
     \   '<C-Down>':      'page_down_in_preview',
     \   '<Esc>':         'close_preview_popup',
@@ -211,6 +220,9 @@ For example, to map everything yourself without using the default mapping:
     \   '<Esc>':        'quit',
     \   '<C-c>':        'quit',
     \   '<CR>':         'accept',
+    \   '<C-s>':        'accept_horizontal',
+    \   '<C-v>':        'accept_vertical',
+    \   '<C-t>':        'accept_tab',
     \   '<C-r>':        'toggle_regex',
     \   '<BS>':         'backspace',
     \   '<C-u>':        'clear_line',
@@ -261,6 +273,15 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
     accept
         Open the file under cursor or create a file with the input pattern
         file name (when empty results).
+
+    accept_horizontal
+        Open the file under cursor in horizontal split window.
+
+    accept_vertical
+        Open the file under cursor in vertical split window.
+
+    accept_tab
+        Open the file under cursor new tabpage.
 
     preview
         Preview the result.
