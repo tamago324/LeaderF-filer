@@ -25,45 +25,101 @@ or
 :Leaderf filer
 ```
 
-## Mappings
+Popup
 
-INSERT MODE:
+```
+:Leaderf filer --popup
+```
 
-| Key     | Action                                                                                            |
-|---------|---------------------------------------------------------------------------------------------------|
-| `<C-h>` | Show files in parent directory                                                                    |
-| `<C-l>` | Show files in directory under cursor                                                              |
-| `<C-f>` | Toggle show hidden files                                                                          |
-| `<C-g>` | Show files of directory where `g:Lf_RootMarkers` exists                                           |
-| `<CR>`  | Open the file under cursor or create a file with the input pattern file name (when empty results) |
+## Configuration
 
-NORMAL MODE:
+see `:h LeaderF-filer-mapping`
 
-| Key           | Action                                                                                            |
-|---------------|---------------------------------------------------------------------------------------------------|
-| `<C-h>` / `h` | Show files in parent directory                                                                    |
-| `<C-l>` / `l` | Show files in directory under cursor                                                              |
-| `I`           | Toggle show hidden files                                                                          |
-| `<C-g>`       | Show files of directory where root marker exists                                                  |
-| `I`           | Toggle show hidden files                                                                          |
-| `<CR>` / `o`  | Open the file under cursor or create a file with the input pattern file name (when empty results) |
-
-
-## Settings
-
-Show icons.
+### Example
 
 ```vim
-" Plug 'ryanoasis/vim-devicons'
+" ====================
+" show devicons
+" ====================
+call plug#begin('~/vimfiles/plugged')
+
+Plug 'Yggdroot/LeaderF'
+Plug 'tamago324/LeaderF-filer'
+Plug 'ryanoasis/vim-devicons'
+
+call plug#end()
+
 let g:Lf_FilerShowDevIcons = 1
+
+" ====================
+" customize mappings
+" ====================
+
+" To map everything yourself without using the default mapping:
+
+" normal mode
+let g:Lf_FilerUseDefaultNormalMap = 0
+let g:Lf_FilerNormalMap = {
+\   'h':             'open_parent',
+\   'l':             'open_current',
+\   '<C-h>':         'open_parent',
+\   '<C-l>':         'open_current',
+\   '~':             'goto_root_marker_dir',
+\   '.':             'toggle_hidden_files',
+\   'j':             'down',
+\   'k':             'up',
+\   '<F1>':          'toggle_help',
+\   '<Tab>':         'switch_insert_mode',
+\   'i':             'switch_insert_mode',
+\   'p':             'preview',
+\   'q':             'quit',
+\   '<C-q>':         'quit',
+\   'o':             'accept',
+\   '<CR>':          'accept',
+\   '<C-Up>':        'page_up_in_preview',
+\   '<C-Down>':      'page_down_in_preview',
+\   '<Esc>':         'close_preview_popup',
+\}
+
+" insert mode
+let g:Lf_FilerUseDefaultInsertMap = 0
+let g:Lf_FilerInsertMap = {
+\   '<C-h>':        'open_parent',
+\   '<C-l>':        'open_current',
+\   '<C-y>':        'toggle_hidden_files',
+\   '<C-g>':        'goto_root_marker_dir',
+\   '<Esc>':        'quit',
+\   '<C-c>':        'quit',
+\   '<CR>':         'accept',
+\   '<C-r>':        'toggle_regex',
+\   '<BS>':         'backspace',
+\   '<C-u>':        'clear_line',
+\   '<C-w>':        'delete_left_word',
+\   '<C-d>':        'delete',
+\   '<C-o>':        'paste',
+\   '<C-a>':        'home',
+\   '<C-e>':        'end',
+\   '<C-b>':        'left',
+\   '<C-f>':        'right',
+\   '<C-j>':        'down',
+\   '<C-k>':        'up',
+\   '<C-p>':        'prev_history',
+\   '<C-n>':        'next_history',
+\   '<C-q>':        'preview',
+\   '<Tab>':        'switch_normal_mode',
+\   '<C-Up>':       'page_up_in_preview',
+\   '<C-Down>':     'page_down_in_preview',
+\   '<ScroollWhellUp>': 'up3',
+\   '<ScroollWhellDown>': 'down3',
+\}
 ```
 
 ## Screenshots
 
-`Leaderf filer`
+`:Leaderf filer`
 
 <img src="./images/buffer.png" alt="buffer" />
 
-`Leaderf filer --popup`
+`:Leaderf filer --popup`
 
 <img src="./images/popup.png" alt="popup" />
