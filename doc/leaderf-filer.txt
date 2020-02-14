@@ -246,6 +246,15 @@ For example, to map everything yourself without using the default mapping:
     \}
 <
 
+
+You can customize the normal mode mapping using |g:Lf_NormalMap|.
+
+e,g, `B` calls `:LeaderfBookmark`:
+>
+    let g:Lf_NormalMap = get(g:, 'Lf_NormalMap', {})
+    let g:Lf_NormalMap = {'Filer':   [['B', ':LeaderfBookmark<CR>']]}
+<
+
 ------------------------------------------------------------------------------
 MAP COMMANDS                                      *LeaderF-filer-map-commands*
 

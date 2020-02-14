@@ -118,6 +118,10 @@ let g:Lf_FilerInsertMap = {
 \   '<ScroollWhellUp>': 'up3',
 \   '<ScroollWhellDown>': 'down3',
 \}
+
+" Customize normal mode mapping using g:Lf_NormalMap
+let g:Lf_NormalMap = get(g:, 'Lf_NormalMap', {})
+let g:Lf_NormalMap = {'Filer':   [['B', ':LeaderfBookmark<CR>']]}
 ```
 
 ## Screenshots

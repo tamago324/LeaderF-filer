@@ -62,6 +62,12 @@ function! leaderf#Filer#Maps()
         endif
         exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "do_command(''%s'')"<CR>', l:key, l:cmd)
     endfor
+
+    if has_key(g:Lf_NormalMap, 'Filer')
+        for i in g:Lf_NormalMap['Filer']
+            exec 'nnoremap <buffer> <silent> '.i[0].' '.i[1]
+        endfor
+    endif
 endfunction
 
 function! leaderf#Filer#InsertMap() abort
