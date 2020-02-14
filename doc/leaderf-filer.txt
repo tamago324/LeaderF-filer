@@ -296,7 +296,7 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
         Show files in parent directory.
 
     open_current
-        Show files in directory under cursor.
+        Show files in directory under cursor or open the file under the cursor.
 
     toggle_hidden_files
         Toggle show hidden files.

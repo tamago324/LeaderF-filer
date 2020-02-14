@@ -26,6 +26,7 @@ commands = {}
 def _command(func):
     """
         Only functions without arguments
+        If return true, exit the input loop
 
         @_command
         def _func(self):
@@ -45,8 +46,11 @@ def setSelf(self):
 
 
 def do_command(name):
+    """
+    if return true, exit the input loop
+    """
     if name in commands:
-        commands[name]()
+        return commands[name]()
 
 # *****************************************************
 # FilerExplorer
@@ -204,7 +208,7 @@ class FilerExplManager(Manager):
         """
 
         if cmd_name in commands:
-            do_command(cmd_name)
+            return do_command(cmd_name)
         elif equal(cmd_name, "nop"):
             pass
 
@@ -258,9 +262,8 @@ class FilerExplManager(Manager):
 
         file_info = self._getExplorer()._contents[line]
         if not file_info["isdir"]:
-            # file
-            # super(FilerExplManager, self)._acceptSelection()
-            return
+            self.accept()
+            return True
 
         if not accessable(file_info["fullpath"]):
             lfCmd(
