@@ -73,7 +73,7 @@ COMMANDS                                              *LeaderF-filer-commands*
 
 
 ------------------------------------------------------------------------------
-OPTIONS                                                *LeaderF-filer-options*
+ARGUMENTS                                            *LeaderF-filer-arguments*
 
 `--auto-cd`                                            *LeaderF-filer-auto-cd*
     Change the working directory while navigating with LeaderF-filer.
