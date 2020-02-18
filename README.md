@@ -82,6 +82,9 @@ let g:Lf_FilerNormalMap = {
 \   '<C-Up>':        'page_up_in_preview',
 \   '<C-Down>':      'page_down_in_preview',
 \   '<Esc>':         'close_preview_popup',
+\   's':             'add_selections',
+\   '<C-a>':         'select_all',
+\   '<F3>':          'clear_selections',
 \}
 
 " insert mode
