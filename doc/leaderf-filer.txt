@@ -116,6 +116,9 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   '<C-Up>':        'page_up_in_preview',
     \   '<C-Down>':      'page_down_in_preview',
     \   '<Esc>':         'close_preview_popup',
+    \   's':             'add_selections',
+    \   'a':             'select_all',
+    \   'c':             'clear_selections',
     \}
 
     " insert mode:
@@ -154,6 +157,9 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   '<C-Down>':     'page_down_in_preview',
     \   '<ScroollWhellUp>': 'up3',
     \   '<ScroollWhellDown>': 'down3',
+    \   '<C-s>':        'add_selections',
+    \   '<C-a>':        'select_all',
+    \   '<F3>':         'clear_selections',
     \}
 <
 
@@ -209,6 +215,9 @@ For example, to map everything yourself without using the default mapping:
     \   '<C-Up>':        'page_up_in_preview',
     \   '<C-Down>':      'page_down_in_preview',
     \   '<Esc>':         'close_preview_popup',
+    \   's':             'add_selections',
+    \   '<C-a>':         'select_all',
+    \   '<F3>':          'clear_selections',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -291,6 +300,15 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
 
     accept_tab
         Open the file under cursor new tabpage.
+
+    add_selections
+        select multiple result.
+
+    select_all
+        select all result.
+
+    clear_selections
+        clear all selections.
 
     preview
         Preview the result.

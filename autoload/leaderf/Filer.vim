@@ -44,6 +44,9 @@ function! leaderf#Filer#NormalMap() abort
         \   '<C-Up>':        'page_up_in_preview',
         \   '<C-Down>':      'page_down_in_preview',
         \   '<Esc>':         'close_preview_popup',
+        \   's':             'add_selections',
+        \   'a':             'select_all',
+        \   'c':             'clear_selections',
         \}
         " \   '<PageUp>':      'page_up',
         " \   '<PageDown>':    'page_down',
@@ -108,6 +111,9 @@ function! leaderf#Filer#InsertMap() abort
         \   '<C-Down>':     'page_down_in_preview',
         \   '<ScroollWhellUp>': 'up3',
         \   '<ScroollWhellDown>': 'down3',
+        \   '<C-s>':        'add_selections',
+        \   '<C-a>':        'select_all',
+        \   '<F3>':         'clear_selections',
         \}
     endif
 
@@ -140,6 +146,9 @@ function! leaderf#Filer#InsertMap() abort
     \   'preview': '<C-p>',
     \   'page_up_in_preview': '<C-Up>',
     \   'page_down_in_preview': '<C-Down>',
+    \   'add_selections': '<C-s>',
+    \   'select_all': '<C-a>',
+    \   'clear_selections': '<F3>',
     \}
 
     " { '<C-e>': 'end' } => { '<C-e>': '<End>' }

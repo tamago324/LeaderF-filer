@@ -131,6 +131,8 @@ class FilerExplorer(Explorer):
     def getCwd(self):
         return self._cwd
 
+    def supportsMulti(self):
+        return True
 
 
 # *****************************************************
@@ -393,6 +395,18 @@ class FilerExplManager(Manager):
     def command_close_preview_popup(self):
         if lfEval("has('nvim')"):
             self._closePreviewPopup()
+
+    @_command
+    def command_add_selections(self):
+        self.addSelections()
+
+    @_command
+    def command_select_all(self):
+        self.selectAll()
+
+    @_command
+    def command_clear_selections(self):
+        self.clearSelections()
 
     def cd(self, path):
         # XXX: from defx.nvim
