@@ -90,7 +90,7 @@ let g:Lf_FilerNormalMap = {
 " insert mode
 let g:Lf_FilerUseDefaultInsertMap = 0
 let g:Lf_FilerInsertMap = {
-\   '<C-h>':        'open_parent',
+\   '<C-h>':        'open_parent_or_backspace',
 \   '<C-l>':        'open_current',
 \   '<C-y>':        'toggle_hidden_files',
 \   '<C-g>':        'goto_root_marker_dir',

@@ -77,7 +77,7 @@ function! leaderf#Filer#InsertMap() abort
     let l:default_map = {}
     if get(g:, 'Lf_FilerUseDefaultInsertMap', v:true)
         let l:default_map = {
-        \   '<C-h>':        'open_parent',
+        \   '<C-h>':        'open_parent_or_clear_line',
         \   '<C-l>':        'open_current',
         \   '<C-f>':        'toggle_hidden_files',
         \   '<C-g>':        'goto_root_marker_dir',

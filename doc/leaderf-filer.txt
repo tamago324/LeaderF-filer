@@ -123,7 +123,7 @@ Default mappings:                              *LeaderF-filer-default-mapping*
 
     " insert mode:
     let l:default_insert_map = {
-    \   '<C-h>':        'open_parent',
+    \   '<C-h>':        'open_parent_or_clear_line',
     \   '<C-l>':        'open_current',
     \   '<C-f>':        'toggle_hidden_files',
     \   '<C-g>':        'goto_root_marker_dir',
@@ -222,7 +222,7 @@ For example, to map everything yourself without using the default mapping:
 
     let g:Lf_FilerUseDefaultInsertMap = 0
     let g:Lf_FilerInsertMap = {
-    \   '<C-h>':        'open_parent',
+    \   '<C-h>':        'open_parent_or_backspace',
     \   '<C-l>':        'open_current',
     \   '<C-y>':        'toggle_hidden_files',
     \   '<C-g>':        'goto_root_marker_dir',
@@ -320,7 +320,16 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
         Scroll down in the popup preview window.
 
     open_parent
-        Show files in parent directory.
+        The prompt string is cleared and show files files in the parent
+        directory.
+
+    open_parent_or_backspace
+        Show files in parent directory or delete the preceding character in
+        the prompt if a pattern wasentered.
+
+    open_parent_or_clear_line
+        Show files in parent directory or clears the prompt if a pattern was
+        entered.
 
     open_current
         Show files in directory under cursor or open the file under the cursor.
@@ -394,6 +403,19 @@ Lf_hl_filerDir                                  *Lf_hl_filerDir*
 
 Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
     default: `highlight def link Lf_hl_filerNoContent Comment`
+
+
+==============================================================================
+CHANGELOG                                            *LeaderF-filer-changelog*
+
+
+0.0.2   2020-02-21
+    - Changed the behavior of `open_parent` command.
+    - Add `open_parent_or_clear_line` command.
+    - Add `open_parent_or_backspace` command.
+
+0.0.1   2020-02-21
+    - Initial version.
 
 ==============================================================================
 vim:tw=78:ts=4:ft=help:norl

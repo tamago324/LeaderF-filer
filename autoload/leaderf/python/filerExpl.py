@@ -282,10 +282,27 @@ class FilerExplManager(Manager):
         self._chcwd(os.path.abspath(file_info["fullpath"]))
 
     @_command
-    def command_open_parent(self):
+    def command_open_parent_or_clear_line(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return
+        self.open_parent()
+
+    @_command
+    def command_open_parent_or_backspace(self):
+        if len(self._getInstance()._cli._cmdline) > 0:
+            # like <BS> in cli#input()
+            self._cli._backspace()
+            self._cli._buildPattern()
+            self.refresh()
+            return
+        self.open_parent()
+
+    @_command
+    def command_open_parent(self):
+        self.open_parent()
+
+    def open_parent(self):
         cwd = self._getExplorer()._cwd or os.getcwd()
         abspath = os.path.abspath(os.path.join(cwd, ".."))
         self._chcwd(abspath)
