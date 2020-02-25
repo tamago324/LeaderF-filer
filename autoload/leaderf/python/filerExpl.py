@@ -430,6 +430,39 @@ class FilerExplManager(Manager):
     def command_clear_selections(self):
         self.clearSelections()
 
+    @_command
+    def command_mkdir(self):
+        # For dir completion
+        save_cwd = lfEval('getcwd()')
+        self.cd(self._getExplorer()._cwd)
+
+        try:
+            dir_name = lfEval("input('Create Directory: ', '', 'dir')")
+        except KeyboardInterrupt:   # Cancel
+            lfCmd("echon ' Canceled.'")
+            return
+        finally:
+            # restore
+            self.cd(save_cwd)
+
+        if dir_name == '':
+            lfCmd("echon ' Canceled.'")
+            return
+
+        path = os.path.join(self._getExplorer()._cwd, dir_name)
+        if os.path.isdir(path):
+            lfPrintError(" Already exists. '{}'".format(path))
+            return
+
+        os.makedirs(path)
+
+        if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)") == "1":
+            self._chcwd(path)
+        else:
+            self._refresh()
+
+        self._move_cursor(dir_name)
+
     def cd(self, path):
         # XXX: from defx.nvim
         if lfEval("exists('*chdir')") == "1":
