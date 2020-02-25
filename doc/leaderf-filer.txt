@@ -61,6 +61,12 @@ g:Lf_FilerNormalMap                                      *g:Lf_FilerNormalMap*
 
     Default value: `{}`
 
+g:Lf_FilerMkdirAutoChdir                            *g:Lf_FilerMkdirAutoChdir*
+    After executing `mkdir`, change the current directory of LeaderF-filer to
+    the created directory.
+
+    Default value: 0
+
 
 ==============================================================================
 USAGE                                                    *LeaderF-filer-usage*
@@ -119,6 +125,7 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   's':             'add_selections',
     \   'a':             'select_all',
     \   'c':             'clear_selections',
+    \   'K':             'mkdir',
     \}
 
     " insert mode:
@@ -218,6 +225,7 @@ For example, to map everything yourself without using the default mapping:
     \   's':             'add_selections',
     \   '<C-a>':         'select_all',
     \   '<F3>':          'clear_selections',
+    \   'K':             'mkdir',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -340,6 +348,10 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
     goto_root_marker_dir
         Show files of directory where |g:Lf_RootMarkers| exists.
 
+    mkdir
+        Create a directory.
+        See |g:Lf_FilerMkdirAutoChdir|
+
 
 NORMAL MODE ONLY                           *LeaderF-filer-map-commands-normal*
 
@@ -408,6 +420,10 @@ Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
 ==============================================================================
 CHANGELOG                                            *LeaderF-filer-changelog*
 
+
+0.0.3   2020-02-25
+    - Add `mkdir` command.
+    - Add |g:Lf_FilerMkdirAutoChdir| options.
 
 0.0.2   2020-02-21
     - Changed the behavior of `open_parent` command.

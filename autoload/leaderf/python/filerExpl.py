@@ -313,6 +313,9 @@ class FilerExplManager(Manager):
         else:
             pattern = r"\v^{}/$".format(os.path.basename(cwd))
 
+        self._move_cursor(pattern)
+
+    def _move_cursor(self, pattern):
         if self._getInstance().getWinPos() == "popup":
             lfCmd(
                 """call win_execute(%d, 'call search(''%s'')')"""
@@ -321,8 +324,10 @@ class FilerExplManager(Manager):
             self._getInstance().mimicCursor()
             # keep cursor pos
             lfCmd("call win_execute(%d, 'normal! jk')" % self._getInstance().getPopupWinId())
+            # lfCmd("call win_execute(%d, 'normal! 0')" % self._getInstance().getPopupWinId())
         else:
             lfCmd("call search('%s')" % pattern)
+            lfCmd("normal! 0")
 
     @_command
     def command_toggle_hidden_files(self):
@@ -514,6 +519,39 @@ class FilerExplManager(Manager):
         fullpath = self._getExplorer()._contents[line]["fullpath"]
         buf_number = lfEval("bufadd('{}')".format(escQuote(fullpath)))
         self._createPopupPreview(line, buf_number, 0)
+
+    @_command
+    def command_mkdir(self):
+        # For dir completion
+        save_cwd = lfEval('getcwd()')
+        self.cd(self._getExplorer()._cwd)
+
+        try:
+            dir_name = lfEval("input('Create Directory: ', '', 'dir')")
+        except KeyboardInterrupt:   # Cancel
+            lfCmd("echon ' Canceled.'")
+            return
+        finally:
+            # restore
+            self.cd(save_cwd)
+
+        if dir_name == '':
+            lfCmd("echon ' Canceled.'")
+            return
+
+        path = os.path.join(self._getExplorer()._cwd, dir_name)
+        if os.path.isdir(path):
+            lfPrintError(" Already exists. '{}'".format(path))
+            return
+
+        os.makedirs(path)
+
+        if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)"):
+            self._chcwd(path)
+        else:
+            self._refresh()
+
+        self._move_cursor(dir_name)
 
 
 # *****************************************************
