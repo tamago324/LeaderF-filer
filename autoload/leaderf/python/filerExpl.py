@@ -546,7 +546,7 @@ class FilerExplManager(Manager):
 
         os.makedirs(path)
 
-        if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)"):
+        if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)") == "1":
             self._chcwd(path)
         else:
             self._refresh()
