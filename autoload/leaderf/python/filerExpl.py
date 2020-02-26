@@ -476,7 +476,15 @@ class FilerExplManager(Manager):
         fullpath = self._getExplorer()._contents[line]["fullpath"]
         basename = os.path.basename(fullpath)
 
-        renamed = lfEval("input('Rename: ', '{}')".format(basename))
+        try:
+            renamed = lfEval("input('Rename: ', '{}')".format(basename))
+        except KeyboardInterrupt:   # Cancel
+            lfCmd("echon ' Canceled.'")
+            return
+
+        if renamed == '':
+            lfCmd("echon ' Canceled.'")
+            return
 
         if renamed == basename:
             return
