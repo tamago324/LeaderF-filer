@@ -48,6 +48,7 @@ function! leaderf#Filer#NormalMap() abort
         \   'a':             'select_all',
         \   'c':             'clear_selections',
         \   'K':             'mkdir',
+        \   'r':             'rename',
         \}
         " \   '<PageUp>':      'page_up',
         " \   '<PageDown>':    'page_down',

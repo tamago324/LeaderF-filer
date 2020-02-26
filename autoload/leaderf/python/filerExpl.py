@@ -463,6 +463,34 @@ class FilerExplManager(Manager):
 
         self._move_cursor(dir_name)
 
+    @_command
+    def command_rename(self):
+        line = self._getInstance().currentLine
+        if len(self._selections) > 0:
+            lfPrintError(' Rename does not support multiple files.')
+            return
+
+        if line in (".", NO_CONTENT_MSG):
+            return
+
+        fullpath = self._getExplorer()._contents[line]["fullpath"]
+        basename = os.path.basename(fullpath)
+
+        renamed = lfEval("input('Rename: ', '{}')".format(basename))
+
+        if renamed == basename:
+            return
+
+        to_path = os.path.join(os.path.dirname(fullpath), renamed)
+        os.rename(fullpath, to_path)
+        self._refresh()
+
+        # move curosr
+        for line, info in self._getExplorer()._contents.items():
+            if info['fullpath'] == to_path:
+                self._move_cursor(line)
+                break
+
     def cd(self, path):
         # XXX: from defx.nvim
         if lfEval("exists('*chdir')") == "1":
@@ -552,39 +580,6 @@ class FilerExplManager(Manager):
         fullpath = self._getExplorer()._contents[line]["fullpath"]
         buf_number = lfEval("bufadd('{}')".format(escQuote(fullpath)))
         self._createPopupPreview(line, buf_number, 0)
-
-    @_command
-    def command_mkdir(self):
-        # For dir completion
-        save_cwd = lfEval('getcwd()')
-        self.cd(self._getExplorer()._cwd)
-
-        try:
-            dir_name = lfEval("input('Create Directory: ', '', 'dir')")
-        except KeyboardInterrupt:   # Cancel
-            lfCmd("echon ' Canceled.'")
-            return
-        finally:
-            # restore
-            self.cd(save_cwd)
-
-        if dir_name == '':
-            lfCmd("echon ' Canceled.'")
-            return
-
-        path = os.path.join(self._getExplorer()._cwd, dir_name)
-        if os.path.isdir(path):
-            lfPrintError(" Already exists. '{}'".format(path))
-            return
-
-        os.makedirs(path)
-
-        if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)") == "1":
-            self._chcwd(path)
-        else:
-            self._refresh()
-
-        self._move_cursor(dir_name)
 
 
 # *****************************************************

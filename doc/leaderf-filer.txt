@@ -126,6 +126,7 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   'a':             'select_all',
     \   'c':             'clear_selections',
     \   'K':             'mkdir',
+    \   'r':             'rename',
     \}
 
     " insert mode:
@@ -226,6 +227,7 @@ For example, to map everything yourself without using the default mapping:
     \   '<C-a>':         'select_all',
     \   '<F3>':          'clear_selections',
     \   'K':             'mkdir',
+    \   'r':             'rename',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -352,6 +354,10 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
         Create a directory.
         See |g:Lf_FilerMkdirAutoChdir|
 
+    rename
+        Rename files and directories.
+        NOTE: Does not support multiple files.
+
 
 NORMAL MODE ONLY                           *LeaderF-filer-map-commands-normal*
 
@@ -420,6 +426,9 @@ Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
 ==============================================================================
 CHANGELOG                                            *LeaderF-filer-changelog*
 
+
+0.0.4   2020-02-26
+    - Add `rename` command.
 
 0.0.3   2020-02-25
     - Add `mkdir` command.

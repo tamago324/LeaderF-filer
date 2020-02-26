@@ -86,6 +86,7 @@ let g:Lf_FilerNormalMap = {
 \   '<C-a>':         'select_all',
 \   '<F3>':          'clear_selections',
 \   'K':             'mkdir',
+\   'r':             'rename',
 \}
 
 " insert mode
