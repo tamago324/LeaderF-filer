@@ -558,7 +558,8 @@ class FilerExplManager(Manager):
         to_path = os.path.join(cwd, basename)
 
         if os.path.exists(to_path):
-            to_path += "_copy"
+            name, ext = os.path.splitext(basename)
+            to_path = os.path.join(cwd, "{}_copy{}".format(name, ext))
 
         # *_copy があったら、だめ
         if os.path.exists(to_path):
