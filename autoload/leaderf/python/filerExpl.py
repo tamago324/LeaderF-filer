@@ -490,6 +490,11 @@ class FilerExplManager(Manager):
             return
 
         to_path = os.path.join(os.path.dirname(fullpath), renamed)
+
+        if os.path.exists(to_path):
+            lfPrintError(" Already exists. '{}'".format(to_path))
+            return
+
         os.rename(fullpath, to_path)
         self._refresh()
 
