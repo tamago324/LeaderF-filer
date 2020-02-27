@@ -10,7 +10,7 @@ from leaderf.utils import *
 from leaderf.explorer import *
 from leaderf.manager import *
 
-NO_CONTENT_MSG = ' No content!'
+NO_CONTENT_MSG = " No content!"
 
 MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
 
@@ -35,7 +35,7 @@ def command(func):
         def _func(self):
             pass
     """
-    commands[func.__name__[len("command_"):]] = func
+    commands[func.__name__[len("command_") :]] = func
 
     @wraps(func)
     def inner_func(*args, **kwargs):
@@ -147,6 +147,7 @@ class FilerExplorer(Explorer):
         """
         self._command_mode = mode
 
+
 # *****************************************************
 # FilerExplManager
 # *****************************************************
@@ -159,10 +160,8 @@ class FilerExplManager(Manager):
         # self._copy_file_matchids = {}
 
     def _update_insert_maps(self):
-        insert_map = lfEval('leaderf#Filer#InsertMap()')
-        maps = {
-            key.upper(): cmd for key, cmd in insert_map.items()
-        }
+        insert_map = lfEval("leaderf#Filer#InsertMap()")
+        maps = {key.upper(): cmd for key, cmd in insert_map.items()}
         self._getInstance()._cli._key_dict = maps
 
     def _getExplClass(self):
@@ -239,7 +238,7 @@ class FilerExplManager(Manager):
         return 0
 
     def _beforeEnter(self):
-        self._copy_file = ''
+        self._copy_file = ""
         self._copy_mode = False
         self._getExplorer().setCommandMode("NORMAL")
 
@@ -272,7 +271,9 @@ class FilerExplManager(Manager):
             self._match_ids.append(id)
             id = int(lfEval("matchadd('Lf_hl_filerDir', '^[^\/]\+\/$')"))
             self._match_ids.append(id)
-            id = int(lfEval("matchadd('Lf_hl_filerNoContent', '^%s$')" % NO_CONTENT_MSG))
+            id = int(
+                lfEval("matchadd('Lf_hl_filerNoContent', '^%s$')" % NO_CONTENT_MSG)
+            )
             self._match_ids.append(id)
 
     @command
@@ -343,7 +344,10 @@ class FilerExplManager(Manager):
             )
             self._getInstance().mimicCursor()
             # keep cursor pos
-            lfCmd("call win_execute(%d, 'normal! jk')" % self._getInstance().getPopupWinId())
+            lfCmd(
+                "call win_execute(%d, 'normal! jk')"
+                % self._getInstance().getPopupWinId()
+            )
             # lfCmd("call win_execute(%d, 'normal! 0')" % self._getInstance().getPopupWinId())
         else:
             lfCmd("call search('%s')" % pattern)
@@ -368,12 +372,12 @@ class FilerExplManager(Manager):
 
     @command
     def command_down(self):
-        lfCmd('normal! j')
+        lfCmd("normal! j")
         self._previewResult(False)
 
     @command
     def command_up(self):
-        lfCmd('normal! k')
+        lfCmd("normal! k")
         self._previewResult(False)
 
     # @command
@@ -413,15 +417,15 @@ class FilerExplManager(Manager):
 
     @command
     def command_accept_horizontal(self):
-        self.accept('h')
+        self.accept("h")
 
     @command
     def command_accept_vertical(self):
-        self.accept('v')
+        self.accept("v")
 
     @command
     def command_accept_tab(self):
-        self.accept('t')
+        self.accept("t")
 
     @command
     def command_page_up_in_preview(self):
@@ -453,19 +457,19 @@ class FilerExplManager(Manager):
     @command
     def command_mkdir(self):
         # For dir completion
-        save_cwd = lfEval('getcwd()')
+        save_cwd = lfEval("getcwd()")
         self.cd(self._getExplorer()._cwd)
 
         try:
             dir_name = lfEval("input('Create Directory: ', '', 'dir')")
-        except KeyboardInterrupt:   # Cancel
+        except KeyboardInterrupt:  # Cancel
             lfCmd("echon ' Canceled.'")
             return
         finally:
             # restore
             self.cd(save_cwd)
 
-        if dir_name == '':
+        if dir_name == "":
             lfCmd("echon ' Canceled.'")
             return
 
@@ -491,7 +495,7 @@ class FilerExplManager(Manager):
     def command_rename(self):
         line = self._getInstance().currentLine
         if len(self._selections) > 0:
-            lfPrintError(' Rename does not support multiple files.')
+            lfPrintError(" Rename does not support multiple files.")
             return
 
         if line in (".", NO_CONTENT_MSG):
@@ -502,11 +506,11 @@ class FilerExplManager(Manager):
 
         try:
             renamed = lfEval("input('Rename: ', '{}')".format(basename))
-        except KeyboardInterrupt:   # Cancel
+        except KeyboardInterrupt:  # Cancel
             lfCmd("echon ' Canceled.'")
             return
 
-        if renamed == '':
+        if renamed == "":
             lfCmd("echon ' Canceled.'")
             return
 
@@ -524,7 +528,7 @@ class FilerExplManager(Manager):
 
         # move curosr
         for line, info in self._getExplorer()._contents.items():
-            if info['fullpath'] == to_path:
+            if info["fullpath"] == to_path:
                 self._move_cursor(line)
                 break
 
@@ -651,7 +655,7 @@ class FilerExplManager(Manager):
             self.cd(path)
 
     def startExplorer(self, win_pos, *args, **kwargs):
-        _dir = ''
+        _dir = ""
         if kwargs.get("arguments", {}).get("directory"):
             _dir = kwargs.get("arguments", {}).get("directory")[0]
             _dir = os.path.expanduser(lfDecode(_dir))
@@ -665,7 +669,7 @@ class FilerExplManager(Manager):
 
         super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
         # super().startExplorer() updates cwd to os.getcwd()
-        if _dir != '':
+        if _dir != "":
             self._getInstance().setCwd(_dir)
 
     def _previewInPopup(self, *args, **kwargs):
@@ -685,6 +689,7 @@ class FilerExplManager(Manager):
         if self._getInstance().getWinPos() in ("popup", "floatwin"):
             self._getInstance().setPopupStl(self._current_mode)
             self._getInstance().refreshPopupStatusline()
+
 
 # *****************************************************
 # filerExplManager is a singleton
