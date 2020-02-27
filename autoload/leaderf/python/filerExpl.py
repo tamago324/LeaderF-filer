@@ -595,10 +595,9 @@ class FilerExplManager(Manager):
                 # update status line
                 self._redrawStlCwd()
             else:
-                self._getInstance().setStlCwd(cwd)
+                self._redrawStlCwd(cwd)
+
             self._getInstance().setCwd(cwd)
-            if self._getInstance().getWinPos() in ('popup', 'floatwin'):
-                self._getInstance().setPopupStl(self._current_mode)
 
         # initialize like startExplorer()
         self._index = 0
@@ -677,9 +676,15 @@ class FilerExplManager(Manager):
         buf_number = lfEval("bufadd('{}')".format(escQuote(fullpath)))
         self._createPopupPreview(line, buf_number, 0)
 
-    def _redrawStlCwd(self):
-        self._getInstance().setStlCwd(self._getExplorer().getStlCurDir())
+    def _redrawStlCwd(self, cwd=None):
+        if cwd is None:
+            self._getInstance().setStlCwd(self._getExplorer().getStlCurDir())
+        else:
+            self._getInstance().setStlCwd(cwd)
 
+        if self._getInstance().getWinPos() in ("popup", "floatwin"):
+            self._getInstance().setPopupStl(self._current_mode)
+            self._getInstance().refreshPopupStatusline()
 
 # *****************************************************
 # filerExplManager is a singleton
