@@ -533,6 +533,7 @@ class FilerExplManager(Manager):
         # clear input pattern
         self._getInstance()._cli.clear()
         self.refresh(normal_mode=False)
+        self._getInstance()._cli._buildPrompt()
 
     def _nearestAncestor(self, markers, path):
         """
