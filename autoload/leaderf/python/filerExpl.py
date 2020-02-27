@@ -461,7 +461,11 @@ class FilerExplManager(Manager):
         else:
             self._refresh()
 
-        self._move_cursor(dir_name)
+        # move curosr
+        for line, info in self._getExplorer()._contents.items():
+            if info["fullpath"] == path:
+                self._move_cursor(line)
+                break
 
     @command
     def command_rename(self):
