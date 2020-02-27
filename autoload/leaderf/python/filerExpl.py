@@ -23,12 +23,12 @@ def accessable(path):
 commands = {}
 
 
-def _command(func):
+def command(func):
     """
         Only functions without arguments
         If return true, exit the input loop
 
-        @_command
+        @command
         def _func(self):
             pass
     """
@@ -255,7 +255,7 @@ class FilerExplManager(Manager):
             id = int(lfEval("matchadd('Lf_hl_filerNoContent', '^%s$')" % NO_CONTENT_MSG))
             self._match_ids.append(id)
 
-    @_command
+    @command
     def command_open_current(self):
         line = self._getInstance().currentLine
 
@@ -281,14 +281,14 @@ class FilerExplManager(Manager):
 
         self._chcwd(os.path.abspath(file_info["fullpath"]))
 
-    @_command
+    @command
     def command_open_parent_or_clear_line(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return
         self.open_parent()
 
-    @_command
+    @command
     def command_open_parent_or_backspace(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             # like <BS> in cli#input()
@@ -298,7 +298,7 @@ class FilerExplManager(Manager):
             return
         self.open_parent()
 
-    @_command
+    @command
     def command_open_parent(self):
         self.open_parent()
 
@@ -329,14 +329,14 @@ class FilerExplManager(Manager):
             lfCmd("call search('%s')" % pattern)
             lfCmd("normal! 0")
 
-    @_command
+    @command
     def command_toggle_hidden_files(self):
         self._getExplorer()._show_hidden_files = (
             not self._getExplorer()._show_hidden_files
         )
         self.refresh(normal_mode=False)
 
-    @_command
+    @command
     def command_goto_root_marker_dir(self):
         root_markers = lfEval("g:Lf_RootMarkers")
         rootMarkersDir = self._nearestAncestor(
@@ -346,91 +346,91 @@ class FilerExplManager(Manager):
             # exists root_markers
             self._chcwd(os.path.abspath(rootMarkersDir))
 
-    @_command
+    @command
     def command_down(self):
         lfCmd('normal! j')
         self._previewResult(False)
 
-    @_command
+    @command
     def command_up(self):
         lfCmd('normal! k')
         self._previewResult(False)
 
-    # @_command
+    # @command
     # def _page_up(self):
     #     lfCmd('normal! <PageUp>')
     #     self._previewResult(False)
 
-    # @_command
+    # @command
     # def _page_down(self):
     #     lfCmd('normal! <PageDown>')
     #     self._previewResult(False)
 
-    # @_command
+    # @command
     # def _left_mouse(self):
     #     lfCmd('normal! <LeftMouse>')
     #     self._previewResult(False)
 
-    @_command
+    @command
     def command_preview(self):
         self._previewResult(True)
 
-    @_command
+    @command
     def command_toggle_help(self):
         self.toggleHelp()
 
-    @_command
+    @command
     def command_quit(self):
         self.quit()
 
-    @_command
+    @command
     def command_switch_insert_mode(self):
         self.input()
 
-    @_command
+    @command
     def command_accept(self):
         self.accept()
 
-    @_command
+    @command
     def command_accept_horizontal(self):
         self.accept('h')
 
-    @_command
+    @command
     def command_accept_vertical(self):
         self.accept('v')
 
-    @_command
+    @command
     def command_accept_tab(self):
         self.accept('t')
 
-    @_command
+    @command
     def command_page_up_in_preview(self):
         if lfEval("has('nvim')"):
             self._toUpInPopup()
 
-    @_command
+    @command
     def command_page_down_in_preview(self):
         if lfEval("has('nvim')"):
             self._toDownInPopup()
 
-    @_command
+    @command
     def command_close_preview_popup(self):
         if lfEval("has('nvim')"):
             self._closePreviewPopup()
 
-    @_command
+    @command
     def command_add_selections(self):
         self.addSelections()
 
-    @_command
+    @command
     def command_select_all(self):
         self.selectAll()
 
-    @_command
+    @command
     def command_clear_selections(self):
         self.clearSelections()
 
-    @_command
+    @command
     def command_mkdir(self):
         # For dir completion
         save_cwd = lfEval('getcwd()')
@@ -463,7 +463,7 @@ class FilerExplManager(Manager):
 
         self._move_cursor(dir_name)
 
-    @_command
+    @command
     def command_rename(self):
         line = self._getInstance().currentLine
         if len(self._selections) > 0:
