@@ -3,6 +3,7 @@
 
 import os
 import os.path
+import shutil
 from functools import partial
 from functools import wraps
 from leaderf.utils import *
@@ -10,6 +11,8 @@ from leaderf.explorer import *
 from leaderf.manager import *
 
 NO_CONTENT_MSG = ' No content!'
+
+MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
 
 
 def accessable(path):
@@ -37,6 +40,7 @@ def command(func):
     @wraps(func)
     def inner_func(*args, **kwargs):
         return func(*args, **kwargs)
+
     return inner_func
 
 
@@ -51,6 +55,7 @@ def do_command(name):
     """
     if name in commands:
         return commands[name]()
+
 
 # *****************************************************
 # FilerExplorer
@@ -68,6 +73,8 @@ class FilerExplorer(Explorer):
             lfEval("exists('*WebDevIconsGetFileTypeSymbol')") == "1"
             and lfEval("get(g:, 'Lf_FilerShowDevIcons', 0)") == "1"
         )
+        # NORMAL or COPY
+        self._command_mode = "NORMAL"
 
     def getContent(self, *args, **kwargs):
         if kwargs.get("arguments", {}).get("directory"):
@@ -126,7 +133,7 @@ class FilerExplorer(Explorer):
         return "Filer"
 
     def getStlCurDir(self):
-        return escQuote(lfEncode(self._cwd))
+        return MODE_DICT.get(self._command_mode, "") + escQuote(lfEncode(self._cwd))
 
     def getCwd(self):
         return self._cwd
@@ -134,6 +141,11 @@ class FilerExplorer(Explorer):
     def supportsMulti(self):
         return True
 
+    def setCommandMode(self, mode):
+        """
+        "NORMAL" or "COPY"
+        """
+        self._command_mode = mode
 
 # *****************************************************
 # FilerExplManager
@@ -142,6 +154,9 @@ class FilerExplManager(Manager):
     def __init__(self):
         super(FilerExplManager, self).__init__()
         self._update_insert_maps()
+        self._copy_file = ""
+        self._copy_mode = False
+        # self._copy_file_matchids = {}
 
     def _update_insert_maps(self):
         insert_map = lfEval('leaderf#Filer#InsertMap()')
@@ -222,6 +237,11 @@ class FilerExplManager(Manager):
 
     def _getDigestStartPos(self, line, mode):
         return 0
+
+    def _beforeEnter(self):
+        self._copy_file = ''
+        self._copy_mode = False
+        self._getExplorer().setCommandMode("NORMAL")
 
     def _afterEnter(self):
         super(FilerExplManager, self)._afterEnter()
@@ -508,6 +528,59 @@ class FilerExplManager(Manager):
                 self._move_cursor(line)
                 break
 
+    @command
+    def command_copy(self):
+        if len(self._selections) > 0:
+            lfPrintError(" Copy does not support multiple files.")
+            return
+
+        line = self._getInstance().currentLine
+        if line in (".", NO_CONTENT_MSG):
+            return
+
+        self._copy_file = self._getExplorer()._contents[line]["fullpath"]
+        self._copy_mode = True
+        lfCmd("echon ' Copied.'")
+        # Updat estatus line
+        self._getExplorer().setCommandMode("COPY")
+        self._redrawStlCwd()
+
+    @command
+    def command_paste(self):
+        if not self._copy_mode:
+            return
+
+        fullpath = self._copy_file
+        basename = os.path.basename(fullpath)
+
+        cwd = self._getExplorer()._cwd
+
+        to_path = os.path.join(cwd, basename)
+
+        if os.path.exists(to_path):
+            to_path += "_copy"
+
+        # *_copy があったら、だめ
+        if os.path.exists(to_path):
+            lfPrintError(" Already exists. '{}'".format(to_path))
+            return
+
+        if os.path.isdir(fullpath):
+            # shutil.copytree(src, dst)
+            shutil.copytree(fullpath, to_path)
+        else:
+            shutil.copy2(fullpath, to_path)
+
+        self._refresh()
+
+        # move curosr
+        for line, info in self._getExplorer()._contents.items():
+            if info["fullpath"] == to_path:
+                self._move_cursor(line)
+                break
+
+        lfCmd("echon ' Pasted.'")
+
     def cd(self, path):
         # XXX: from defx.nvim
         if lfEval("exists('*chdir')") == "1":
@@ -517,7 +590,11 @@ class FilerExplManager(Manager):
 
     def _refresh(self, cwd=None):
         if cwd:
-            self._getInstance().setStlCwd(cwd)
+            if self._copy_mode:
+                # update status line
+                self._redrawStlCwd()
+            else:
+                self._getInstance().setStlCwd(cwd)
             self._getInstance().setCwd(cwd)
             if self._getInstance().getWinPos() in ('popup', 'floatwin'):
                 self._getInstance().setPopupStl(self._current_mode)
@@ -598,6 +675,9 @@ class FilerExplManager(Manager):
         fullpath = self._getExplorer()._contents[line]["fullpath"]
         buf_number = lfEval("bufadd('{}')".format(escQuote(fullpath)))
         self._createPopupPreview(line, buf_number, 0)
+
+    def _redrawStlCwd(self):
+        self._getInstance().setStlCwd(self._getExplorer().getStlCurDir())
 
 
 # *****************************************************

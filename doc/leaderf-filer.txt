@@ -127,6 +127,8 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   'c':             'clear_selections',
     \   'K':             'mkdir',
     \   'r':             'rename',
+    \   'C':             'copy',
+    \   'P':             'paste',
     \}
 
     " insert mode:
@@ -228,6 +230,8 @@ For example, to map everything yourself without using the default mapping:
     \   '<F3>':          'clear_selections',
     \   'K':             'mkdir',
     \   'r':             'rename',
+    \   'C':             'copy',
+    \   'P':             'paste',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -357,6 +361,18 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
     rename
         Rename files and directories.
         NOTE: Does not support multiple files.
+
+    copy
+        Copy files and directories under cursor.
+
+        See `paste` command.
+        NOTE: Does not support multiple files.
+
+    paste
+        Paste the file or directory copied by the copy command to cwd of
+        LeaderF-filer.
+
+        See `copy` command.
 
 
 NORMAL MODE ONLY                           *LeaderF-filer-map-commands-normal*
