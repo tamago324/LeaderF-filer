@@ -264,7 +264,7 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
     else
         " customize l:key mappings
         for [l:custom_key, l:func] in items(s:normal_map)
-            if l:key ==? l:custom_key
+            if l:key ==# l:custom_key
                 exec printf('exec g:Lf_py "do_command(''%s'')"', l:func)
             endif
         endfor
