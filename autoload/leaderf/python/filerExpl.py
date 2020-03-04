@@ -10,17 +10,17 @@ from leaderf.utils import *
 from leaderf.explorer import *
 from leaderf.manager import *
 
-NO_CONTENT_MSG = " No content!"
+from utils import (
+    accessable,
+    NO_CONTENT_MSG,
+    invalid_line,
+    echo_cancel,
+    nearestAncestor,
+    cd,
+)
+
 
 MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
-
-
-def accessable(path):
-    try:
-        os.listdir(path)
-        return True
-    except PermissionError:
-        return False
 
 
 commands = {}
@@ -298,9 +298,6 @@ class FilerExplManager(Manager):
     def command_open_current(self):
         line = self._getInstance().currentLine
 
-        if line in (".", NO_CONTENT_MSG):
-            return
-
         file_info = self._getExplorer()._contents[line]
         if not file_info["isdir"]:
             self.accept()
@@ -360,9 +357,7 @@ class FilerExplManager(Manager):
     @command
     def command_goto_root_marker_dir(self):
         root_markers = lfEval("g:Lf_RootMarkers")
-        rootMarkersDir = self._nearestAncestor(
-            root_markers, self._getExplorer().getCwd()
-        )
+        rootMarkersDir = nearestAncestor(root_markers, self._getExplorer().getCwd())
         if rootMarkersDir:
             # exists root_markers
             self._chcwd(os.path.abspath(rootMarkersDir))
@@ -455,23 +450,23 @@ class FilerExplManager(Manager):
     def command_mkdir(self):
         # For dir completion
         save_cwd = lfEval("getcwd()")
-        self.cd(self._getExplorer()._cwd)
+        cd(self._getExplorer()._cwd)
 
         try:
             dir_name = lfEval("input('Create Directory: ', '', 'dir')")
         except KeyboardInterrupt:  # Cancel
-            lfCmd("echon ' Canceled.'")
+            echo_cancel()
             return
         finally:
             # restore
-            self.cd(save_cwd)
+            cd(save_cwd)
 
         if dir_name == "":
-            lfCmd("echon ' Canceled.'")
+            echo_cancel()
             return
 
         path = os.path.join(self._getExplorer()._cwd, dir_name)
-        if os.path.isdir(path):
+        if os.path.isdir(os.path.join(self._getExplorer()._cwd, dir_name)):
             lfPrintError(" Already exists. '{}'".format(path))
             return
 
@@ -491,7 +486,7 @@ class FilerExplManager(Manager):
             lfPrintError(" Rename does not support multiple files.")
             return
 
-        if line in (".", NO_CONTENT_MSG):
+        if invalid_line(line):
             return
 
         fullpath = self._getExplorer()._contents[line]["fullpath"]
@@ -500,11 +495,11 @@ class FilerExplManager(Manager):
         try:
             renamed = lfEval("input('Rename: ', '{}')".format(basename))
         except KeyboardInterrupt:  # Cancel
-            lfCmd("echon ' Canceled.'")
+            echo_cancel()
             return
 
         if renamed == "":
-            lfCmd("echon ' Canceled.'")
+            echo_cancel()
             return
 
         if renamed == basename:
@@ -527,7 +522,7 @@ class FilerExplManager(Manager):
             return
 
         line = self._getInstance().currentLine
-        if line in (".", NO_CONTENT_MSG):
+        if invalid_line(line):
             return
 
         self._copy_file = self._getExplorer()._contents[line]["fullpath"]
@@ -573,11 +568,11 @@ class FilerExplManager(Manager):
         try:
             file_name = lfEval("input('Create file: ')")
         except KeyboardInterrupt:
-            lfCmd("echon ' Canceled.'")
+            echo_cancel()
             return
 
         if file_name == "":
-            lfCmd("echon ' Canceled.'")
+            echo_cancel()
             return
 
         path = os.path.join(self._getExplorer()._cwd, file_name)
@@ -586,7 +581,7 @@ class FilerExplManager(Manager):
             return
 
         # create file
-        open(path, 'w').close()
+        open(path, "w").close()
 
         self._refresh()
         self._move_cursor_if_fullpath_match(path)
@@ -630,13 +625,6 @@ class FilerExplManager(Manager):
                 self._move_cursor(line)
                 break
 
-    def cd(self, path):
-        # XXX: from defx.nvim
-        if lfEval("exists('*chdir')") == "1":
-            lfCmd("call chdir('%s')" % path)
-        else:
-            lfCmd("silent execute (haslocaldir() ? 'lcd' : 'cd') '%s'" % path)
-
     def _refresh(self, cwd=None):
         if cwd:
             if self._copy_mode:
@@ -660,33 +648,6 @@ class FilerExplManager(Manager):
         self.refresh(normal_mode=False)
         self._getInstance()._cli._buildPrompt()
 
-    def _nearestAncestor(self, markers, path):
-        """
-        return the nearest ancestor path(including itself) of `path` that contains
-        one of files or directories in `markers`.
-        `markers` is a list of file or directory names.
-
-        """
-        # XXX: from LeaderF fileExpl.py
-        if os.name == "nt":
-            # e.g. C:\\
-            root = os.path.splitdrive(os.path.abspath(path))[0] + os.sep
-        else:
-            root = "/"
-
-        path = os.path.abspath(path)
-        while path != root:
-            for name in markers:
-                if os.path.exists(os.path.join(path, name)):
-                    return path
-            path = os.path.abspath(os.path.join(path, ".."))
-
-        for name in markers:
-            if os.path.exists(os.path.join(path, name)):
-                return path
-
-        return ""
-
     def _edit(self, name):
         path = os.path.join(self._getExplorer().getCwd(), name)
         self._getInstance().exitBuffer()
@@ -696,7 +657,7 @@ class FilerExplManager(Manager):
         self._getExplorer()._cwd = path
         self._refresh(cwd=path)
         if "--auto-cd" in self.getArguments():
-            self.cd(path)
+            cd(path)
 
     def _previewInPopup(self, *args, **kwargs):
         line = args[0]
