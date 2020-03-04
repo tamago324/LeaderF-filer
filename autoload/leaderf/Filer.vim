@@ -48,6 +48,8 @@ function! leaderf#Filer#NormalMap() abort
         \   'a':             'select_all',
         \   'c':             'clear_selections',
         \   'K':             'mkdir',
+        \   'C':             'copy',
+        \   'P':             'paste',
         \   'r':             'rename',
         \   'O':             'create_file',
         \}
