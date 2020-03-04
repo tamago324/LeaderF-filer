@@ -315,7 +315,16 @@ class FilerExplManager(Manager):
             # like <BS> in cli#input()
             self._cli._backspace()
             self._cli._buildPattern()
-            self.refresh()
+
+            # like <Shorten> in manager#input()
+            cur_len = len(self._content)
+            cur_content = self._content[:cur_len]
+            self._index = 0
+            self._search(cur_content)
+            if self._getInstance().isReverseOrder():
+                lfCmd("normal! G")
+            else:
+                self._gotoFirstLine()
             return
         self.open_parent()
 
