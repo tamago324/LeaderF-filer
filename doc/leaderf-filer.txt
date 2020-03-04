@@ -125,6 +125,7 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   's':             'add_selections',
     \   'a':             'select_all',
     \   'c':             'clear_selections',
+    \   'O':             'create_file',
     \   'K':             'mkdir',
     \   'r':             'rename',
     \   'C':             'copy',
@@ -232,6 +233,7 @@ For example, to map everything yourself without using the default mapping:
     \   'r':             'rename',
     \   'C':             'copy',
     \   'P':             'paste',
+    \   'O':             'create_file',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -357,6 +359,9 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
     mkdir
         Create a directory.
         See |g:Lf_FilerMkdirAutoChdir|
+
+    create_file
+        Create a file.
 
     rename
         Rename files and directories.

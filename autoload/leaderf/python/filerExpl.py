@@ -595,6 +595,34 @@ class FilerExplManager(Manager):
 
         lfCmd("echon ' Pasted.'")
 
+    @command
+    def command_create_file(self):
+        try:
+            file_name = lfEval("input('Create file: ')")
+        except KeyboardInterrupt:
+            lfCmd("echon ' Canceled.'")
+            return
+
+        if file_name == "":
+            lfCmd("echon ' Canceled.'")
+            return
+
+        path = os.path.join(self._getExplorer()._cwd, file_name)
+        if os.path.exists(path):
+            lfPrintError(" Already exists. '{}'".format(path))
+            return
+
+        # create file
+        open(path, 'w').close()
+
+        self._refresh()
+
+        # move curosr
+        for line, info in self._getExplorer()._contents.items():
+            if info["fullpath"] == path:
+                self._move_cursor(line)
+                break
+
     def cd(self, path):
         # XXX: from defx.nvim
         if lfEval("exists('*chdir')") == "1":
