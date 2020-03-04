@@ -4,8 +4,6 @@
 import os
 import os.path
 import shutil
-from functools import partial
-from functools import wraps
 from leaderf.utils import *
 from leaderf.explorer import *
 from leaderf.manager import *
@@ -17,19 +15,12 @@ from utils import (
     echo_cancel,
     nearestAncestor,
     cd,
+    command,
 )
 
 
 MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
 
-
-def command(func):
-    """ marker """
-    @wraps(func)
-    def inner_func(*args, **kwargs):
-        return func(*args, **kwargs)
-
-    return inner_func
 
 # *****************************************************
 # FilerExplorer
@@ -196,7 +187,6 @@ class FilerExplManager(Manager):
         return help
 
     def do_command(self, cmd_name):
-        lfCmd("echomsg '{}'".format(cmd_name))
         return eval('self.command__{}()'.format(cmd_name))
 
     def _cmdExtension(self, cmd_name):
