@@ -68,7 +68,7 @@ function! leaderf#Filer#Maps()
         if l:cmd ==? 'nop'
             exec printf('nnoremap <buffer> <silent> %s <Nop>', l:key)
         endif
-        exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "do_command(''%s'')"<CR>', l:key, l:cmd)
+        exec printf('nnoremap <buffer> <silent> %s :exec g:Lf_py "filerExplManager.do_command(''%s'')"<CR>', l:key, l:cmd)
     endfor
 
     if has_key(g:Lf_NormalMap, 'Filer')
@@ -267,10 +267,10 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
     else
         " customize l:key mappings
         for [l:custom_key, l:func] in items(s:normal_map)
-                exec printf('exec g:Lf_py "do_command(''%s'')"', l:func)
             " <TAB> == <Tab>
             if l:key ==# l:custom_key ||
             \   l:key =~# '^<' && l:key ==? l:custom_key
+                exec printf('exec g:Lf_py "filerExplManager.do_command(''%s'')"', l:func)
             endif
         endfor
     endif
