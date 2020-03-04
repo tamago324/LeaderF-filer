@@ -50,7 +50,7 @@ function! leaderf#Filer#NormalMap() abort
         \   'K':             'mkdir',
         \   'C':             'copy',
         \   'P':             'paste',
-        \   'r':             'rename',
+        \   'R':             'rename',
         \   'O':             'create_file',
         \}
         " \   '<PageUp>':      'page_up',

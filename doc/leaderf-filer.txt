@@ -127,7 +127,7 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   'c':             'clear_selections',
     \   'O':             'create_file',
     \   'K':             'mkdir',
-    \   'r':             'rename',
+    \   'R':             'rename',
     \   'C':             'copy',
     \   'P':             'paste',
     \}
@@ -230,7 +230,7 @@ For example, to map everything yourself without using the default mapping:
     \   '<C-a>':         'select_all',
     \   '<F3>':          'clear_selections',
     \   'K':             'mkdir',
-    \   'r':             'rename',
+    \   'R':             'rename',
     \   'C':             'copy',
     \   'P':             'paste',
     \   'O':             'create_file',

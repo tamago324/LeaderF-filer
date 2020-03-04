@@ -86,7 +86,7 @@ let g:Lf_FilerNormalMap = {
 \   '<C-a>':         'select_all',
 \   '<F3>':          'clear_selections',
 \   'K':             'mkdir',
-\   'r':             'rename',
+\   'R':             'rename',
 \   'C':             'copy',
 \   'P':             'paste',
 \   'O':             'create_file',
