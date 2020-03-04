@@ -276,6 +276,24 @@ class FilerExplManager(Manager):
             )
             self._match_ids.append(id)
 
+    def startExplorer(self, win_pos, *args, **kwargs):
+        _dir = ""
+        if kwargs.get("arguments", {}).get("directory"):
+            _dir = kwargs.get("arguments", {}).get("directory")[0]
+            _dir = os.path.expanduser(lfDecode(_dir))
+
+            if not accessable(_dir):
+                lfCmd(
+                    "echohl ErrorMsg | redraw | echon "
+                    "' Permission denied `%s`' | echohl NONE" % _dir
+                )
+                return
+
+        super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
+        # super().startExplorer() updates cwd to os.getcwd()
+        if _dir != "":
+            self._getInstance().setCwd(_dir)
+
     @command
     def command_open_current(self):
         line = self._getInstance().currentLine
@@ -307,7 +325,7 @@ class FilerExplManager(Manager):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return
-        self.open_parent()
+        self._open_parent()
 
     @command
     def command_open_parent_or_backspace(self):
@@ -326,41 +344,11 @@ class FilerExplManager(Manager):
             else:
                 self._gotoFirstLine()
             return
-        self.open_parent()
+        self._open_parent()
 
     @command
     def command_open_parent(self):
-        self.open_parent()
-
-    def open_parent(self):
-        cwd = self._getExplorer()._cwd or os.getcwd()
-        abspath = os.path.abspath(os.path.join(cwd, ".."))
-        self._chcwd(abspath)
-
-        if self._getExplorer()._show_devicons:
-            dir_icon = lfEval('WebDevIconsGetFileTypeSymbol("", 1)')
-            pattern = r"\v^{}{}/$".format(dir_icon, os.path.basename(cwd))
-        else:
-            pattern = r"\v^{}/$".format(os.path.basename(cwd))
-
-        self._move_cursor(pattern)
-
-    def _move_cursor(self, pattern):
-        if self._getInstance().getWinPos() == "popup":
-            lfCmd(
-                """call win_execute(%d, 'call search(''%s'')')"""
-                % (self._getInstance().getPopupWinId(), pattern)
-            )
-            self._getInstance().mimicCursor()
-            # keep cursor pos
-            lfCmd(
-                "call win_execute(%d, 'normal! jk')"
-                % self._getInstance().getPopupWinId()
-            )
-            # lfCmd("call win_execute(%d, 'normal! 0')" % self._getInstance().getPopupWinId())
-        else:
-            lfCmd("call search('%s')" % pattern)
-            lfCmd("normal! 0")
+        self._open_parent()
 
     @command
     def command_toggle_hidden_files(self):
@@ -494,11 +482,7 @@ class FilerExplManager(Manager):
         else:
             self._refresh()
 
-        # move curosr
-        for line, info in self._getExplorer()._contents.items():
-            if info["fullpath"] == path:
-                self._move_cursor(line)
-                break
+        self._move_cursor_if_fullpath_match(path)
 
     @command
     def command_rename(self):
@@ -534,12 +518,7 @@ class FilerExplManager(Manager):
 
         os.rename(fullpath, to_path)
         self._refresh()
-
-        # move curosr
-        for line, info in self._getExplorer()._contents.items():
-            if info["fullpath"] == to_path:
-                self._move_cursor(line)
-                break
+        self._move_cursor_if_fullpath_match(to_path)
 
     @command
     def command_copy(self):
@@ -586,13 +565,7 @@ class FilerExplManager(Manager):
             shutil.copy2(fullpath, to_path)
 
         self._refresh()
-
-        # move curosr
-        for line, info in self._getExplorer()._contents.items():
-            if info["fullpath"] == to_path:
-                self._move_cursor(line)
-                break
-
+        self._move_cursor_if_fullpath_match(to_path)
         lfCmd("echon ' Pasted.'")
 
     @command
@@ -616,8 +589,42 @@ class FilerExplManager(Manager):
         open(path, 'w').close()
 
         self._refresh()
+        self._move_cursor_if_fullpath_match(path)
 
-        # move curosr
+    def _open_parent(self):
+        cwd = self._getExplorer()._cwd or os.getcwd()
+        abspath = os.path.abspath(os.path.join(cwd, ".."))
+        self._chcwd(abspath)
+
+        if self._getExplorer()._show_devicons:
+            dir_icon = lfEval('WebDevIconsGetFileTypeSymbol("", 1)')
+            pattern = r"\v^{}{}/$".format(dir_icon, os.path.basename(cwd))
+        else:
+            pattern = r"\v^{}/$".format(os.path.basename(cwd))
+
+        self._move_cursor(pattern)
+
+    def _move_cursor(self, pattern):
+        if self._getInstance().getWinPos() == "popup":
+            lfCmd(
+                """call win_execute(%d, 'call search(''%s'')')"""
+                % (self._getInstance().getPopupWinId(), pattern)
+            )
+            self._getInstance().mimicCursor()
+            # keep cursor pos
+            lfCmd(
+                "call win_execute(%d, 'normal! jk')"
+                % self._getInstance().getPopupWinId()
+            )
+            # lfCmd("call win_execute(%d, 'normal! 0')" % self._getInstance().getPopupWinId())
+        else:
+            lfCmd("call search('%s')" % pattern)
+            lfCmd("normal! 0")
+
+    def _move_cursor_if_fullpath_match(self, path):
+        """
+        Move the cursor to the line where fullpath matches path.
+        """
         for line, info in self._getExplorer()._contents.items():
             if info["fullpath"] == path:
                 self._move_cursor(line)
@@ -690,24 +697,6 @@ class FilerExplManager(Manager):
         self._refresh(cwd=path)
         if "--auto-cd" in self.getArguments():
             self.cd(path)
-
-    def startExplorer(self, win_pos, *args, **kwargs):
-        _dir = ""
-        if kwargs.get("arguments", {}).get("directory"):
-            _dir = kwargs.get("arguments", {}).get("directory")[0]
-            _dir = os.path.expanduser(lfDecode(_dir))
-
-            if not accessable(_dir):
-                lfCmd(
-                    "echohl ErrorMsg | redraw | echon "
-                    "' Permission denied `%s`' | echohl NONE" % _dir
-                )
-                return
-
-        super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
-        # super().startExplorer() updates cwd to os.getcwd()
-        if _dir != "":
-            self._getInstance().setCwd(_dir)
 
     def _previewInPopup(self, *args, **kwargs):
         line = args[0]
