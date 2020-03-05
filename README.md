@@ -141,3 +141,11 @@ let g:Lf_NormalMap = {'Filer':   [['B', ':LeaderfBookmark<CR>']]}
 `:Leaderf filer --popup`
 
 <img src="./images/popup.png" alt="popup" />
+
+## Credit
+
+* LeaderF-filer uses some code from [defx.nvim](https://github.com/Shougo/defx.nvim).
+
+## License
+
+Apache-2.0
