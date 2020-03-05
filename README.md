@@ -90,6 +90,7 @@ let g:Lf_FilerNormalMap = {
 \   'C':             'copy',
 \   'P':             'paste',
 \   'O':             'create_file',
+\   '@':             'change_directory',
 \}
 
 " insert mode

@@ -555,6 +555,10 @@ class FilerExplManager(Manager):
         self._refresh()
         self._move_cursor_if_fullpath_match(path)
 
+    def command__change_directory(self):
+        cd(self._getExplorer()._cwd)
+        lfCmd("echon ' cd {}'".format(self._getExplorer()._cwd))
+
     def _open_parent(self):
         cwd = self._getExplorer()._cwd or os.getcwd()
         abspath = os.path.abspath(os.path.join(cwd, ".."))

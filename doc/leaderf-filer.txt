@@ -130,6 +130,7 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   'R':             'rename',
     \   'C':             'copy',
     \   'P':             'paste',
+    \   '@':             'change_directory',
     \}
 
     " insert mode:
@@ -234,6 +235,7 @@ For example, to map everything yourself without using the default mapping:
     \   'C':             'copy',
     \   'P':             'paste',
     \   'O':             'create_file',
+    \   '@':             'change_directory',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -378,6 +380,10 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
         LeaderF-filer.
 
         See `copy` command.
+
+    change_directory
+        Change the current directory to cwd of LeaderF-filer.
+        NOTE: Use |chdir()|, |lcd| or |cd|.
 
 
 NORMAL MODE ONLY                           *LeaderF-filer-map-commands-normal*

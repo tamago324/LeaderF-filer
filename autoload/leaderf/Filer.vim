@@ -52,6 +52,7 @@ function! leaderf#Filer#NormalMap() abort
         \   'P':             'paste',
         \   'R':             'rename',
         \   'O':             'create_file',
+        \   '@':             'change_directory',
         \}
         " \   '<PageUp>':      'page_up',
         " \   '<PageDown>':    'page_down',
