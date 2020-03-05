@@ -41,20 +41,7 @@ class FilerExplorer(Explorer):
         self._command_mode = "NORMAL"
 
     def getContent(self, *args, **kwargs):
-        if kwargs.get("arguments", {}).get("directory"):
-            # from fileExpl.py
-            _dir = kwargs.get("arguments", {}).get("directory")[0]
-            _dir = os.path.expanduser(lfDecode(_dir))
-            if os.path.exists(_dir):
-                self._cwd = os.path.abspath(_dir)
-            else:
-                lfCmd(
-                    "echohl ErrorMsg | redraw | echon "
-                    "'Unknown directory `%s`' | echohl NONE" % _dir
-                )
-                return None
-        else:
-            self._cwd = os.getcwd()
+        self._cwd = self._cwd or os.getcwd()
         return self.getFreshContent()
 
     def getFreshContent(self, *args, **kwargs):
@@ -252,13 +239,26 @@ class FilerExplManager(Manager):
         if kwargs.get("arguments", {}).get("directory"):
             _dir = kwargs.get("arguments", {}).get("directory")[0]
             _dir = os.path.expanduser(lfDecode(_dir))
+            _dir = os.path.expandvars(_dir)
+            _dir = os.path.abspath(_dir)
 
-            if not accessable(_dir):
+            if not os.path.exists(_dir):
+                lfCmd(
+                    "echohl ErrorMsg | redraw | echon "
+                    "'Unknown directory `%s`' | echohl NONE" % _dir
+                )
+                return
+
+            elif not accessable(_dir):
                 lfCmd(
                     "echohl ErrorMsg | redraw | echon "
                     "' Permission denied `%s`' | echohl NONE" % _dir
                 )
                 return
+
+        # Set vars because super().startExplorer() is calling self._getExplorer()
+        if _dir != "":
+            self._getExplorer()._cwd = _dir
 
         super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
         # super().startExplorer() updates cwd to os.getcwd()
