@@ -454,6 +454,12 @@ Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
 CHANGELOG                                            *LeaderF-filer-changelog*
 
 
+0.0.7   2020-03-05
+    - Add `change_directory` command.
+
+0.0.6   2020-03-04
+    - Add `create_file` command.
+
 0.0.5   2020-02-27
     - Add `copy` command.
     - Add `paste` command.
