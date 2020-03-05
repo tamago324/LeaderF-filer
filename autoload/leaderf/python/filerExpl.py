@@ -15,7 +15,6 @@ from utils import (
     echo_cancel,
     nearestAncestor,
     cd,
-    command,
 )
 
 
@@ -266,7 +265,6 @@ class FilerExplManager(Manager):
         if _dir != "":
             self._getInstance().setCwd(_dir)
 
-    @command
     def command__open_current(self):
         line = self._getInstance().currentLine
 
@@ -289,14 +287,12 @@ class FilerExplManager(Manager):
 
         self._chcwd(os.path.abspath(file_info["fullpath"]))
 
-    @command
     def command__open_parent_or_clear_line(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return
         self._open_parent()
 
-    @command
     def command__open_parent_or_backspace(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             # like <BS> in cli#input()
@@ -315,18 +311,15 @@ class FilerExplManager(Manager):
             return
         self._open_parent()
 
-    @command
     def command__open_parent(self):
         self._open_parent()
 
-    @command
     def command__toggle_hidden_files(self):
         self._getExplorer()._show_hidden_files = (
             not self._getExplorer()._show_hidden_files
         )
         self.refresh(normal_mode=False)
 
-    @command
     def command__goto_root_marker_dir(self):
         root_markers = lfEval("g:Lf_RootMarkers")
         rootMarkersDir = nearestAncestor(root_markers, self._getExplorer().getCwd())
@@ -334,12 +327,10 @@ class FilerExplManager(Manager):
             # exists root_markers
             self._chcwd(os.path.abspath(rootMarkersDir))
 
-    @command
     def command__down(self):
         lfCmd("normal! j")
         self._previewResult(False)
 
-    @command
     def command__up(self):
         lfCmd("normal! k")
         self._previewResult(False)
@@ -356,66 +347,51 @@ class FilerExplManager(Manager):
     #     lfCmd('normal! <LeftMouse>')
     #     self._previewResult(False)
 
-    @command
     def command__preview(self):
         self._previewResult(True)
 
-    @command
     def command__toggle_help(self):
         self.toggleHelp()
 
-    @command
     def command__quit(self):
         self.quit()
 
-    @command
     def command__switch_insert_mode(self):
         self.input()
 
-    @command
     def command__accept(self):
         self.accept()
 
-    @command
     def command__accept_horizontal(self):
         self.accept("h")
 
-    @command
     def command__accept_vertical(self):
         self.accept("v")
 
-    @command
     def command__accept_tab(self):
         self.accept("t")
 
-    @command
     def command__page_up_in_preview(self):
         if lfEval("has('nvim')"):
             self._toUpInPopup()
 
-    @command
     def command__page_down_in_preview(self):
         if lfEval("has('nvim')"):
             self._toDownInPopup()
 
-    @command
     def command__close_preview_popup(self):
         if lfEval("has('nvim')"):
             self._closePreviewPopup()
 
-    @command
     def command__add_selections(self):
         self.addSelections()
 
-    @command
     def command__select_all(self):
         self.selectAll()
 
-    @command
     def command__clear_selections(self):
         self.clearSelections()
 
-    @command
     def command__mkdir(self):
         # For dir completion
         save_cwd = lfEval("getcwd()")
@@ -448,7 +424,6 @@ class FilerExplManager(Manager):
 
         self._move_cursor_if_fullpath_match(path)
 
-    @command
     def command__rename(self):
         line = self._getInstance().currentLine
         if len(self._selections) > 0:
@@ -484,7 +459,6 @@ class FilerExplManager(Manager):
         self._refresh()
         self._move_cursor_if_fullpath_match(to_path)
 
-    @command
     def command__copy(self):
         if len(self._selections) > 0:
             lfPrintError(" Copy does not support multiple files.")
@@ -501,7 +475,6 @@ class FilerExplManager(Manager):
         self._getExplorer().setCommandMode("COPY")
         self._redrawStlCwd()
 
-    @command
     def command__paste(self):
         if not self._copy_mode:
             return
@@ -532,7 +505,6 @@ class FilerExplManager(Manager):
         self._move_cursor_if_fullpath_match(to_path)
         lfCmd("echon ' Pasted.'")
 
-    @command
     def command__create_file(self):
         try:
             file_name = lfEval("input('Create file: ')")

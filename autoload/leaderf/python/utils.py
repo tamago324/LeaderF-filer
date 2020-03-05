@@ -59,12 +59,3 @@ def cd(path):
         lfCmd("call chdir('%s')" % path)
     else:
         lfCmd("silent execute (haslocaldir() ? 'lcd' : 'cd') '%s'" % path)
-
-
-def command(func):
-    """ marker """
-    @wraps(func)
-    def inner_func(*args, **kwargs):
-        return func(*args, **kwargs)
-
-    return inner_func
