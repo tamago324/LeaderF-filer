@@ -267,6 +267,8 @@ class FilerExplManager(Manager):
 
     def command__open_current(self):
         line = self._getInstance().currentLine
+        if line == NO_CONTENT_MSG:
+            return
 
         file_info = self._getExplorer()._contents[line]
         if not file_info["isdir"]:
