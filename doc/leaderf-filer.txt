@@ -337,6 +337,9 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
     page_down_in_preview
         Scroll down in the popup preview window.
 
+    close_preview_popup
+        Close popup preview window.
+
     open_parent
         The prompt string is cleared and show files files in the parent
         directory.

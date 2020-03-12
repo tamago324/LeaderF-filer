@@ -20,6 +20,16 @@ from utils import (
 
 MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
 
+help_dict = dict()
+
+def help(text):
+    def decorator(func):
+        def inner_func(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        help_dict[func.__name__.replace("command__", "")] = text
+        return inner_func
+    return decorator
 
 # *****************************************************
 # FilerExplorer
@@ -110,6 +120,7 @@ class FilerExplManager(Manager):
         self._copy_mode = False
         # self._copy_file_matchids = {}
         self._commands = self._get_commands()
+        self._help_text_list = []
 
     def _get_commands(self):
         return [x[len('command__'):] for x in self.__dir__() if x.startswith('command__')]
@@ -159,17 +170,27 @@ class FilerExplManager(Manager):
         super(FilerExplManager, self)._acceptSelection(path, *args[1:], **kwargs)
 
     def _createHelp(self):
+        if self._help_text_list:
+            return self._help_text_list
+
         help = []
-        help.append('" <CR>/<double-click>/o : open file/dir under cursor')
-        help.append('" <TAB> : switch to input mode')
-        help.append('" <C-h>/h : Show files in parent directory')
-        help.append('" <C-l>/l : Show files in directory under cursor')
-        help.append('" I : Toggle show hidden files')
-        help.append('" <C-g> : Show files of directory where g:Lf_RootMarkers exists')
-        help.append('" p : preview the file')
-        help.append('" q : quit')
-        help.append('" <F1> : toggle this help')
+        key_cmd_dict = dict()
+        for [key, cmd_name] in lfEval('leaderf#Filer#NormalMap()').items():
+            key_cmd_dict[cmd_name] = key_cmd_dict.get(cmd_name, []) + [key]
+
+        # sort key
+        for [key, val] in key_cmd_dict.items():
+            key_cmd_dict[key] = sorted(val)
+
+        for [name, text] in help_dict.items():
+            if name in key_cmd_dict:
+                # key1/key2 : help text
+                line = '" {} : {}'.format("/".join(key_cmd_dict[name]), text)
+                help.append(line)
+        help.sort()
         help.append('" ---------------------------------------------------------')
+
+        self._help_text_list = help
         return help
 
     def do_command(self, cmd_name):
@@ -196,6 +217,7 @@ class FilerExplManager(Manager):
         return 0
 
     def _beforeEnter(self):
+        super(FilerExplManager, self)._beforeEnter()
         self._copy_file = ""
         self._copy_mode = False
         self._getExplorer().setCommandMode("NORMAL")
@@ -234,6 +256,9 @@ class FilerExplManager(Manager):
             )
             self._match_ids.append(id)
 
+        if lfEval("get(g:, 'Lf_FilerMoveCursorCufBuf', 0)") == "1":
+            self._move_cursor_if_fullpath_match(self._cur_buffer.name)
+
     def startExplorer(self, win_pos, *args, **kwargs):
         _dir = ""
         if kwargs.get("arguments", {}).get("directory"):
@@ -265,6 +290,7 @@ class FilerExplManager(Manager):
         if _dir != "":
             self._getInstance().setCwd(_dir)
 
+    @help("open file/dir under cursor")
     def command__open_current(self):
         line = self._getInstance().currentLine
         if line == NO_CONTENT_MSG:
@@ -289,12 +315,14 @@ class FilerExplManager(Manager):
 
         self._chcwd(os.path.abspath(file_info["fullpath"]))
 
+    @help("show files in parent directory")
     def command__open_parent_or_clear_line(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return
         self._open_parent()
 
+    @help("show files in parent directory")
     def command__open_parent_or_backspace(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             # like <BS> in cli#input()
@@ -313,15 +341,18 @@ class FilerExplManager(Manager):
             return
         self._open_parent()
 
+    @help("show files in parent directory")
     def command__open_parent(self):
         self._open_parent()
 
+    @help("toggle show hidden files")
     def command__toggle_hidden_files(self):
         self._getExplorer()._show_hidden_files = (
             not self._getExplorer()._show_hidden_files
         )
         self.refresh(normal_mode=False)
 
+    @help("show files of directory where g:Lf_RootMarkers exists")
     def command__goto_root_marker_dir(self):
         root_markers = lfEval("g:Lf_RootMarkers")
         rootMarkersDir = nearestAncestor(root_markers, self._getExplorer().getCwd())
@@ -329,10 +360,12 @@ class FilerExplManager(Manager):
             # exists root_markers
             self._chcwd(os.path.abspath(rootMarkersDir))
 
+    @help("move the cursor upward")
     def command__down(self):
         lfCmd("normal! j")
         self._previewResult(False)
 
+    @help("move the cursor downward")
     def command__up(self):
         lfCmd("normal! k")
         self._previewResult(False)
@@ -349,51 +382,66 @@ class FilerExplManager(Manager):
     #     lfCmd('normal! <LeftMouse>')
     #     self._previewResult(False)
 
+    @help("preview the result")
     def command__preview(self):
         self._previewResult(True)
 
+    @help("toggle this help")
     def command__toggle_help(self):
         self.toggleHelp()
 
+    @help("quit")
     def command__quit(self):
         self.quit()
 
+    @help("switch to input mode")
     def command__switch_insert_mode(self):
         self.input()
 
+    @help("open the file under cursor")
     def command__accept(self):
         self.accept()
 
+    @help("open the file under cursor in horizontal split window")
     def command__accept_horizontal(self):
         self.accept("h")
 
+    @help("open the file under cursor in vertical split window")
     def command__accept_vertical(self):
         self.accept("v")
 
+    @help("open the file under cursor new tabpage")
     def command__accept_tab(self):
         self.accept("t")
 
+    @help("scroll up in the popup preview window (nvim only)")
     def command__page_up_in_preview(self):
         if lfEval("has('nvim')"):
             self._toUpInPopup()
 
+    @help("scroll down in the popup preview window (nvim only)")
     def command__page_down_in_preview(self):
         if lfEval("has('nvim')"):
             self._toDownInPopup()
 
+    @help("close popup preview window (nvim only)")
     def command__close_preview_popup(self):
         if lfEval("has('nvim')"):
             self._closePreviewPopup()
 
+    @help("select multiple result")
     def command__add_selections(self):
         self.addSelections()
 
+    @help("select all result")
     def command__select_all(self):
         self.selectAll()
 
+    @help("clear all selections")
     def command__clear_selections(self):
         self.clearSelections()
 
+    @help("create a directory")
     def command__mkdir(self):
         # For dir completion
         save_cwd = lfEval("getcwd()")
@@ -426,6 +474,7 @@ class FilerExplManager(Manager):
 
         self._move_cursor_if_fullpath_match(path)
 
+    @help("rename files and directories")
     def command__rename(self):
         line = self._getInstance().currentLine
         if len(self._selections) > 0:
@@ -461,6 +510,7 @@ class FilerExplManager(Manager):
         self._refresh()
         self._move_cursor_if_fullpath_match(to_path)
 
+    @help("copy files and directories under cursor")
     def command__copy(self):
         if len(self._selections) > 0:
             lfPrintError(" Copy does not support multiple files.")
@@ -477,6 +527,7 @@ class FilerExplManager(Manager):
         self._getExplorer().setCommandMode("COPY")
         self._redrawStlCwd()
 
+    @help("paste the file or directory")
     def command__paste(self):
         if not self._copy_mode:
             return
@@ -507,6 +558,7 @@ class FilerExplManager(Manager):
         self._move_cursor_if_fullpath_match(to_path)
         lfCmd("echon ' Pasted.'")
 
+    @help("create a file")
     def command__create_file(self):
         try:
             file_name = lfEval("input('Create file: ')")
@@ -529,6 +581,7 @@ class FilerExplManager(Manager):
         self._refresh()
         self._move_cursor_if_fullpath_match(path)
 
+    @help("change the current directory to cwd of LeaderF-filer")
     def command__change_directory(self):
         cd(self._getExplorer()._cwd)
         lfCmd("echon ' cd {}'".format(self._getExplorer()._cwd))
