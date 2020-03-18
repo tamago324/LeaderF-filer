@@ -167,7 +167,21 @@ class FilerExplManager(Manager):
             lfCmd("%s %s" % (cmd, escSpecial(path)))
             return
 
-        super(FilerExplManager, self)._acceptSelection(path, *args[1:], **kwargs)
+        # from manager.py
+        try:
+            if kwargs.get("mode", '') != 't' or (lfEval("get(g:, 'Lf_DiscardEmptyBuffer', 0)") == '1'
+                    and len(vim.tabpages) == 1 and len(vim.current.tabpage.windows) == 1
+                    and vim.current.buffer.name == '' and len(vim.current.buffer) == 1
+                    and vim.current.buffer[0] == '' and not vim.current.buffer.options["modified"]):
+
+                if vim.current.buffer.options["modified"]:
+                    lfCmd("hide edit %s" % escSpecial(path))
+                else:
+                    lfCmd("edit %s" % escSpecial(path))
+            else:
+                lfCmd("tab drop %s" % escSpecial(path))
+        except vim.error as e: # E37
+            lfPrintError(e)
 
     def _createHelp(self):
         if self._help_text_list:
