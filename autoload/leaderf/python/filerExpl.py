@@ -40,10 +40,7 @@ class FilerExplorer(Explorer):
         self._contents = dict()
         self._cwd = None
         self._show_hidden_files = lfEval("get(g:, 'Lf_FilerShowHiddenFiles', 0)") == "1"
-        self._show_devicons = (
-            lfEval("exists('*WebDevIconsGetFileTypeSymbol')") == "1"
-            and lfEval("get(g:, 'Lf_FilerShowDevIcons', 0)") == "1"
-        )
+        self._show_devicons = lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == "1"
         # NORMAL or COPY
         self._command_mode = "NORMAL"
 
@@ -66,10 +63,12 @@ class FilerExplorer(Explorer):
         if not self._show_hidden_files:
             contents = {k: v for k, v in contents.items() if not k.startswith(".")}
 
+        if self._show_devicons:
+            self._prefix_length = webDevIconsBytesLen()
+
         for k, v in contents.items():
             if self._show_devicons:
-                isdir = "1" if v["isdir"] else "0"
-                icon = lfEval('WebDevIconsGetFileTypeSymbol("%s", %s)' % (k, isdir))
+                icon = webDevIconsGetFileTypeSymbol(k, v["isdir"])
                 k = icon + k
             if v["isdir"]:
                 k += "/"
@@ -104,6 +103,9 @@ class FilerExplorer(Explorer):
         "NORMAL" or "COPY"
         """
         self._command_mode = mode
+
+    def getPrefixLength(self):
+        return self._prefix_length
 
 
 # *****************************************************
@@ -153,9 +155,8 @@ class FilerExplManager(Manager):
 
         if path == ".":
             path = self._getExplorer().getCwd()
-
-        if self._getExplorer()._show_devicons:
-            path = path[2:]
+        else:
+            path = self._getDigest(path, 0)
 
         if not os.path.isabs(path):
             path = os.path.join(self._getExplorer().getCwd(), lfDecode(path))
@@ -229,10 +230,13 @@ class FilerExplManager(Manager):
         if not line:
             return ""
 
-        return line
+        prefix_len = self._getExplorer().getPrefixLength()
+        b_line = lfByteArray(line)
+        b_line = b_line[prefix_len:]
+        return lfBytes2Str(b_line, encoding="utf8")
 
     def _getDigestStartPos(self, line, mode):
-        return 0
+        return self._getExplorer().getPrefixLength()
 
     def _beforeEnter(self):
         super(FilerExplManager, self)._beforeEnter()
@@ -242,6 +246,8 @@ class FilerExplManager(Manager):
 
     def _afterEnter(self):
         super(FilerExplManager, self)._afterEnter()
+
+        winid = None
 
         if self._getInstance().getWinPos() == "popup":
             lfCmd(
@@ -264,6 +270,7 @@ class FilerExplManager(Manager):
             )
             id = int(lfEval("matchid"))
             self._match_ids.append(id)
+            winid = self._getInstance().getPopupWinId()
         else:
             id = int(lfEval("matchadd('Lf_hl_filerFile', '^[^\/]\+\(\/\)\@!$')"))
             self._match_ids.append(id)
@@ -276,6 +283,12 @@ class FilerExplManager(Manager):
 
         if lfEval("get(g:, 'Lf_FilerMoveCursorCufBuf', 0)") == "1":
             self._move_cursor_if_fullpath_match(self._cur_buffer.name)
+
+        # devicons
+        if self._getExplorer()._show_devicons:
+            self._match_ids.extend(matchaddDevIconsExtension(r'^__icon__\ze\s\+\S\+\.__name__$', winid))
+            self._match_ids.extend(matchaddDevIconsExact(r'^__icon__\ze\s\+__name__$', winid))
+            self._match_ids.extend(matchaddDevIconsDefault(r'^__icon__', winid))
 
     def startExplorer(self, win_pos, *args, **kwargs):
         _dir = ""

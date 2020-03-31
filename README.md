@@ -49,7 +49,7 @@ Plug 'ryanoasis/vim-devicons'
 
 call plug#end()
 
-let g:Lf_FilerShowDevIcons = 1
+let g:Lf_ShowDevIcons = 1
 
 " ====================
 " customize mappings

@@ -30,12 +30,6 @@ g:Lf_FilerAcceptDirSelectionCmd              *g:Lf_FilerAcceptDirSelectionCmd*
 
     Default value: 'lcd'
 
-g:Lf_FilerShowDevIcons                                *g:Lf_FilerShowDevIcons*
-    Use vim-devicons to display icons.
-    NOTE: https://github.com/ryanoasis/vim-devicons is required.
-
-    Default value: 0
-
 g:Lf_FilerShowCurrentDirDot                      *g:Lf_FilerShowCurrentDirDot*
     Whether to display `.` for the current directory.
 
@@ -456,6 +450,11 @@ Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
 ==============================================================================
 CHANGELOG                                            *LeaderF-filer-changelog*
 
+
+0.0.8   2020-03-31
+    - Use LeaderF's icon display function.
+    - Remove `g:Lf_FilerShowDevIcons`
+        - Use |g:Lf_ShowDevIcons| instead.
 
 0.0.7   2020-03-05
     - Add `change_directory` command.
