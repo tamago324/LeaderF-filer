@@ -64,7 +64,7 @@ class FilerExplorer(Explorer):
             contents = {k: v for k, v in contents.items() if not k.startswith(".")}
 
         if self._show_devicons:
-            self._prefix_length = webDevIconsBytesLen()
+            self._prefix_length = webDevIconsStrLen()
 
         for k, v in contents.items():
             if self._show_devicons:
@@ -231,12 +231,10 @@ class FilerExplManager(Manager):
             return ""
 
         prefix_len = self._getExplorer().getPrefixLength()
-        b_line = lfByteArray(line)
-        b_line = b_line[prefix_len:]
-        return lfBytes2Str(b_line, encoding="utf8")
+        return line[prefix_len:]
 
     def _getDigestStartPos(self, line, mode):
-        return self._getExplorer().getPrefixLength()
+        return webDevIconsBytesLen()
 
     def _beforeEnter(self):
         super(FilerExplManager, self)._beforeEnter()

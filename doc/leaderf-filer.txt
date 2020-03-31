@@ -450,6 +450,9 @@ Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
 ==============================================================================
 CHANGELOG                                            *LeaderF-filer-changelog*
 
+0.0.9   2020-03-31
+    - Remove the dependency on vim-devicons
+        - See https://github.com/Yggdroot/LeaderF/commit/e039
 
 0.0.8   2020-03-31
     - Use LeaderF's icon display function.
@@ -482,4 +485,4 @@ CHANGELOG                                            *LeaderF-filer-changelog*
     - Initial version.
 
 ==============================================================================
-vim:tw=78:ts=4:ft=help:norl
+vim:tw=78:ts=4:ft=help:norl:et

@@ -10,9 +10,6 @@ Inspired by [vim-clap's filer provider](https://github.com/liuchengxu/vim-clap/p
 ```
 Plug 'Yggdroot/LeaderF'
 Plug 'tamago324/LeaderF-filer'
-
-" optional
-Plug 'ryanoasis/vim-devicons'
 ```
 
 ## Usage
@@ -45,10 +42,10 @@ call plug#begin('~/vimfiles/plugged')
 
 Plug 'Yggdroot/LeaderF'
 Plug 'tamago324/LeaderF-filer'
-Plug 'ryanoasis/vim-devicons'
 
 call plug#end()
 
+" default value 1
 let g:Lf_ShowDevIcons = 1
 
 " ====================
