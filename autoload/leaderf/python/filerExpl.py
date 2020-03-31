@@ -4,23 +4,18 @@
 import os
 import os.path
 import shutil
-from leaderf.utils import *
+
+from leaderf.devicons import *
 from leaderf.explorer import *
 from leaderf.manager import *
-
-from utils import (
-    accessable,
-    NO_CONTENT_MSG,
-    invalid_line,
-    echo_cancel,
-    nearestAncestor,
-    cd,
-)
-
+from leaderf.utils import *
+from utils import (NO_CONTENT_MSG, accessable, cd, echo_cancel, invalid_line,
+                   nearestAncestor)
 
 MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
 
 help_dict = dict()
+
 
 def help(text):
     def decorator(func):
@@ -29,7 +24,9 @@ def help(text):
 
         help_dict[func.__name__.replace("command__", "")] = text
         return inner_func
+
     return decorator
+
 
 # *****************************************************
 # FilerExplorer
@@ -123,7 +120,9 @@ class FilerExplManager(Manager):
         self._help_text_list = []
 
     def _get_commands(self):
-        return [x[len('command__'):] for x in self.__dir__() if x.startswith('command__')]
+        return [
+            x[len("command__") :] for x in self.__dir__() if x.startswith("command__")
+        ]
 
     def _update_insert_maps(self):
         insert_map = lfEval("leaderf#Filer#InsertMap()")
@@ -169,10 +168,15 @@ class FilerExplManager(Manager):
 
         # from manager.py
         try:
-            if kwargs.get("mode", '') != 't' or (lfEval("get(g:, 'Lf_DiscardEmptyBuffer', 0)") == '1'
-                    and len(vim.tabpages) == 1 and len(vim.current.tabpage.windows) == 1
-                    and vim.current.buffer.name == '' and len(vim.current.buffer) == 1
-                    and vim.current.buffer[0] == '' and not vim.current.buffer.options["modified"]):
+            if kwargs.get("mode", "") != "t" or (
+                lfEval("get(g:, 'Lf_DiscardEmptyBuffer', 0)") == "1"
+                and len(vim.tabpages) == 1
+                and len(vim.current.tabpage.windows) == 1
+                and vim.current.buffer.name == ""
+                and len(vim.current.buffer) == 1
+                and vim.current.buffer[0] == ""
+                and not vim.current.buffer.options["modified"]
+            ):
 
                 if vim.current.buffer.options["modified"]:
                     lfCmd("hide edit %s" % escSpecial(path))
@@ -180,7 +184,7 @@ class FilerExplManager(Manager):
                     lfCmd("edit %s" % escSpecial(path))
             else:
                 lfCmd("tab drop %s" % escSpecial(path))
-        except vim.error as e: # E37
+        except vim.error as e:  # E37
             lfPrintError(e)
 
     def _createHelp(self):
@@ -189,7 +193,7 @@ class FilerExplManager(Manager):
 
         help = []
         key_cmd_dict = dict()
-        for [key, cmd_name] in lfEval('leaderf#Filer#NormalMap()').items():
+        for [key, cmd_name] in lfEval("leaderf#Filer#NormalMap()").items():
             key_cmd_dict[cmd_name] = key_cmd_dict.get(cmd_name, []) + [key]
 
         # sort key
@@ -208,7 +212,7 @@ class FilerExplManager(Manager):
         return help
 
     def do_command(self, cmd_name):
-        return eval('self.command__{}()'.format(cmd_name))
+        return eval("self.command__{}()".format(cmd_name))
 
     def _cmdExtension(self, cmd_name):
         """
