@@ -621,7 +621,7 @@ class FilerExplManager(Manager):
         self._chcwd(abspath)
 
         if self._getExplorer()._show_devicons:
-            dir_icon = lfEval('WebDevIconsGetFileTypeSymbol("", 1)')
+            dir_icon = webDevIconsGetFileTypeSymbol('', True)
             pattern = r"\v^{}{}/$".format(dir_icon, os.path.basename(cwd))
         else:
             pattern = r"\v^{}/$".format(os.path.basename(cwd))
