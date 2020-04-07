@@ -45,7 +45,7 @@ class FilerExplorer(Explorer):
         self._command_mode = "NORMAL"
 
     def getContent(self, *args, **kwargs):
-        self._cwd = self._cwd or os.getcwd()
+        self.cwd = self.cwd or os.getcwd()
         return self.getFreshContent()
 
     def getFreshContent(self, *args, **kwargs):
@@ -53,10 +53,10 @@ class FilerExplorer(Explorer):
 
         contents = {
             lfEncode(f): {
-                "isdir": os.path.isdir(os.path.join(self._cwd, f)),
-                "fullpath": os.path.join(self._cwd, f),
+                "isdir": os.path.isdir(os.path.join(self.cwd, f)),
+                "fullpath": os.path.join(self.cwd, f),
             }
-            for f in os.listdir(self._cwd)
+            for f in os.listdir(self.cwd)
         }
 
         # hide dotfiles
@@ -90,10 +90,15 @@ class FilerExplorer(Explorer):
         return "Filer"
 
     def getStlCurDir(self):
-        return MODE_DICT.get(self._command_mode, "") + escQuote(lfEncode(self._cwd))
+        return MODE_DICT.get(self._command_mode, "") + escQuote(lfEncode(self.cwd))
 
-    def getCwd(self):
+    @property
+    def cwd(self):
         return self._cwd
+
+    @cwd.setter
+    def cwd(self, cwd):
+        self._cwd = cwd.replace('\\', '/')
 
     def supportsMulti(self):
         return True
@@ -313,7 +318,7 @@ class FilerExplManager(Manager):
         _dir = _dir or os.getcwd()
 
         # Set vars because super().startExplorer() is calling self._getExplorer()
-        self._getExplorer()._cwd = _dir
+        self._getExplorer().cwd = _dir
 
         # To call _buildPrompt() in super().startExplorer()
         if lfEval("get(g:, 'Lf_FilerShowPromptPath', 1)") == '1':
@@ -481,7 +486,7 @@ class FilerExplManager(Manager):
     def command__mkdir(self):
         # For dir completion
         save_cwd = lfEval("getcwd()")
-        cd(self._getExplorer()._cwd)
+        cd(self._getExplorer().cwd)
 
         try:
             dir_name = lfEval("input('Create Directory: ', '', 'dir')")
@@ -496,8 +501,8 @@ class FilerExplManager(Manager):
             echo_cancel()
             return
 
-        path = os.path.join(self._getExplorer()._cwd, dir_name)
-        if os.path.isdir(os.path.join(self._getExplorer()._cwd, dir_name)):
+        path = os.path.join(self._getExplorer().cwd, dir_name)
+        if os.path.isdir(os.path.join(self._getExplorer().cwd, dir_name)):
             lfPrintError(" Already exists. '{}'".format(path))
             return
 
@@ -571,7 +576,7 @@ class FilerExplManager(Manager):
         fullpath = self._copy_file
         basename = os.path.basename(fullpath)
 
-        cwd = self._getExplorer()._cwd
+        cwd = self._getExplorer().cwd
 
         to_path = os.path.join(cwd, basename)
 
@@ -606,7 +611,7 @@ class FilerExplManager(Manager):
             echo_cancel()
             return
 
-        path = os.path.join(self._getExplorer()._cwd, file_name)
+        path = os.path.join(self._getExplorer().cwd, file_name)
         if os.path.exists(path):
             lfPrintError(" Already exists. '{}'".format(path))
             return
@@ -619,11 +624,11 @@ class FilerExplManager(Manager):
 
     @help("change the current directory to cwd of LeaderF-filer")
     def command__change_directory(self):
-        cd(self._getExplorer()._cwd)
-        lfCmd("echon ' cd {}'".format(self._getExplorer()._cwd))
+        cd(self._getExplorer().cwd)
+        lfCmd("echon ' cd {}'".format(self._getExplorer().cwd))
 
     def _open_parent(self):
-        cwd = self._getExplorer()._cwd or os.getcwd()
+        cwd = self._getExplorer().cwd or os.getcwd()
         abspath = os.path.abspath(os.path.join(cwd, ".."))
         self._chcwd(abspath)
 
@@ -683,7 +688,7 @@ class FilerExplManager(Manager):
         self._getInstance()._cli.clear()
         self.refresh(normal_mode=False)
         if lfEval("get(g:, 'Lf_FilerShowPromptPath', 1)") == '1':
-            self._getInstance()._cli._additional_prompt_string = self._adjust_path(self._getExplorer()._cwd)
+            self._getInstance()._cli._additional_prompt_string = self._adjust_path(self._getExplorer().cwd)
         self._getInstance()._cli._buildPrompt()
 
     def _edit(self, name):
@@ -692,7 +697,7 @@ class FilerExplManager(Manager):
         lfCmd("edit %s" % path)
 
     def _chcwd(self, path):
-        self._getExplorer()._cwd = path
+        self._getExplorer().cwd = path
         self._refresh(cwd=path)
         if "--auto-cd" in self.getArguments():
             cd(path)
@@ -709,7 +714,7 @@ class FilerExplManager(Manager):
         if cwd is None:
             self._getInstance().setStlCwd(self._getExplorer().getStlCurDir())
         else:
-            self._getInstance().setStlCwd(cwd)
+            self._getInstance().setStlCwd(cwd.replace('\\', '/'))
 
         if self._getInstance().getWinPos() in ("popup", "floatwin"):
             self._getInstance().setPopupStl(self._current_mode)
@@ -717,14 +722,14 @@ class FilerExplManager(Manager):
 
     def _adjust_path(self, path):
         if os.name == 'nt':
+            path = path.replace('\\', '/')
             if len(path) == 3:
                 return path
         else:
             if path == '/':
                 return path
         path = lfEval("pathshorten('{}')".format(path))
-        endchars = '\\' if os.name == "nt" else '/'
-        return path + endchars
+        return path + '/'
 
 # *****************************************************
 # filerExplManager is a singleton
