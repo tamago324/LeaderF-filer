@@ -310,19 +310,26 @@ class FilerExplManager(Manager):
                 )
                 return
 
+        _dir = _dir or os.getcwd()
+
         # Set vars because super().startExplorer() is calling self._getExplorer()
-        if _dir != "":
-            self._getExplorer()._cwd = _dir
+        self._getExplorer()._cwd = _dir
+
+        # To call _buildPrompt() in super().startExplorer()
+        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 1)") == '1':
+            self._getInstance()._cli._additional_prompt_string = self._adjust_path(_dir)
 
         super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
+
         # super().startExplorer() updates cwd to os.getcwd()
-        if _dir != "":
-            self._getInstance().setCwd(_dir)
+        self._getInstance().setCwd(_dir)
 
     @help("open file/dir under cursor")
     def command__open_current(self):
         line = self._getInstance().currentLine
         if line == NO_CONTENT_MSG:
+            return
+        if line == "":
             return
 
         file_info = self._getExplorer()._contents[line]
@@ -675,6 +682,8 @@ class FilerExplManager(Manager):
         # clear input pattern
         self._getInstance()._cli.clear()
         self.refresh(normal_mode=False)
+        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 1)") == '1':
+            self._getInstance()._cli._additional_prompt_string = self._adjust_path(self._getExplorer()._cwd)
         self._getInstance()._cli._buildPrompt()
 
     def _edit(self, name):
@@ -706,6 +715,16 @@ class FilerExplManager(Manager):
             self._getInstance().setPopupStl(self._current_mode)
             self._getInstance().refreshPopupStatusline()
 
+    def _adjust_path(self, path):
+        if os.name == 'nt':
+            if len(path) == 3:
+                return path
+        else:
+            if path == '/':
+                return path
+        path = lfEval("pathshorten('{}')".format(path))
+        endchars = '\\' if os.name == "nt" else '/'
+        return path + endchars
 
 # *****************************************************
 # filerExplManager is a singleton
