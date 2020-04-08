@@ -159,12 +159,12 @@ class FilerExplManager(Manager):
             return
 
         if path == ".":
-            path = self._getExplorer().getCwd()
+            path = self._getExplorer().cwd
         else:
             path = self._getDigest(path, 0)
 
         if not os.path.isabs(path):
-            path = os.path.join(self._getExplorer().getCwd(), lfDecode(path))
+            path = os.path.join(self._getExplorer().cwd, lfDecode(path))
             path = os.path.normpath(lfEncode(path))
 
         if os.path.isdir(path):
@@ -396,7 +396,7 @@ class FilerExplManager(Manager):
     @help("show files of directory where g:Lf_RootMarkers exists")
     def command__goto_root_marker_dir(self):
         root_markers = lfEval("g:Lf_RootMarkers")
-        rootMarkersDir = nearestAncestor(root_markers, self._getExplorer().getCwd())
+        rootMarkersDir = nearestAncestor(root_markers, self._getExplorer().cwd)
         if rootMarkersDir:
             # exists root_markers
             self._chcwd(os.path.abspath(rootMarkersDir))
@@ -692,7 +692,7 @@ class FilerExplManager(Manager):
         self._getInstance()._cli._buildPrompt()
 
     def _edit(self, name):
-        path = os.path.join(self._getExplorer().getCwd(), name)
+        path = os.path.join(self._getExplorer().cwd, name)
         self._getInstance().exitBuffer()
         lfCmd("edit %s" % path)
 
