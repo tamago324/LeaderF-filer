@@ -321,7 +321,7 @@ class FilerExplManager(Manager):
         self._getExplorer().cwd = _dir
 
         # To call _buildPrompt() in super().startExplorer()
-        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 1)") == '1':
+        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 0)") == '1':
             self._getInstance()._cli._additional_prompt_string = self._adjust_path(_dir)
 
         super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
@@ -687,7 +687,7 @@ class FilerExplManager(Manager):
         # clear input pattern
         self._getInstance()._cli.clear()
         self.refresh(normal_mode=False)
-        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 1)") == '1':
+        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 0)") == '1':
             self._getInstance()._cli._additional_prompt_string = self._adjust_path(self._getExplorer().cwd)
         self._getInstance()._cli._buildPrompt()
 
