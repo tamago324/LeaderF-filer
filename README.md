@@ -48,6 +48,9 @@ call plug#end()
 " default value 1
 let g:Lf_ShowDevIcons = 1
 
+" show path in prompt
+let g:Lf_FilerShowPromptPath = 1
+
 " ====================
 " customize mappings
 " ====================
@@ -139,6 +142,10 @@ let g:Lf_NormalMap = {'Filer':   [['B', ':LeaderfBookmark<CR>']]}
 `:Leaderf filer --popup`
 
 <img src="./images/popup.png" alt="popup" />
+
+`let g:Lf_FilerShowPromptPath = 1`
+
+<img src="./images/popup_show_path.png" alt="popup-show-path-in-prompt" />
 
 ## Credit
 
