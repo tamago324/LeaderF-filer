@@ -43,6 +43,7 @@ class FilerExplorer(Explorer):
         self._show_devicons = lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == "1"
         # NORMAL or COPY
         self._command_mode = "NORMAL"
+        self._prefix_length = 0
 
     def getContent(self, *args, **kwargs):
         self.cwd = self.cwd or os.getcwd()
