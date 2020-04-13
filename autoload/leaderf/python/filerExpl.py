@@ -64,9 +64,6 @@ class FilerExplorer(Explorer):
         if not self._show_hidden_files:
             contents = {k: v for k, v in contents.items() if not k.startswith(".")}
 
-        if self._show_devicons:
-            self._prefix_length = webDevIconsStrLen()
-
         for k, v in contents.items():
             if self._show_devicons:
                 icon = webDevIconsGetFileTypeSymbol(k, v["isdir"])
@@ -75,8 +72,15 @@ class FilerExplorer(Explorer):
                 k += "/"
             self._contents[k] = v
 
+        if self._show_devicons:
+            self._prefix_length = webDevIconsStrLen()
+            # Remove icon
+            func = lambda x: x[self._prefix_length:]
+        else:
+            self._prefix_length = 0
+            func = lambda x: x
         # Sort directories and files by each
-        files = sorted([k for k, v in self._contents.items() if not v["isdir"]])
+        files = sorted([k for k, v in self._contents.items() if not v["isdir"]], key=func)
         dirs = sorted([k for k, v in self._contents.items() if v["isdir"]])
 
         if lfEval("get(g:, 'Lf_FilerShowCurrentDirDot', 0)") == "1":
