@@ -344,26 +344,41 @@ class FilerExplManager(Manager):
         self._context = {}
         self._context['search_func'] = self._search
         self._context['additional_prompt_string'] = self._instance._cli._additional_prompt_string
+        self._context['cli_key_dict'] = dict(self._instance._cli._key_dict)
         self._context['cli_cmdline'] = list(self._instance._cli._cmdline)
         self._context['cli_cursor_pos'] = self._instance._cli._cursor_pos
         self._context['cli_pattern'] = self._instance._cli._pattern
-        self._context['cli_key_dict'] = dict(self._instance._cli._key_dict)
-        # self._context['cur_winid'] = lfEval("win_getid()")
+        self._context['cursor_pos'] = self._getInstance()._window_object.cursor
         self._context.update(**kwargs)
 
         self._search = lambda content, is_continue=False, step=0: ""
 
-    def _restore_context(self):
+    def _restore_context(self, restore_input_pattern=True, restore_cursor_pos=True):
         """
         For _input_prompt
+
+        params:
+            restore_input_pattern:
+                The following attributes of the `cli` will not be restored
+                * _cmdline
+                * _cursor_pos
+                * _pattern
+            restore_cursor_pos:
+                cursor position
         """
         self._search = self._context['search_func']
         self._instance._cli._additional_prompt_string = self._context['additional_prompt_string'] 
-        self._instance._cli._cmdline = self._context['cli_cmdline']
-        self._instance._cli._cursor_pos = self._context['cli_cursor_pos']
-        self._instance._cli._pattern = self._context['cli_pattern']
         self._instance._cli._key_dict = self._context['cli_key_dict']
-        # lfCmd("noautocmd call win_gotoid({})".format(self._context['cur_winid']))
+        if restore_cursor_pos:
+            # To restore only in case of cancel
+            [row, col] = self._context['cursor_pos']
+            lfCmd("""call win_execute({}, 'exec "norm! {}G"')""".format(self._instance._popup_winid, row))
+            self._getInstance().refreshPopupStatusline()
+        if restore_input_pattern:
+            # To restore only in case of cancel
+            self._instance._cli._cmdline = self._context['cli_cmdline']
+            self._instance._cli._cursor_pos = self._context['cli_cursor_pos']
+            self._instance._cli._pattern = self._context['cli_pattern']
         self._context = {}
 
     def _input_prompt(self, command, prompt, text=""):
@@ -430,7 +445,10 @@ class FilerExplManager(Manager):
         private
         """
         self._restore_context()
-        lfCmd('redraw')
+        self._switch_normal_mode()
+    
+    def _switch_normal_mode(self):
+        lfCmd('call feedkeys("\<Tab>", "n")')
 
     @help("open file/dir under cursor")
     def command__open_current(self):
@@ -616,8 +634,8 @@ class FilerExplManager(Manager):
         finally:
             cd(self._context['save_cwd'])
             # restore cwd
-            self._restore_context()
-            lfCmd('redraw')
+            self._restore_context(restore_input_pattern=False, restore_cursor_pos=False)
+            self._switch_normal_mode()
 
     def _mkdir(self, dir_name):
         if dir_name == "":
@@ -665,6 +683,7 @@ class FilerExplManager(Manager):
                 return
 
             self._rename(from_path, renamed, basename)
+            lfCmd('redraw')
         else:
             self._save_context(**{"from_path": from_path, "basename": basename})
             # in popup
@@ -678,8 +697,8 @@ class FilerExplManager(Manager):
         try:
             self._rename(self._context["from_path"], renamed, self._context["basename"])
         finally:
-            self._restore_context()
-            lfCmd('redraw')
+            self._restore_context(restore_input_pattern=False, restore_cursor_pos=False)
+            self._switch_normal_mode()
 
     def _rename(self, from_path, renamed, basename):
         """
@@ -777,8 +796,8 @@ class FilerExplManager(Manager):
         try:
             self._create_file(file_name)
         finally:
-            self._restore_context()
-            lfCmd('redraw')
+            self._restore_context(restore_input_pattern=False, restore_cursor_pos=False)
+            self._switch_normal_mode()
 
     def _create_file(self, file_name):
         """
