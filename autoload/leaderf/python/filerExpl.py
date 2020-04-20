@@ -131,7 +131,7 @@ class FilerExplManager(Manager):
         self._commands = self._get_commands()
         self._help_text_list = []
         self._context = {}
-        self._is_input_prompt = False
+        self._switch_normal_mode_key = ""
 
     def _get_commands(self):
         return [
@@ -338,8 +338,7 @@ class FilerExplManager(Manager):
         self._getInstance().setCwd(_dir)
 
     def _save_context(self, **kwargs):
-        """
-        For _input_prompt
+        """ For _input_prompt
         """
         self._context = {}
         self._context['search_func'] = self._search
@@ -354,8 +353,7 @@ class FilerExplManager(Manager):
         self._search = lambda content, is_continue=False, step=0: ""
 
     def _restore_context(self, restore_input_pattern=True, restore_cursor_pos=True):
-        """
-        For _input_prompt
+        """ For _input_prompt
 
         params:
             restore_input_pattern:
@@ -438,17 +436,33 @@ class FilerExplManager(Manager):
         key_dict["<CR>"] = "_do_" + command
         self._instance._cli._key_dict = key_dict
         self.input()
-        self._is_input_prompt = True
 
     def command___input_cancel(self):
-        """
-        private
+        """ private
         """
         self._restore_context()
         self._switch_normal_mode()
     
     def _switch_normal_mode(self):
-        lfCmd('call feedkeys("\<Tab>", "n")')
+        lfCmd(r'call feedkeys("{}", "n")'.format(self._get_switch_normal_mode_key()))
+
+    def _get_switch_normal_mode_key(self):
+        """ Returns the key to go into normal mode.
+        """
+        if self._switch_normal_mode_key:
+            return self._switch_normal_mode_key
+
+        keys = [
+            lrs
+            for [lrs, rhs] in self._instance._cli._key_dict.items()
+            if rhs.lower() == "<tab>"
+        ]
+        if len(keys) == 0:
+            self._switch_normal_mode_key = r"\<Tab>"
+        else:
+            # <Tab> => \<Tab>
+            self._switch_normal_mode_key = keys[0].replace("<", r"\<")
+        return self._switch_normal_mode_key
 
     @help("open file/dir under cursor")
     def command__open_current(self):
@@ -701,10 +715,6 @@ class FilerExplManager(Manager):
             self._switch_normal_mode()
 
     def _rename(self, from_path, renamed, basename):
-        """
-        return:
-            File path after renaming
-        """
         if renamed == "":
             echo_cancel()
             return
@@ -800,10 +810,6 @@ class FilerExplManager(Manager):
             self._switch_normal_mode()
 
     def _create_file(self, file_name):
-        """
-        return:
-            File path created
-        """
         if file_name == "":
             echo_cancel()
             return
