@@ -53,6 +53,8 @@ function! leaderf#Filer#NormalMap() abort
         \   'R':             'rename',
         \   'O':             'create_file',
         \   '@':             'change_directory',
+        \   'H':             'history_backward',
+        \   'L':             'history_forward',
         \}
         " \   '<PageUp>':      'page_up',
         " \   '<PageDown>':    'page_down',

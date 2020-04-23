@@ -9,6 +9,7 @@ from leaderf.devicons import *
 from leaderf.explorer import *
 from leaderf.manager import *
 from leaderf.utils import *
+from history import History, HistoryEmptyException
 from utils import (NO_CONTENT_MSG, accessable, cd, echo_cancel, invalid_line,
                    nearestAncestor)
 
@@ -130,6 +131,7 @@ class FilerExplManager(Manager):
         # self._copy_file_matchids = {}
         self._commands = self._get_commands()
         self._help_text_list = []
+        self._history = History()
 
     def _get_commands(self):
         return [
@@ -360,12 +362,14 @@ class FilerExplManager(Manager):
             self._gotoFirstLine()
 
         self._chcwd(os.path.abspath(file_info["fullpath"]))
+        self._history.add(self._getExplorer().cwd)
 
     @help("show files in parent directory")
     def command__open_parent_or_clear_line(self):
         if len(self._getInstance()._cli._cmdline) > 0:
             self._refresh()
             return
+        self._history.add(self._getExplorer().cwd)
         self._open_parent()
 
     @help("show files in parent directory")
@@ -385,10 +389,12 @@ class FilerExplManager(Manager):
             else:
                 self._gotoFirstLine()
             return
+        self._history.add(self._getExplorer().cwd)
         self._open_parent()
 
     @help("show files in parent directory")
     def command__open_parent(self):
+        self._history.add(self._getExplorer().cwd)
         self._open_parent()
 
     @help("toggle show hidden files")
@@ -631,6 +637,14 @@ class FilerExplManager(Manager):
     def command__change_directory(self):
         cd(self._getExplorer().cwd)
         lfCmd("echon ' cd {}'".format(self._getExplorer().cwd))
+
+    @help("go backwards in history")
+    def command__history_backward(self):
+        self._chcwd(self._history.backward())
+
+    @help("go forwards in history")
+    def command__history_forward(self):
+        self._chcwd(self._history.forward())
 
     def _open_parent(self):
         cwd = self._getExplorer().cwd or os.getcwd()
