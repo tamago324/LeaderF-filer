@@ -132,6 +132,8 @@ class FilerExplManager(Manager):
         self._commands = self._get_commands()
         self._help_text_list = []
         self._history = History()
+        self._context = {}
+        self._switch_normal_mode_key = ""
 
     def _get_commands(self):
         return [
@@ -152,6 +154,7 @@ class FilerExplManager(Manager):
     def accept(self, mode=""):
         instance = self._getInstance()
         line = instance.currentLine
+        # instance._cli.pattern
         pattern = "".join(instance._cli._cmdline)
 
         if line in ("", NO_CONTENT_MSG):
@@ -336,6 +339,133 @@ class FilerExplManager(Manager):
         # super().startExplorer() updates cwd to os.getcwd()
         self._getInstance().setCwd(_dir)
 
+    def _save_context(self, **kwargs):
+        """ For _input_prompt
+        """
+        self._context = {}
+        self._context['search_func'] = self._search
+        self._context['additional_prompt_string'] = self._instance._cli._additional_prompt_string
+        self._context['cli_key_dict'] = dict(self._instance._cli._key_dict)
+        self._context['cli_cmdline'] = list(self._instance._cli._cmdline)
+        self._context['cli_cursor_pos'] = self._instance._cli._cursor_pos
+        self._context['cli_pattern'] = self._instance._cli._pattern
+        self._context['cursor_pos'] = self._getInstance()._window_object.cursor
+        self._context.update(**kwargs)
+
+        self._search = lambda content, is_continue=False, step=0: ""
+
+    def _restore_context(self, restore_input_pattern=True, restore_cursor_pos=True):
+        """ For _input_prompt
+
+        params:
+            restore_input_pattern:
+                The following attributes of the `cli` will not be restored
+                * _cmdline
+                * _cursor_pos
+                * _pattern
+            restore_cursor_pos:
+                cursor position
+        """
+        self._search = self._context['search_func']
+        self._instance._cli._additional_prompt_string = self._context['additional_prompt_string'] 
+        self._instance._cli._key_dict = self._context['cli_key_dict']
+        if restore_cursor_pos:
+            # To restore only in case of cancel
+            [row, col] = self._context['cursor_pos']
+            lfCmd("""call win_execute({}, 'exec "norm! {}G"')""".format(self._instance._popup_winid, row))
+            self._getInstance().refreshPopupStatusline()
+        if restore_input_pattern:
+            # To restore only in case of cancel
+            self._instance._cli._cmdline = self._context['cli_cmdline']
+            self._instance._cli._cursor_pos = self._context['cli_cursor_pos']
+            self._instance._cli._pattern = self._context['cli_pattern']
+        self._context = {}
+
+    def _input_prompt(self, command, prompt, text=""):
+        """
+        params:
+            command:
+                "rename" or "create_file" or "mkdir"
+                When <CR> is pressed, self.command___co_{command}() is executed.
+            prompt:
+                prompt string
+            text:
+                default value
+        """
+        if self._instance.getWinPos() not in ("popup", "floatwin"):
+            # popup only
+            return
+
+        # set pattern
+        self._instance._cli._additional_prompt_string = prompt
+        self._instance._cli.setPattern(text)
+
+        # update key_dict
+        key_dict = {
+            lhs: rhs
+            for [lhs, rhs] in self._instance._cli._key_dict.items()
+            if rhs.lower() in {
+                "<esc>",
+                "<c-c>",
+                "<bs>",
+                "<c-h>",
+                "<c-u>",
+                "<c-w>",
+                "<del>",
+                "<c-v>",
+                "<s-insert>",
+                "<home>",
+                "<c-b>",
+                "<end>",
+                "<c-e>",
+                "<left>",
+                "<right>",
+                "<up>",
+                "<down>",
+                "open_parent_or_backspace",
+                "open_parent_or_clear_line",
+            }
+        }
+
+        # To be able to do general input
+        for [lrs, rhs] in key_dict.items():
+            rhs_low = rhs.lower()
+            if rhs_low in {"open_parent_or_backspace", "open_parent_or_clear_line"}:
+                key_dict[lrs] = "<BS>"
+            elif rhs_low in {"<esc>", "<c-c>"}:
+                key_dict[lrs] = "_input_cancel"
+        # add command
+        key_dict["<CR>"] = "_do_" + command
+        self._instance._cli._key_dict = key_dict
+        self.input()
+
+    def command___input_cancel(self):
+        """ private
+        """
+        self._restore_context()
+        self._switch_normal_mode()
+    
+    def _switch_normal_mode(self):
+        lfCmd(r'call feedkeys("{}", "n")'.format(self._get_switch_normal_mode_key()))
+
+    def _get_switch_normal_mode_key(self):
+        """ Returns the key to go into normal mode.
+        """
+        if self._switch_normal_mode_key:
+            return self._switch_normal_mode_key
+
+        keys = [
+            lrs
+            for [lrs, rhs] in self._instance._cli._key_dict.items()
+            if rhs.lower() == "<tab>"
+        ]
+        if len(keys) == 0:
+            self._switch_normal_mode_key = r"\<Tab>"
+        else:
+            # <Tab> => \<Tab>
+            self._switch_normal_mode_key = keys[0].replace("<", r"\<")
+        return self._switch_normal_mode_key
+
     @help("open file/dir under cursor")
     def command__open_current(self):
         line = self._getInstance().currentLine
@@ -499,15 +629,35 @@ class FilerExplManager(Manager):
         save_cwd = lfEval("getcwd()")
         cd(self._getExplorer().cwd)
 
-        try:
-            dir_name = lfEval("input('Create Directory: ', '', 'dir')")
-        except KeyboardInterrupt:  # Cancel
-            echo_cancel()
-            return
-        finally:
-            # restore
-            cd(save_cwd)
+        if self._instance.getWinPos() not in ("popup", "floatwin"):
+            try:
+                dir_name = lfEval("input('Create Directory: ', '', 'dir')")
+            except KeyboardInterrupt:  # Cancel
+                echo_cancel()
+                return
+            finally:
+                # restore
+                cd(save_cwd)
+            self._mkdir(dir_name)
+        else:
+            self._save_context(**{"save_cwd": save_cwd})
+            # in popup
+            self._input_prompt("mkdir", "Create directory: ")
 
+    def command___do_mkdir(self):
+        """
+        private
+        """
+        dir_name = self._instance._cli.pattern
+        try:
+            self._mkdir(dir_name)
+        finally:
+            cd(self._context['save_cwd'])
+            # restore cwd
+            self._restore_context(restore_input_pattern=False, restore_cursor_pos=False)
+            self._switch_normal_mode()
+
+    def _mkdir(self, dir_name):
         if dir_name == "":
             echo_cancel()
             return
@@ -519,16 +669,22 @@ class FilerExplManager(Manager):
 
         os.makedirs(path)
 
-        if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)") == "1":
-            self._chcwd(path)
+        if self._instance.getWinPos() not in ("popup", "floatwin"):
+            if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)") == "1":
+                self._chcwd(path)
+            else:
+                self._refresh()
         else:
-            self._refresh()
+            if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)") == "1":
+                self._chcwd(path, write_history=False, normal_mode=True)
+            else:
+                self._refresh(write_history=False, normal_mode=True)
 
         self._move_cursor_if_fullpath_match(path)
 
     @help("rename files and directories")
     def command__rename(self):
-        line = self._getInstance().currentLine
+        line = self._instance.currentLine
         if len(self._selections) > 0:
             lfPrintError(" Rename does not support multiple files.")
             return
@@ -536,15 +692,35 @@ class FilerExplManager(Manager):
         if invalid_line(line):
             return
 
-        fullpath = self._getExplorer()._contents[line]["fullpath"]
-        basename = os.path.basename(fullpath)
+        from_path = self._getExplorer()._contents[line]["fullpath"]
+        basename = os.path.basename(from_path)
 
+        if self._instance.getWinPos() not in ("popup", "floatwin"):
+            try:
+                renamed = lfEval("input('Rename: ', '{}')".format(basename))
+            except KeyboardInterrupt:  # Cancel
+                echo_cancel()
+                return
+
+            self._rename(from_path, renamed, basename)
+            lfCmd('redraw')
+        else:
+            self._save_context(**{"from_path": from_path, "basename": basename})
+            # in popup
+            self._input_prompt("rename", "Rename: ", basename)
+
+    def command___do_rename(self):
+        """
+        private
+        """
+        renamed = self._instance._cli.pattern
         try:
-            renamed = lfEval("input('Rename: ', '{}')".format(basename))
-        except KeyboardInterrupt:  # Cancel
-            echo_cancel()
-            return
+            self._rename(self._context["from_path"], renamed, self._context["basename"])
+        finally:
+            self._restore_context(restore_input_pattern=False, restore_cursor_pos=False)
+            self._switch_normal_mode()
 
+    def _rename(self, from_path, renamed, basename):
         if renamed == "":
             echo_cancel()
             return
@@ -552,14 +728,18 @@ class FilerExplManager(Manager):
         if renamed == basename:
             return
 
-        to_path = os.path.join(os.path.dirname(fullpath), renamed)
+        to_path = os.path.join(os.path.dirname(from_path), renamed)
 
         if os.path.exists(to_path):
             lfPrintError(" Already exists. '{}'".format(to_path))
             return
 
-        os.rename(fullpath, to_path)
-        self._refresh()
+        os.rename(from_path, to_path)
+
+        if self._instance.getWinPos() not in ("popup", "floatwin"):
+            self._refresh()
+        else:
+            self._refresh(write_history=False, normal_mode=True)
         self._move_cursor_if_fullpath_match(to_path)
 
     @help("copy files and directories under cursor")
@@ -612,12 +792,30 @@ class FilerExplManager(Manager):
 
     @help("create a file")
     def command__create_file(self):
-        try:
-            file_name = lfEval("input('Create file: ')")
-        except KeyboardInterrupt:
-            echo_cancel()
-            return
+        if self._instance.getWinPos() not in ("popup", "floatwin"):
+            try:
+                file_name = lfEval("input('Create file: ')")
+            except KeyboardInterrupt:
+                echo_cancel()
+                return
+            self._create_file(file_name)
+        else:
+            self._save_context()
+            # in popup
+            self._input_prompt("create_file", "Create file: ")
 
+    def command___do_create_file(self):
+        """
+        private
+        """
+        file_name = self._instance._cli.pattern
+        try:
+            self._create_file(file_name)
+        finally:
+            self._restore_context(restore_input_pattern=False, restore_cursor_pos=False)
+            self._switch_normal_mode()
+
+    def _create_file(self, file_name):
         if file_name == "":
             echo_cancel()
             return
@@ -630,9 +828,12 @@ class FilerExplManager(Manager):
         # create file
         open(path, "w").close()
 
-        self._refresh()
+        if self._instance.getWinPos() not in ("popup", "floatwin"):
+            self._refresh()
+        else:
+            self._refresh(write_history=False, normal_mode=True)
         self._move_cursor_if_fullpath_match(path)
-
+        
     @help("change the current directory to cwd of LeaderF-filer")
     def command__change_directory(self):
         cd(self._getExplorer().cwd)
@@ -685,7 +886,7 @@ class FilerExplManager(Manager):
                 self._move_cursor(line)
                 break
 
-    def _refresh(self, cwd=None):
+    def _refresh(self, cwd=None, write_history=True, normal_mode=False):
         if cwd:
             if self._copy_mode:
                 # update status line
@@ -701,11 +902,13 @@ class FilerExplManager(Manager):
         self._cb_content = []
 
         # add history
-        self._cli.writeHistory(self._getExplorer().getStlCategory())
+        if write_history:
+            self._cli.writeHistory(self._getExplorer().getStlCategory())
 
         # clear input pattern
+        # self._getInstance()._cli.clear()
         self._getInstance()._cli.clear()
-        self.refresh(normal_mode=False)
+        self.refresh(normal_mode=normal_mode)
         if lfEval("get(g:, 'Lf_FilerShowPromptPath', 0)") == '1':
             self._getInstance()._cli._additional_prompt_string = self._adjust_path(self._getExplorer().cwd)
         self._getInstance()._cli._buildPrompt()
@@ -715,9 +918,9 @@ class FilerExplManager(Manager):
         self._getInstance().exitBuffer()
         lfCmd("edit %s" % path)
 
-    def _chcwd(self, path):
+    def _chcwd(self, path, write_history=True, normal_mode=False):
         self._getExplorer().cwd = path
-        self._refresh(cwd=path)
+        self._refresh(cwd=path, write_history=write_history, normal_mode=normal_mode)
         if "--auto-cd" in self.getArguments():
             cd(path)
 
