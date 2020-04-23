@@ -25,7 +25,7 @@ class History(object):
 
     def add(self, item):
         # Delete back
-        del self.history[self.index + 1:]
+        del self.history[self.index + 1 :]
         # If it is maxed out, delete the head
         if len(self.history) > max(self.maxlen - 1, 0):
             del self.history[0]
