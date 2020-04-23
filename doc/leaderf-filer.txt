@@ -129,6 +129,8 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   'C':             'copy',
     \   'P':             'paste',
     \   '@':             'change_directory',
+    \   'H':             'history_backward',
+    \   'L':             'history_forward',
     \}
 
     " insert mode:
@@ -234,6 +236,8 @@ For example, to map everything yourself without using the default mapping:
     \   'P':             'paste',
     \   'O':             'create_file',
     \   '@':             'change_directory',
+    \   'H':             'history_backward',
+    \   'L':             'history_forward',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -397,6 +401,12 @@ List of command names that can be used only by |g:Lf_FilerNormalMap|.
     switch_insert_mode
         Switch to insert mode.
 
+    history_backward
+        Go backwards in history.
+
+    history_forward
+        Go forwards in history.
+
 
 INSERT MODE ONLY                           *LeaderF-filer-map-commands-insert*
 
@@ -453,6 +463,10 @@ Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
 
 ==============================================================================
 CHANGELOG                                            *LeaderF-filer-changelog*
+
+0.1.1   2020-04-23
+    - Add `history_backward` command.
+    - Add `history_forward` command.
 
 0.1.0   2020-04-07
     - Add |g:Lf_FilerShowPromptPath| options.

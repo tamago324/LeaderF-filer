@@ -94,6 +94,8 @@ let g:Lf_FilerNormalMap = {
 \   'P':             'paste',
 \   'O':             'create_file',
 \   '@':             'change_directory',
+\   'H':             'history_backward',
+\   'L':             'history_forward',
 \}
 
 " insert mode
