@@ -3,30 +3,17 @@
 
 import os
 import os.path
-import shutil
+from cmd import Cmd
 
+from help import _help
+from history import History, HistoryEmptyException
 from leaderf.devicons import *
 from leaderf.explorer import *
 from leaderf.manager import *
 from leaderf.utils import *
-from history import History, HistoryEmptyException
-from utils import (NO_CONTENT_MSG, accessable, cd, echo_cancel, invalid_line,
-                   nearestAncestor)
+from utils import NO_CONTENT_MSG, accessable, cd
 
 MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
-
-help_dict = dict()
-
-
-def help(text):
-    def decorator(func):
-        def inner_func(*args, **kwargs):
-            return func(*args, **kwargs)
-
-        help_dict[func.__name__.replace("command__", "")] = text
-        return inner_func
-
-    return decorator
 
 
 # *****************************************************
@@ -81,7 +68,9 @@ class FilerExplorer(Explorer):
             self._prefix_length = 0
             func = lambda x: x
         # Sort directories and files by each
-        files = sorted([k for k, v in self._contents.items() if not v["isdir"]], key=func)
+        files = sorted(
+            [k for k, v in self._contents.items() if not v["isdir"]], key=func
+        )
         dirs = sorted([k for k, v in self._contents.items() if v["isdir"]])
 
         if lfEval("get(g:, 'Lf_FilerShowCurrentDirDot', 0)") == "1":
@@ -104,7 +93,7 @@ class FilerExplorer(Explorer):
 
     @cwd.setter
     def cwd(self, cwd):
-        self._cwd = cwd.replace('\\', '/')
+        self._cwd = cwd.replace("\\", "/")
 
     def supportsMulti(self):
         return True
@@ -128,17 +117,8 @@ class FilerExplManager(Manager):
         self._update_insert_maps()
         self._copy_file = ""
         self._copy_mode = False
-        # self._copy_file_matchids = {}
-        self._commands = self._get_commands()
-        self._help_text_list = []
+        self._command = Cmd(self)
         self._history = History()
-        self._context = {}
-        self._switch_normal_mode_key = ""
-
-    def _get_commands(self):
-        return [
-            x[len("command__") :] for x in self.__dir__() if x.startswith("command__")
-        ]
 
     def _update_insert_maps(self):
         insert_map = lfEval("leaderf#Filer#InsertMap()")
@@ -158,7 +138,10 @@ class FilerExplManager(Manager):
         pattern = "".join(instance._cli._cmdline)
 
         if line in ("", NO_CONTENT_MSG):
-            self._edit(pattern)
+            # edit (new file)
+            path = os.path.join(self._getExplorer().cwd, pattern)
+            self._getInstance().exitBuffer()
+            lfCmd("edit %s" % path)
             return
 
         super(FilerExplManager, self).accept(mode)
@@ -204,39 +187,17 @@ class FilerExplManager(Manager):
             lfPrintError(e)
 
     def _createHelp(self):
-        if self._help_text_list:
-            return self._help_text_list
-
-        help = []
-        key_cmd_dict = dict()
-        for [key, cmd_name] in lfEval("leaderf#Filer#NormalMap()").items():
-            key_cmd_dict[cmd_name] = key_cmd_dict.get(cmd_name, []) + [key]
-
-        # sort key
-        for [key, val] in key_cmd_dict.items():
-            key_cmd_dict[key] = sorted(val)
-
-        for [name, text] in help_dict.items():
-            if name in key_cmd_dict:
-                # key1/key2 : help text
-                line = '" {} : {}'.format("/".join(key_cmd_dict[name]), text)
-                help.append(line)
-        help.sort()
-        help.append('" ---------------------------------------------------------')
-
-        self._help_text_list = help
-        return help
+        return _help.help_list
 
     def do_command(self, cmd_name):
-        return eval("self.command__{}()".format(cmd_name))
+        return self._command.exec(cmd_name)
 
     def _cmdExtension(self, cmd_name):
         """
         this function can be overridden to add new cmd
         if return true, exit the input loop
         """
-
-        if cmd_name in self._commands:
+        if cmd_name in self._command.command_names:
             return self.do_command(cmd_name)
         elif equal(cmd_name, "nop"):
             pass
@@ -299,9 +260,13 @@ class FilerExplManager(Manager):
 
         # devicons
         if self._getExplorer()._show_devicons:
-            self._match_ids.extend(matchaddDevIconsExtension(r'^__icon__\ze\s\+\S\+\.__name__$', winid))
-            self._match_ids.extend(matchaddDevIconsExact(r'^__icon__\ze\s\+__name__$', winid))
-            self._match_ids.extend(matchaddDevIconsDefault(r'^__icon__', winid))
+            self._match_ids.extend(
+                matchaddDevIconsExtension(r"^__icon__\ze\s\+\S\+\.__name__$", winid)
+            )
+            self._match_ids.extend(
+                matchaddDevIconsExact(r"^__icon__\ze\s\+__name__$", winid)
+            )
+            self._match_ids.extend(matchaddDevIconsDefault(r"^__icon__", winid))
 
     def startExplorer(self, win_pos, *args, **kwargs):
         _dir = ""
@@ -331,534 +296,13 @@ class FilerExplManager(Manager):
         self._getExplorer().cwd = _dir
 
         # To call _buildPrompt() in super().startExplorer()
-        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 0)") == '1':
+        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 0)") == "1":
             self._getInstance()._cli._additional_prompt_string = self._adjust_path(_dir)
 
         super(FilerExplManager, self).startExplorer(win_pos, *args, **kwargs)
 
         # super().startExplorer() updates cwd to os.getcwd()
         self._getInstance().setCwd(_dir)
-
-    def _save_context(self, **kwargs):
-        """ For _input_prompt
-        """
-        self._context = {}
-        self._context['search_func'] = self._search
-        self._context['additional_prompt_string'] = self._instance._cli._additional_prompt_string
-        self._context['cli_key_dict'] = dict(self._instance._cli._key_dict)
-        self._context['cli_cmdline'] = list(self._instance._cli._cmdline)
-        self._context['cli_cursor_pos'] = self._instance._cli._cursor_pos
-        self._context['cli_pattern'] = self._instance._cli._pattern
-        self._context['cursor_pos'] = self._getInstance()._window_object.cursor
-        self._context.update(**kwargs)
-
-        self._search = lambda content, is_continue=False, step=0: ""
-
-    def _restore_context(self, restore_input_pattern=True, restore_cursor_pos=True):
-        """ For _input_prompt
-
-        params:
-            restore_input_pattern:
-                The following attributes of the `cli` will not be restored
-                * _cmdline
-                * _cursor_pos
-                * _pattern
-            restore_cursor_pos:
-                cursor position
-        """
-        self._search = self._context['search_func']
-        self._instance._cli._additional_prompt_string = self._context['additional_prompt_string'] 
-        self._instance._cli._key_dict = self._context['cli_key_dict']
-        if restore_cursor_pos:
-            # To restore only in case of cancel
-            [row, col] = self._context['cursor_pos']
-            lfCmd("""call win_execute({}, 'exec "norm! {}G"')""".format(self._instance._popup_winid, row))
-            self._getInstance().refreshPopupStatusline()
-        if restore_input_pattern:
-            # To restore only in case of cancel
-            self._instance._cli._cmdline = self._context['cli_cmdline']
-            self._instance._cli._cursor_pos = self._context['cli_cursor_pos']
-            self._instance._cli._pattern = self._context['cli_pattern']
-        self._context = {}
-
-    def _input_prompt(self, command, prompt, text=""):
-        """
-        params:
-            command:
-                "rename" or "create_file" or "mkdir"
-                When <CR> is pressed, self.command___co_{command}() is executed.
-            prompt:
-                prompt string
-            text:
-                default value
-        """
-        if self._instance.getWinPos() not in ("popup", "floatwin"):
-            # popup only
-            return
-
-        # set pattern
-        self._instance._cli._additional_prompt_string = prompt
-        self._instance._cli.setPattern(text)
-
-        # update key_dict
-        key_dict = {
-            lhs: rhs
-            for [lhs, rhs] in self._instance._cli._key_dict.items()
-            if rhs.lower() in {
-                "<esc>",
-                "<c-c>",
-                "<bs>",
-                "<c-h>",
-                "<c-u>",
-                "<c-w>",
-                "<del>",
-                "<c-v>",
-                "<s-insert>",
-                "<home>",
-                "<c-b>",
-                "<end>",
-                "<c-e>",
-                "<left>",
-                "<right>",
-                "<up>",
-                "<down>",
-                "open_parent_or_backspace",
-                "open_parent_or_clear_line",
-            }
-        }
-
-        # To be able to do general input
-        for [lrs, rhs] in key_dict.items():
-            rhs_low = rhs.lower()
-            if rhs_low in {"open_parent_or_backspace", "open_parent_or_clear_line"}:
-                key_dict[lrs] = "<BS>"
-            elif rhs_low in {"<esc>", "<c-c>"}:
-                key_dict[lrs] = "_input_cancel"
-        # add command
-        key_dict["<CR>"] = "_do_" + command
-        self._instance._cli._key_dict = key_dict
-        self.input()
-
-    def command___input_cancel(self):
-        """ private
-        """
-        self._restore_context()
-        self._switch_normal_mode()
-    
-    def _switch_normal_mode(self):
-        lfCmd(r'call feedkeys("{}", "n")'.format(self._get_switch_normal_mode_key()))
-
-    def _get_switch_normal_mode_key(self):
-        """ Returns the key to go into normal mode.
-        """
-        if self._switch_normal_mode_key:
-            return self._switch_normal_mode_key
-
-        keys = [
-            lrs
-            for [lrs, rhs] in self._instance._cli._key_dict.items()
-            if rhs.lower() == "<tab>"
-        ]
-        if len(keys) == 0:
-            self._switch_normal_mode_key = r"\<Tab>"
-        else:
-            # <Tab> => \<Tab>
-            self._switch_normal_mode_key = keys[0].replace("<", r"\<")
-        return self._switch_normal_mode_key
-
-    @help("open file/dir under cursor")
-    def command__open_current(self):
-        line = self._getInstance().currentLine
-        if line == NO_CONTENT_MSG:
-            return
-        if line == "":
-            return
-
-        file_info = self._getExplorer()._contents[line]
-        if not file_info["isdir"]:
-            self.accept()
-            return True
-
-        if not accessable(file_info["fullpath"]):
-            lfCmd(
-                "echohl ErrorMsg | redraw | echon "
-                "' Permission denied `%s`' | echohl NONE" % file_info["fullpath"]
-            )
-            return
-
-        if self._getInstance().isReverseOrder():
-            lfCmd("normal! G")
-        else:
-            self._gotoFirstLine()
-
-        self._chcwd(os.path.abspath(file_info["fullpath"]))
-        self._history.add(self._getExplorer().cwd)
-
-    @help("show files in parent directory")
-    def command__open_parent_or_clear_line(self):
-        if len(self._getInstance()._cli._cmdline) > 0:
-            self._refresh()
-            return
-        self._history.add(self._getExplorer().cwd)
-        self._open_parent()
-
-    @help("show files in parent directory")
-    def command__open_parent_or_backspace(self):
-        if len(self._getInstance()._cli._cmdline) > 0:
-            # like <BS> in cli#input()
-            self._cli._backspace()
-            self._cli._buildPattern()
-
-            # like <Shorten> in manager#input()
-            cur_len = len(self._content)
-            cur_content = self._content[:cur_len]
-            self._index = 0
-            self._search(cur_content)
-            if self._getInstance().isReverseOrder():
-                lfCmd("normal! G")
-            else:
-                self._gotoFirstLine()
-            return
-        self._history.add(self._getExplorer().cwd)
-        self._open_parent()
-
-    @help("show files in parent directory")
-    def command__open_parent(self):
-        self._history.add(self._getExplorer().cwd)
-        self._open_parent()
-
-    @help("toggle show hidden files")
-    def command__toggle_hidden_files(self):
-        self._getExplorer()._show_hidden_files = (
-            not self._getExplorer()._show_hidden_files
-        )
-        self.refresh(normal_mode=False)
-
-    @help("show files of directory where g:Lf_RootMarkers exists")
-    def command__goto_root_marker_dir(self):
-        root_markers = lfEval("g:Lf_RootMarkers")
-        rootMarkersDir = nearestAncestor(root_markers, self._getExplorer().cwd)
-        if rootMarkersDir:
-            # exists root_markers
-            self._chcwd(os.path.abspath(rootMarkersDir))
-
-    @help("move the cursor upward")
-    def command__down(self):
-        lfCmd("normal! j")
-        self._previewResult(False)
-
-    @help("move the cursor downward")
-    def command__up(self):
-        lfCmd("normal! k")
-        self._previewResult(False)
-
-    # def _page_up(self):
-    #     lfCmd('normal! <PageUp>')
-    #     self._previewResult(False)
-
-    # def _page_down(self):
-    #     lfCmd('normal! <PageDown>')
-    #     self._previewResult(False)
-
-    # def _left_mouse(self):
-    #     lfCmd('normal! <LeftMouse>')
-    #     self._previewResult(False)
-
-    @help("preview the result")
-    def command__preview(self):
-        self._previewResult(True)
-
-    @help("toggle this help")
-    def command__toggle_help(self):
-        self.toggleHelp()
-
-    @help("quit")
-    def command__quit(self):
-        self.quit()
-
-    @help("switch to input mode")
-    def command__switch_insert_mode(self):
-        self.input()
-
-    @help("open the file under cursor")
-    def command__accept(self):
-        self.accept()
-
-    @help("open the file under cursor in horizontal split window")
-    def command__accept_horizontal(self):
-        self.accept("h")
-
-    @help("open the file under cursor in vertical split window")
-    def command__accept_vertical(self):
-        self.accept("v")
-
-    @help("open the file under cursor new tabpage")
-    def command__accept_tab(self):
-        self.accept("t")
-
-    @help("scroll up in the popup preview window (nvim only)")
-    def command__page_up_in_preview(self):
-        if lfEval("has('nvim')"):
-            self._toUpInPopup()
-
-    @help("scroll down in the popup preview window (nvim only)")
-    def command__page_down_in_preview(self):
-        if lfEval("has('nvim')"):
-            self._toDownInPopup()
-
-    @help("close popup preview window (nvim only)")
-    def command__close_preview_popup(self):
-        if lfEval("has('nvim')"):
-            self._closePreviewPopup()
-
-    @help("select multiple result")
-    def command__add_selections(self):
-        self.addSelections()
-
-    @help("select all result")
-    def command__select_all(self):
-        self.selectAll()
-
-    @help("clear all selections")
-    def command__clear_selections(self):
-        self.clearSelections()
-
-    @help("create a directory")
-    def command__mkdir(self):
-        # For dir completion
-        save_cwd = lfEval("getcwd()")
-        cd(self._getExplorer().cwd)
-
-        if self._instance.getWinPos() not in ("popup", "floatwin"):
-            try:
-                dir_name = lfEval("input('Create Directory: ', '', 'dir')")
-            except KeyboardInterrupt:  # Cancel
-                echo_cancel()
-                return
-            finally:
-                # restore
-                cd(save_cwd)
-            self._mkdir(dir_name)
-        else:
-            self._save_context(**{"save_cwd": save_cwd})
-            # in popup
-            self._input_prompt("mkdir", "Create directory: ")
-
-    def command___do_mkdir(self):
-        """
-        private
-        """
-        dir_name = self._instance._cli.pattern
-        try:
-            self._mkdir(dir_name)
-        finally:
-            cd(self._context['save_cwd'])
-            # restore cwd
-            self._restore_context(restore_input_pattern=False, restore_cursor_pos=False)
-            self._switch_normal_mode()
-
-    def _mkdir(self, dir_name):
-        if dir_name == "":
-            echo_cancel()
-            return
-
-        path = os.path.join(self._getExplorer().cwd, dir_name)
-        if os.path.isdir(os.path.join(self._getExplorer().cwd, dir_name)):
-            lfPrintError(" Already exists. '{}'".format(path))
-            return
-
-        os.makedirs(path)
-
-        if self._instance.getWinPos() not in ("popup", "floatwin"):
-            if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)") == "1":
-                self._chcwd(path)
-            else:
-                self._refresh()
-        else:
-            if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)") == "1":
-                self._chcwd(path, write_history=False, normal_mode=True)
-            else:
-                self._refresh(write_history=False, normal_mode=True)
-
-        self._move_cursor_if_fullpath_match(path)
-
-    @help("rename files and directories")
-    def command__rename(self):
-        line = self._instance.currentLine
-        if len(self._selections) > 0:
-            lfPrintError(" Rename does not support multiple files.")
-            return
-
-        if invalid_line(line):
-            return
-
-        from_path = self._getExplorer()._contents[line]["fullpath"]
-        basename = os.path.basename(from_path)
-
-        if self._instance.getWinPos() not in ("popup", "floatwin"):
-            try:
-                renamed = lfEval("input('Rename: ', '{}')".format(basename))
-            except KeyboardInterrupt:  # Cancel
-                echo_cancel()
-                return
-
-            self._rename(from_path, renamed, basename)
-            lfCmd('redraw')
-        else:
-            self._save_context(**{"from_path": from_path, "basename": basename})
-            # in popup
-            self._input_prompt("rename", "Rename: ", basename)
-
-    def command___do_rename(self):
-        """
-        private
-        """
-        renamed = self._instance._cli.pattern
-        try:
-            self._rename(self._context["from_path"], renamed, self._context["basename"])
-        finally:
-            self._restore_context(restore_input_pattern=False, restore_cursor_pos=False)
-            self._switch_normal_mode()
-
-    def _rename(self, from_path, renamed, basename):
-        if renamed == "":
-            echo_cancel()
-            return
-
-        if renamed == basename:
-            return
-
-        to_path = os.path.join(os.path.dirname(from_path), renamed)
-
-        if os.path.exists(to_path):
-            lfPrintError(" Already exists. '{}'".format(to_path))
-            return
-
-        os.rename(from_path, to_path)
-
-        if self._instance.getWinPos() not in ("popup", "floatwin"):
-            self._refresh()
-        else:
-            self._refresh(write_history=False, normal_mode=True)
-        self._move_cursor_if_fullpath_match(to_path)
-
-    @help("copy files and directories under cursor")
-    def command__copy(self):
-        if len(self._selections) > 0:
-            lfPrintError(" Copy does not support multiple files.")
-            return
-
-        line = self._getInstance().currentLine
-        if invalid_line(line):
-            return
-
-        self._copy_file = self._getExplorer()._contents[line]["fullpath"]
-        self._copy_mode = True
-        lfCmd("echon ' Copied.'")
-        # Updat estatus line
-        self._getExplorer().setCommandMode("COPY")
-        self._redrawStlCwd()
-
-    @help("paste the file or directory")
-    def command__paste(self):
-        if not self._copy_mode:
-            return
-
-        fullpath = self._copy_file
-        basename = os.path.basename(fullpath)
-
-        cwd = self._getExplorer().cwd
-
-        to_path = os.path.join(cwd, basename)
-
-        if os.path.exists(to_path):
-            name, ext = os.path.splitext(basename)
-            to_path = os.path.join(cwd, "{}_copy{}".format(name, ext))
-
-        # *_copy があったら、だめ
-        if os.path.exists(to_path):
-            lfPrintError(" Already exists. '{}'".format(to_path))
-            return
-
-        if os.path.isdir(fullpath):
-            # shutil.copytree(src, dst)
-            shutil.copytree(fullpath, to_path)
-        else:
-            shutil.copy2(fullpath, to_path)
-
-        self._refresh()
-        self._move_cursor_if_fullpath_match(to_path)
-        lfCmd("echon ' Pasted.'")
-
-    @help("create a file")
-    def command__create_file(self):
-        if self._instance.getWinPos() not in ("popup", "floatwin"):
-            try:
-                file_name = lfEval("input('Create file: ')")
-            except KeyboardInterrupt:
-                echo_cancel()
-                return
-            self._create_file(file_name)
-        else:
-            self._save_context()
-            # in popup
-            self._input_prompt("create_file", "Create file: ")
-
-    def command___do_create_file(self):
-        """
-        private
-        """
-        file_name = self._instance._cli.pattern
-        try:
-            self._create_file(file_name)
-        finally:
-            self._restore_context(restore_input_pattern=False, restore_cursor_pos=False)
-            self._switch_normal_mode()
-
-    def _create_file(self, file_name):
-        if file_name == "":
-            echo_cancel()
-            return
-
-        path = os.path.join(self._getExplorer().cwd, file_name)
-        if os.path.exists(path):
-            lfPrintError(" Already exists. '{}'".format(path))
-            return
-
-        # create file
-        open(path, "w").close()
-
-        if self._instance.getWinPos() not in ("popup", "floatwin"):
-            self._refresh()
-        else:
-            self._refresh(write_history=False, normal_mode=True)
-        self._move_cursor_if_fullpath_match(path)
-        
-    @help("change the current directory to cwd of LeaderF-filer")
-    def command__change_directory(self):
-        cd(self._getExplorer().cwd)
-        lfCmd("echon ' cd {}'".format(self._getExplorer().cwd))
-
-    @help("go backwards in history")
-    def command__history_backward(self):
-        self._chcwd(self._history.backward())
-
-    @help("go forwards in history")
-    def command__history_forward(self):
-        self._chcwd(self._history.forward())
-
-    def _open_parent(self):
-        cwd = self._getExplorer().cwd or os.getcwd()
-        abspath = os.path.abspath(os.path.join(cwd, ".."))
-        self._chcwd(abspath)
-
-        if self._getExplorer()._show_devicons:
-            dir_icon = webDevIconsGetFileTypeSymbol('', True)
-            pattern = r"\v^{}{}/$".format(dir_icon, os.path.basename(cwd))
-        else:
-            pattern = r"\v^{}/$".format(os.path.basename(cwd))
-
-        self._move_cursor(pattern)
 
     def _move_cursor(self, pattern):
         if self._getInstance().getWinPos() == "popup":
@@ -906,17 +350,13 @@ class FilerExplManager(Manager):
             self._cli.writeHistory(self._getExplorer().getStlCategory())
 
         # clear input pattern
-        # self._getInstance()._cli.clear()
         self._getInstance()._cli.clear()
         self.refresh(normal_mode=normal_mode)
-        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 0)") == '1':
-            self._getInstance()._cli._additional_prompt_string = self._adjust_path(self._getExplorer().cwd)
+        if lfEval("get(g:, 'Lf_FilerShowPromptPath', 0)") == "1":
+            self._getInstance()._cli._additional_prompt_string = self._adjust_path(
+                self._getExplorer().cwd
+            )
         self._getInstance()._cli._buildPrompt()
-
-    def _edit(self, name):
-        path = os.path.join(self._getExplorer().cwd, name)
-        self._getInstance().exitBuffer()
-        lfCmd("edit %s" % path)
 
     def _chcwd(self, path, write_history=True, normal_mode=False):
         self._getExplorer().cwd = path
@@ -936,22 +376,23 @@ class FilerExplManager(Manager):
         if cwd is None:
             self._getInstance().setStlCwd(self._getExplorer().getStlCurDir())
         else:
-            self._getInstance().setStlCwd(cwd.replace('\\', '/'))
+            self._getInstance().setStlCwd(cwd.replace("\\", "/"))
 
         if self._getInstance().getWinPos() in ("popup", "floatwin"):
             self._getInstance().setPopupStl(self._current_mode)
             self._getInstance().refreshPopupStatusline()
 
     def _adjust_path(self, path):
-        if os.name == 'nt':
-            path = path.replace('\\', '/')
+        if os.name == "nt":
+            path = path.replace("\\", "/")
             if len(path) == 3:
                 return path
         else:
-            if path == '/':
+            if path == "/":
                 return path
         path = lfEval("pathshorten('{}')".format(path))
-        return path + '/'
+        return path + "/"
+
 
 # *****************************************************
 # filerExplManager is a singleton

@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-from functools import wraps
-from leaderf.utils import lfEval, lfCmd
 
+from leaderf.utils import lfCmd, lfEval
 
 NO_CONTENT_MSG = " No content!"
 
