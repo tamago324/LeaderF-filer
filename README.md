@@ -15,6 +15,8 @@ Plug 'Yggdroot/LeaderF'
 Plug 'tamago324/LeaderF-filer'
 ```
 
+If you use `remove_trash` and `remove_trash:force`, you need [Send2Trash](https://pypi.org/project/Send2Trash/).
+
 ## Usage
 
 ```
@@ -96,6 +98,8 @@ let g:Lf_FilerNormalMap = {
 \   '@':             'change_directory',
 \   'H':             'history_backward',
 \   'L':             'history_forward',
+\   'd':             'remove_trash',
+\   'D':             'remove_trash:force',
 \}
 
 " insert mode
@@ -154,7 +158,8 @@ let g:Lf_NormalMap = {'Filer':   [['B', ':LeaderfBookmark<CR>']]}
 
 ## Credit
 
-* LeaderF-filer uses some code from [defx.nvim](https://github.com/Shougo/defx.nvim).
+* LeaderF-filer uses some code from [defx.nvim](https://github.com/Shougo/defx.nvim), [ranger](https://github.com/ranger/ranger).
+* Thanks [Send2Trash](https://pypi.org/project/Send2Trash/).
 
 ## License
 

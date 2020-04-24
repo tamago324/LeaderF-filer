@@ -4,8 +4,6 @@
 import commands
 from commands import *
 
-from utils import lfCmd
-
 
 class Cmd:
     def __init__(self, manager):
@@ -13,7 +11,7 @@ class Cmd:
         self._command_names = set()
 
     def exec(self, cmd_name):
-        return eval("command__" + cmd_name)(self._manager)
+        return eval("command__" + self.normalize_cmd_name(cmd_name))(self._manager)
 
     @property
     def command_names(self):
@@ -24,3 +22,9 @@ class Cmd:
                 if x.startswith("command__")
             }
         return self._command_names
+
+    def contains(self, cmd_name):
+        return self.normalize_cmd_name(cmd_name) in self.command_names
+
+    def normalize_cmd_name(self, cmd_name):
+        return cmd_name.replace(":", "_")

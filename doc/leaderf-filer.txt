@@ -238,6 +238,8 @@ For example, to map everything yourself without using the default mapping:
     \   '@':             'change_directory',
     \   'H':             'history_backward',
     \   'L':             'history_forward',
+    \   'd':             'remove_trash',
+    \   'D':             'remove_trash:force',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -363,6 +365,27 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
     goto_root_marker_dir
         Show files of directory where |g:Lf_RootMarkers| exists.
 
+    change_directory
+        Change the current directory to cwd of LeaderF-filer.
+        NOTE: Use |chdir()|, |lcd| or |cd|.
+
+
+NORMAL MODE ONLY                           *LeaderF-filer-map-commands-normal*
+
+List of command names that can be used only by |g:Lf_FilerNormalMap|.
+
+    toggle_help
+        Toggle this help.
+
+    switch_insert_mode
+        Switch to insert mode.
+
+    history_backward
+        Go backwards in history.
+
+    history_forward
+        Go forwards in history.
+
     mkdir
         Create a directory.
         See |g:Lf_FilerMkdirAutoChdir|
@@ -386,26 +409,17 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
 
         See `copy` command.
 
-    change_directory
-        Change the current directory to cwd of LeaderF-filer.
-        NOTE: Use |chdir()|, |lcd| or |cd|.
+    remove
+    remove:force
+        Remove files.
+        If you add `:force`, it will be removed without confirmation.
 
+    remove_trash
+    remove_trash:force
+        Remove files and put in the trash
+        NOTE: Required Send2Trash (https://pypi.org/project/Send2Trash/)
+        If you add `:force`, it will be removed without confirmation.
 
-NORMAL MODE ONLY                           *LeaderF-filer-map-commands-normal*
-
-List of command names that can be used only by |g:Lf_FilerNormalMap|.
-
-    toggle_help
-        Toggle this help.
-
-    switch_insert_mode
-        Switch to insert mode.
-
-    history_backward
-        Go backwards in history.
-
-    history_forward
-        Go forwards in history.
 
 
 INSERT MODE ONLY                           *LeaderF-filer-map-commands-insert*
@@ -463,6 +477,12 @@ Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
 
 ==============================================================================
 CHANGELOG                                            *LeaderF-filer-changelog*
+
+0.1.1   2020-04-24
+    - Add `remove` command.
+    - Add `remove:force` command.
+    - Add `remove_trash` command.
+    - Add `remove_trash:force` command.
 
 0.1.1   2020-04-23
     - Add `history_backward` command.

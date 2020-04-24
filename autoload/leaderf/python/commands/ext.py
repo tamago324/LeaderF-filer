@@ -10,7 +10,9 @@ from utils import cd, nearestAncestor
 
 @_help.help("toggle show hidden files")
 def command__toggle_hidden_files(manager):
-    manager._getExplorer()._show_hidden_files = not manager._getExplorer()._show_hidden_files
+    manager._getExplorer()._show_hidden_files = (
+        not manager._getExplorer()._show_hidden_files
+    )
     manager.refresh(normal_mode=False)
 
 
