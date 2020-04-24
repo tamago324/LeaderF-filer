@@ -75,11 +75,4 @@ def _open_parent(manager):
     cwd = manager._getExplorer().cwd or os.getcwd()
     abspath = os.path.abspath(os.path.join(cwd, ".."))
     manager._chcwd(abspath)
-
-    if manager._getExplorer()._show_devicons:
-        dir_icon = webDevIconsGetFileTypeSymbol("", True)
-        pattern = r"\v^{}{}/$".format(dir_icon, os.path.basename(cwd))
-    else:
-        pattern = r"\v^{}/$".format(os.path.basename(cwd))
-
-    manager._move_cursor(pattern)
+    manager._move_cursor_if_fullpath_match(cwd)

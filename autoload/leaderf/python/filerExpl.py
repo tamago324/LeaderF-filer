@@ -301,31 +301,27 @@ class FilerExplManager(Manager):
         # super().startExplorer() updates cwd to os.getcwd()
         self._getInstance().setCwd(_dir)
 
-    def _move_cursor(self, pattern):
+    def _move_cursor(self, lnum):
         if self._getInstance().getWinPos() == "popup":
             lfCmd(
-                """call win_execute(%d, 'call search(''%s'')')"""
-                % (self._getInstance().getPopupWinId(), pattern)
+                """call win_execute({}, 'normal! {}G')""".format(self._getInstance().getPopupWinId(), lnum)
             )
-            self._getInstance().mimicCursor()
-            # keep cursor pos
-            lfCmd(
-                "call win_execute(%d, 'normal! jk')"
-                % self._getInstance().getPopupWinId()
-            )
-            # lfCmd("call win_execute(%d, 'normal! 0')" % self._getInstance().getPopupWinId())
+            lfCmd("""call win_execute(%d, "let cursor_pos = getcurpos()[1:2]")""" % (self._getInstance()._popup_winid))
         else:
-            lfCmd("call search('%s')" % pattern)
+            lfCmd("normal! {}G".format(lnum))
             lfCmd("normal! 0")
+        self._getInstance().mimicCursor()
 
     def _move_cursor_if_fullpath_match(self, path):
         """
         Move the cursor to the line where fullpath matches path.
         """
+        lines = lfEval('getbufline("{}", "1", "$")'.format(self._instance._buffer_object.number))
         for line, info in self._getExplorer()._contents.items():
-            if info["fullpath"] == path:
-                self._move_cursor(line)
-                break
+            if info["fullpath"] == os.path.abspath(path):
+                if line in lines:
+                    self._move_cursor(lines.index(line) + 1)
+                    break
 
     def _refresh(self, cwd=None, write_history=True, normal_mode=False):
         if cwd:
