@@ -1,6 +1,11 @@
 import os
-from commands.input import (get_context, input_prompt, restore_context,
-                            save_context, switch_normal_mode)
+from commands.input import (
+    get_context,
+    input_prompt,
+    restore_context,
+    save_context,
+    switch_normal_mode,
+)
 
 from help import _help
 from leaderf.utils import lfCmd, lfEval, lfPrintError
@@ -39,10 +44,7 @@ def command___do_rename(manager):
     renamed = manager._instance._cli.pattern
     try:
         _rename(
-            manager,
-            get_context()["from_path"],
-            renamed,
-            get_context()["basename"],
+            manager, get_context()["from_path"], renamed, get_context()["basename"],
         )
     finally:
         restore_context(manager, restore_input_pattern=False, restore_cursor_pos=False)

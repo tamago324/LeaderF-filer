@@ -43,7 +43,7 @@ class FilerExplorer(Explorer):
         contents = {
             lfEncode(f): {
                 "isdir": os.path.isdir(os.path.join(self.cwd, f)),
-                "fullpath": os.path.join(self.cwd, f),
+                "fullpath": os.path.abspath(os.path.join(self.cwd, f)),
             }
             for f in os.listdir(self.cwd)
         }
@@ -63,7 +63,7 @@ class FilerExplorer(Explorer):
         if self._show_devicons:
             self._prefix_length = webDevIconsStrLen()
             # Remove icon
-            func = lambda x: x[self._prefix_length:]
+            func = lambda x: x[self._prefix_length :]
         else:
             self._prefix_length = 0
             func = lambda x: x
@@ -197,7 +197,7 @@ class FilerExplManager(Manager):
         this function can be overridden to add new cmd
         if return true, exit the input loop
         """
-        if cmd_name in self._command.command_names:
+        if self._command.contains(cmd_name):
             return self.do_command(cmd_name)
         elif equal(cmd_name, "nop"):
             pass

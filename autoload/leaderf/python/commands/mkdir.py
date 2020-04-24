@@ -2,8 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
-from commands.input import (get_context, input_prompt, restore_context,
-                            save_context, switch_normal_mode)
+from commands.input import (
+    get_context,
+    input_prompt,
+    restore_context,
+    save_context,
+    switch_normal_mode,
+)
 
 from help import _help
 from leaderf.utils import lfEval, lfPrintError
