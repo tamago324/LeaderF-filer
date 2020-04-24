@@ -11,8 +11,8 @@ from commands.input import (
 )
 
 from help import _help
-from leaderf.utils import lfEval, lfPrintError
-from utils import cd, echo_cancel
+from leaderf.utils import lfEval, lfCmd
+from utils import cd, echo_cancel, echo_error
 
 
 @_help.help("create a directory")
@@ -58,10 +58,9 @@ def _mkdir(manager, dir_name):
 
     path = os.path.join(manager._getExplorer().cwd, dir_name)
     if os.path.isdir(os.path.join(manager._getExplorer().cwd, dir_name)):
-        lfPrintError(" Already exists. '{}'".format(path))
-        return
-
-    os.makedirs(path)
+        echo_error(" Already exists. '{}'".format(path))
+    else:
+        os.makedirs(path)
 
     if manager._instance.getWinPos() not in ("popup", "floatwin"):
         if lfEval("get(g:, 'Lf_FilerMkdirAutoChdir', 0)") == "1":

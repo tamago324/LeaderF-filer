@@ -11,7 +11,7 @@ from leaderf.devicons import *
 from leaderf.explorer import *
 from leaderf.manager import *
 from leaderf.utils import *
-from utils import NO_CONTENT_MSG, accessable, cd
+from utils import NO_CONTENT_MSG, accessable, cd, echo_error
 
 MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
 
@@ -190,7 +190,10 @@ class FilerExplManager(Manager):
         return _help.help_list
 
     def do_command(self, cmd_name):
-        return self._command.exec(cmd_name)
+        if self._command.contains(cmd_name):
+            return self._command.exec(cmd_name)
+        else:
+            echo_error("Not found command: {}".format(cmd_name))
 
     def _cmdExtension(self, cmd_name):
         """
@@ -277,17 +280,11 @@ class FilerExplManager(Manager):
             _dir = os.path.abspath(_dir)
 
             if not os.path.exists(_dir):
-                lfCmd(
-                    "echohl ErrorMsg | redraw | echon "
-                    "'Unknown directory `%s`' | echohl NONE" % _dir
-                )
+                echo_error('Unknown directory `{}`'.format(_dir))
                 return
 
             elif not accessable(_dir):
-                lfCmd(
-                    "echohl ErrorMsg | redraw | echon "
-                    "' Permission denied `%s`' | echohl NONE" % _dir
-                )
+                echo_error('Permission denied `{}`'.format(_dir))
                 return
 
         _dir = _dir or os.getcwd()

@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from help import _help
-from leaderf.utils import lfCmd, lfPrintError
-from utils import invalid_line
+from leaderf.utils import lfCmd
+from utils import invalid_line, echo_error
 
 
 @_help.help("copy files and directories under cursor")
 def command__copy(manager):
     if len(manager._selections) > 0:
-        lfPrintError(" Copy does not support multiple files.")
+        echo_error(" Copy does not support multiple files.")
         return
 
     line = manager._getInstance().currentLine

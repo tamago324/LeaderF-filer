@@ -7,8 +7,8 @@ from commands.input import (
 )
 
 from help import _help
-from leaderf.utils import lfEval, lfPrintError
-from utils import echo_cancel
+from leaderf.utils import lfEval
+from utils import echo_cancel, echo_error
 
 
 @_help.help("create a file")
@@ -42,11 +42,10 @@ def _create_file(manager, file_name):
 
     path = os.path.join(manager._getExplorer().cwd, file_name)
     if os.path.exists(path):
-        lfPrintError(" Already exists. '{}'".format(path))
-        return
-
-    # create file
-    open(path, "w").close()
+        echo_error(" Already exists. '{}'".format(path))
+    else:
+        # create file
+        open(path, "w").close()
 
     if manager._instance.getWinPos() not in ("popup", "floatwin"):
         manager._refresh()

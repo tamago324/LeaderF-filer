@@ -8,15 +8,15 @@ from commands.input import (
 )
 
 from help import _help
-from leaderf.utils import lfCmd, lfEval, lfPrintError
-from utils import echo_cancel, invalid_line
+from leaderf.utils import lfCmd, lfEval
+from utils import echo_cancel, invalid_line, echo_error
 
 
 @_help.help("rename files and directories")
 def command__rename(manager):
     line = manager._instance.currentLine
     if len(manager._selections) > 0:
-        lfPrintError(" Rename does not support multiple files.")
+        echo_error(" Rename does not support multiple files.")
         return
 
     if invalid_line(line):
@@ -62,7 +62,7 @@ def _rename(manager, from_path, renamed, basename):
     to_path = os.path.join(os.path.dirname(from_path), renamed)
 
     if os.path.exists(to_path):
-        lfPrintError(" Already exists. '{}'".format(to_path))
+        echo_error(" Already exists. '{}'".format(to_path))
         return
 
     os.rename(from_path, to_path)

@@ -6,7 +6,7 @@ import os
 from help import _help
 from leaderf.devicons import webDevIconsGetFileTypeSymbol
 from leaderf.utils import lfCmd
-from utils import NO_CONTENT_MSG, accessable
+from utils import NO_CONTENT_MSG, accessable, echo_error
 
 
 @_help.help("open file/dir under cursor")
@@ -23,10 +23,7 @@ def command__open_current(manager):
         return True
 
     if not accessable(file_info["fullpath"]):
-        lfCmd(
-            "echohl ErrorMsg | redraw | echon "
-            "' Permission denied `%s`' | echohl NONE" % file_info["fullpath"]
-        )
+        echo_error('Permission denied `{}`'.format(file_info["fullpath"]))
         return
 
     if manager._getInstance().isReverseOrder():

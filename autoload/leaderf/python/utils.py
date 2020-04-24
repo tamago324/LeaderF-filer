@@ -3,7 +3,7 @@
 
 import os
 
-from leaderf.utils import lfCmd, lfEval
+from leaderf.utils import lfCmd, lfEval, escQuote
 
 NO_CONTENT_MSG = " No content!"
 
@@ -22,6 +22,12 @@ def invalid_line(line):
 
 def echo_cancel():
     lfCmd("echon ' Canceled.'")
+
+
+def echo_error(msg):
+    lfCmd(
+        "echohl ErrorMsg | redraw | echon " "' [LeaderF] {}' | echohl NONE".format(escQuote(msg))
+    )
 
 
 def nearestAncestor(markers, path):

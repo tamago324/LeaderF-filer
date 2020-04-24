@@ -8,8 +8,8 @@ from commands.input import (command___input_cancel, get_context, input_prompt,
                             restore_context, save_context, switch_normal_mode)
 
 from help import _help
-from leaderf.utils import lfCmd, lfEval, lfPrintError
-from utils import NO_CONTENT_MSG, echo_cancel
+from leaderf.utils import lfCmd, lfEval
+from utils import NO_CONTENT_MSG, echo_cancel, echo_error
 
 
 @_help.help("remove files")
@@ -132,7 +132,7 @@ def _remove_trash(manager, path_list):
     try:
         import send2trash
     except ImportError:
-        lfPrintError('"Send2Trash" is not installed')
+        echo_error('"Send2Trash" is not installed')
         return
     for path in path_list:
         send2trash.send2trash(path)
