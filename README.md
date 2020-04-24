@@ -15,7 +15,7 @@ Plug 'Yggdroot/LeaderF'
 Plug 'tamago324/LeaderF-filer'
 ```
 
-If you use `remove_trash` and `remove_trash:force`, you need [Send2Trash](https://pypi.org/project/Send2Trash/).
+If you use `remove_trash` and `remove_trash_force`, you need [Send2Trash](https://pypi.org/project/Send2Trash/).
 
 ## Usage
 
@@ -99,7 +99,7 @@ let g:Lf_FilerNormalMap = {
 \   'H':             'history_backward',
 \   'L':             'history_forward',
 \   'd':             'remove_trash',
-\   'D':             'remove_trash:force',
+\   'D':             'remove_trash_force',
 \}
 
 " insert mode

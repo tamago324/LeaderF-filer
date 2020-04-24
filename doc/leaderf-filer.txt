@@ -239,7 +239,7 @@ For example, to map everything yourself without using the default mapping:
     \   'H':             'history_backward',
     \   'L':             'history_forward',
     \   'd':             'remove_trash',
-    \   'D':             'remove_trash:force',
+    \   'D':             'remove_trash_force',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -410,15 +410,15 @@ List of command names that can be used only by |g:Lf_FilerNormalMap|.
         See `copy` command.
 
     remove
-    remove:force
+    remove_force
         Remove files.
-        If you add `:force`, it will be removed without confirmation.
+        If you add `_force`, it will be removed without confirmation.
 
     remove_trash
-    remove_trash:force
+    remove_trash_force
         Remove files and put in the trash
         NOTE: Required Send2Trash (https://pypi.org/project/Send2Trash/)
-        If you add `:force`, it will be removed without confirmation.
+        If you add `_force`, it will be removed without confirmation.
 
 
 
@@ -480,9 +480,9 @@ CHANGELOG                                            *LeaderF-filer-changelog*
 
 0.1.1   2020-04-24
     - Add `remove` command.
-    - Add `remove:force` command.
+    - Add `remove_force` command.
     - Add `remove_trash` command.
-    - Add `remove_trash:force` command.
+    - Add `remove_trash_force` command.
 
 0.1.1   2020-04-23
     - Add `history_backward` command.
