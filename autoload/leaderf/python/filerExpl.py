@@ -317,11 +317,10 @@ class FilerExplManager(Manager):
         """
         Move the cursor to the line where fullpath matches path.
         """
-        lines = lfEval('getbufline("{}", "1", "$")'.format(self._instance._buffer_object.number))
         for line, info in self._getExplorer()._contents.items():
             if info["fullpath"] == os.path.abspath(path):
-                if line in lines:
-                    self._move_cursor(lines.index(line) + 1)
+                if line in self._content:
+                    self._move_cursor(self._content.index(line) + 1)
                     break
 
     def _refresh(self, cwd=None, write_history=True, normal_mode=False):
