@@ -23,7 +23,7 @@ def command__open_current(manager):
         return True
 
     if not accessable(file_info["fullpath"]):
-        echo_error('Permission denied `{}`'.format(file_info["fullpath"]))
+        echo_error("Permission denied `{}`".format(file_info["fullpath"]))
         return
 
     if manager._getInstance().isReverseOrder():

@@ -3,7 +3,7 @@
 
 import os
 
-from leaderf.utils import lfCmd, lfEval, escQuote
+from leaderf.utils import escQuote, lfCmd, lfEval
 
 NO_CONTENT_MSG = " No content!"
 
@@ -26,7 +26,9 @@ def echo_cancel():
 
 def echo_error(msg):
     lfCmd(
-        "echohl ErrorMsg | redraw | echon " "' [LeaderF] {}' | echohl NONE".format(escQuote(msg))
+        "echohl ErrorMsg | redraw | echon ' [LeaderF] {}' | echohl NONE".format(
+            escQuote(msg)
+        )
     )
 
 

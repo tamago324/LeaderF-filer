@@ -280,11 +280,11 @@ class FilerExplManager(Manager):
             _dir = os.path.abspath(_dir)
 
             if not os.path.exists(_dir):
-                echo_error('Unknown directory `{}`'.format(_dir))
+                echo_error("Unknown directory `{}`".format(_dir))
                 return
 
             elif not accessable(_dir):
-                echo_error('Permission denied `{}`'.format(_dir))
+                echo_error("Permission denied `{}`".format(_dir))
                 return
 
         _dir = _dir or os.getcwd()
@@ -305,9 +305,14 @@ class FilerExplManager(Manager):
     def _move_cursor(self, lnum):
         if self._getInstance().getWinPos() == "popup":
             lfCmd(
-                """call win_execute({}, 'normal! {}G')""".format(self._getInstance().getPopupWinId(), lnum)
+                """call win_execute({}, 'normal! {}G')""".format(
+                    self._getInstance().getPopupWinId(), lnum
+                )
             )
-            lfCmd("""call win_execute(%d, "let cursor_pos = getcurpos()[1:2]")""" % (self._getInstance()._popup_winid))
+            lfCmd(
+                """call win_execute(%d, "let cursor_pos = getcurpos()[1:2]")"""
+                % (self._getInstance()._popup_winid)
+            )
         else:
             lfCmd("normal! {}G".format(lnum))
             lfCmd("normal! 0")

@@ -11,7 +11,7 @@ from commands.input import (
 )
 
 from help import _help
-from leaderf.utils import lfEval, lfCmd
+from leaderf.utils import lfCmd, lfEval
 from utils import cd, echo_cancel, echo_error
 
 

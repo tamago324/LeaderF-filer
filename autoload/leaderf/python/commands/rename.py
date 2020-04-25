@@ -9,7 +9,7 @@ from commands.input import (
 
 from help import _help
 from leaderf.utils import lfCmd, lfEval
-from utils import echo_cancel, invalid_line, echo_error
+from utils import echo_cancel, echo_error, invalid_line
 
 
 @_help.help("rename files and directories")

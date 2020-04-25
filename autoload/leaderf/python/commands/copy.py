@@ -3,7 +3,7 @@
 
 from help import _help
 from leaderf.utils import lfCmd
-from utils import invalid_line, echo_error
+from utils import echo_error, invalid_line
 
 
 @_help.help("copy files and directories under cursor")

@@ -4,8 +4,14 @@
 import os
 import re
 import shutil
-from commands.input import (command___input_cancel, get_context, input_prompt,
-                            restore_context, save_context, switch_normal_mode)
+from commands.input import (
+    command___input_cancel,
+    get_context,
+    input_prompt,
+    restore_context,
+    save_context,
+    switch_normal_mode,
+)
 
 from help import _help
 from leaderf.utils import lfCmd, lfEval
