@@ -300,6 +300,7 @@ class FilerExplManager(Manager):
 
         # super().startExplorer() updates cwd to os.getcwd()
         self._getInstance().setCwd(_dir)
+        self._history.add(_dir)
 
     def _move_cursor(self, lnum):
         if self._getInstance().getWinPos() == "popup":
