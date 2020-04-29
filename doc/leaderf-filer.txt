@@ -21,7 +21,7 @@ REQUIREMENTS                                      *LeaderF-filer-requirements*
 OPTIONS                                                *LeaderF-filer-options*
 
 g:Lf_FilerShowHiddenFiles                          *g:Lf_FilerShowHiddenFiles*
-    If enabled, shows hidden files by default.
+    When enabled, shows hidden files by default.
 
     Default value: 0
 
@@ -63,6 +63,12 @@ g:Lf_FilerMkdirAutoChdir                            *g:Lf_FilerMkdirAutoChdir*
 
 g:Lf_FilerShowPromptPath                            *g:Lf_FilerShowPromptPath*
     When enabled, the path is displayed at the prompt.
+
+    Default value: 0
+
+g:Lf_FilerOnlyIconHighlight                      *g:Lf_FilerOnlyIconHighlight*
+    When enabled, Only the directory icon is highlighted with a
+    |Lf_hl_filerDir|.
 
     Default value: 0
 
@@ -477,6 +483,9 @@ Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
 
 ==============================================================================
 CHANGELOG                                            *LeaderF-filer-changelog*
+
+0.1.2   2020-04-30
+    - Add |Lf_FilerOnlyIconHighlight| options.
 
 0.1.1   2020-04-24
     - Add `remove` command.

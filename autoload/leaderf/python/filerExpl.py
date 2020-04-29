@@ -6,7 +6,7 @@ import os.path
 from cmd import Cmd
 
 from help import _help
-from history import History, HistoryEmptyException
+from history import History
 from leaderf.devicons import *
 from leaderf.explorer import *
 from leaderf.manager import *
@@ -228,16 +228,22 @@ class FilerExplManager(Manager):
 
         if self._getInstance().getWinPos() == "popup":
             lfCmd(
-                """call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerFile'', ''^[^\/]\+\(\/\)\@!$'')')"""
+                r"""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerFile'', ''^[^\/]\+\(\/\)\@!$'')')"""
                 % self._getInstance().getPopupWinId()
             )
             id = int(lfEval("matchid"))
             self._match_ids.append(id)
 
-            lfCmd(
-                """call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerDir'', ''^[^\/]\+\/$'')')"""
-                % self._getInstance().getPopupWinId()
-            )
+            if lfEval("get(g:, 'Lf_FilerOnlyIconHighlight', 0)") == "1":
+                lfCmd(
+                    """call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerDir'', ''^%s'')')"""
+                    % (self._getInstance().getPopupWinId(), webDevIconsGetFileTypeSymbol('', isdir=True))
+                )
+            else:
+                lfCmd(
+                    r"""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerDir'', ''^[^\/]\+\/$'')')"""
+                    % self._getInstance().getPopupWinId()
+                )
             id = int(lfEval("matchid"))
             self._match_ids.append(id)
 
@@ -249,10 +255,16 @@ class FilerExplManager(Manager):
             self._match_ids.append(id)
             winid = self._getInstance().getPopupWinId()
         else:
-            id = int(lfEval("matchadd('Lf_hl_filerFile', '^[^\/]\+\(\/\)\@!$')"))
+            id = int(lfEval(r"matchadd('Lf_hl_filerFile', '^[^\/]\+\(\/\)\@!$')"))
             self._match_ids.append(id)
-            id = int(lfEval("matchadd('Lf_hl_filerDir', '^[^\/]\+\/$')"))
+
+            if lfEval("get(g:, 'Lf_FilerOnlyIconHighlight', 0)") == "1":
+                id = int(lfEval("matchadd('Lf_hl_filerDir', '^%s')" % webDevIconsGetFileTypeSymbol('', isdir=True)))
+            else:
+                id = int(lfEval(r"matchadd('Lf_hl_filerDir', '^[^\/]\+\/$')"))
+
             self._match_ids.append(id)
+
             id = int(
                 lfEval("matchadd('Lf_hl_filerNoContent', '^%s$')" % NO_CONTENT_MSG)
             )
