@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import commands
-from commands import *
+import filer.commands
+from filer.commands import *
 
 
 class Cmd:
@@ -18,7 +18,7 @@ class Cmd:
         if len(self._command_names) == 0:
             self._command_names = {
                 x[len("command__") :]
-                for x in commands.__dir__()
+                for x in filer.commands.__dir__()
                 if x.startswith("command__")
             }
         return self._command_names

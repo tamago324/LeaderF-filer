@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from utils import lfCmd
+from leaderf.utils import lfCmd
 
 _switch_normal_mode_key = ""
 _context = {}

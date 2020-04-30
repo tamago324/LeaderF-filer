@@ -4,7 +4,8 @@
 import os
 import re
 import shutil
-from commands.input import (
+
+from filer.commands.input import (
     command___input_cancel,
     get_context,
     input_prompt,
@@ -12,10 +13,9 @@ from commands.input import (
     save_context,
     switch_normal_mode,
 )
-
-from help import _help
+from filer.help import _help
+from filer.utils import NO_CONTENT_MSG, echo_cancel, echo_error
 from leaderf.utils import lfCmd, lfEval
-from utils import NO_CONTENT_MSG, echo_cancel, echo_error
 
 
 @_help.help("remove files")

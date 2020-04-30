@@ -4,9 +4,9 @@
 import os
 import shutil
 
-from help import _help
+from filer.help import _help
+from filer.utils import echo_error
 from leaderf.utils import lfCmd
-from utils import echo_error
 
 
 @_help.help("paste the file or directory")

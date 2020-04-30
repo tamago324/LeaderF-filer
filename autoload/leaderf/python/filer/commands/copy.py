@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from help import _help
+from filer.help import _help
+from filer.utils import echo_error, invalid_line
 from leaderf.utils import lfCmd
-from utils import echo_error, invalid_line
 
 
 @_help.help("copy files and directories under cursor")

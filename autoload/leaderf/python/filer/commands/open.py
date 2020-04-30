@@ -3,10 +3,10 @@
 
 import os
 
-from help import _help
+from filer.help import _help
+from filer.utils import NO_CONTENT_MSG, accessable, echo_error
 from leaderf.devicons import webDevIconsGetFileTypeSymbol
 from leaderf.utils import lfCmd
-from utils import NO_CONTENT_MSG, accessable, echo_error
 
 
 @_help.help("open file/dir under cursor")

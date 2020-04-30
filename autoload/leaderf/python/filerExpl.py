@@ -3,15 +3,15 @@
 
 import os
 import os.path
-from cmd import Cmd
 
-from help import _help
-from history import History
+from filer.cmd import Cmd
+from filer.help import _help
+from filer.history import History
+from filer.utils import NO_CONTENT_MSG, accessable, cd, echo_error
 from leaderf.devicons import *
 from leaderf.explorer import *
 from leaderf.manager import *
 from leaderf.utils import *
-from utils import NO_CONTENT_MSG, accessable, cd, echo_error
 
 MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
 
@@ -237,7 +237,10 @@ class FilerExplManager(Manager):
             if lfEval("get(g:, 'Lf_FilerOnlyIconHighlight', 0)") == "1":
                 lfCmd(
                     """call win_execute(%d, 'let matchid = matchadd(''Lf_hl_filerDir'', ''^%s'')')"""
-                    % (self._getInstance().getPopupWinId(), webDevIconsGetFileTypeSymbol('', isdir=True))
+                    % (
+                        self._getInstance().getPopupWinId(),
+                        webDevIconsGetFileTypeSymbol("", isdir=True),
+                    )
                 )
             else:
                 lfCmd(
@@ -259,7 +262,12 @@ class FilerExplManager(Manager):
             self._match_ids.append(id)
 
             if lfEval("get(g:, 'Lf_FilerOnlyIconHighlight', 0)") == "1":
-                id = int(lfEval("matchadd('Lf_hl_filerDir', '^%s')" % webDevIconsGetFileTypeSymbol('', isdir=True)))
+                id = int(
+                    lfEval(
+                        "matchadd('Lf_hl_filerDir', '^%s')"
+                        % webDevIconsGetFileTypeSymbol("", isdir=True)
+                    )
+                )
             else:
                 id = int(lfEval(r"matchadd('Lf_hl_filerDir', '^[^\/]\+\/$')"))
 
