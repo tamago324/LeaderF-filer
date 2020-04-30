@@ -7,15 +7,13 @@ import shutil
 
 from filer.commands.input import (
     command___input_cancel,
-    get_context,
+    do_command,
     input_prompt,
-    restore_context,
     save_context,
-    switch_normal_mode,
 )
 from filer.help import _help
-from filer.utils import NO_CONTENT_MSG, echo_cancel, echo_error
-from leaderf.utils import lfCmd, lfEval
+from filer.utils import NO_CONTENT_MSG, echo_error
+from leaderf.utils import lfCmd
 
 
 @_help.help("remove files")
@@ -60,19 +58,15 @@ def command__remove_trash_force(manager):
     return
 
 
-def command___do_remove(manager):
-    result = manager._instance._cli.pattern
+@do_command
+def command___do_remove(manager, context, results):
+    result = results[0]
     if not yes(result):
         command___input_cancel(manager)
         return
 
-    ctx = get_context()
-    try:
-        remove = ctx["remove_func"]
-        remove(manager, ctx["path_list"])
-    finally:
-        restore_context(manager, restore_input_pattern=False, restore_cursor_pos=False)
-        switch_normal_mode(manager)
+    remove = context["remove_func"]
+    remove(manager, context["path_list"])
 
 
 def cmd_remove(manager, remove_func):
@@ -82,24 +76,10 @@ def cmd_remove(manager, remove_func):
     if NO_CONTENT_MSG in path_list:
         return
 
-    if manager._instance.getWinPos() not in ("popup", "floatwin"):
-        try:
-            # confirm
-            result = lfEval("input('Remove {}files? Y[es]/n[o]: ')".format(file_cnt))
-        except KeyboardInterrupt:  # Cancel
-            echo_cancel()
-            return
-
-        if not yes(result):
-            echo_cancel()
-            return
-
-        remove_func(manager, path_list)
-        lfCmd("redraw")
-    else:
-        save_context(manager, **{"path_list": path_list, "remove_func": remove_func})
-        # confirm
-        input_prompt(manager, "remove", "Remove {}files? Y[es]/n[o]: ".format(file_cnt))
+    save_context(manager, **{"path_list": path_list, "remove_func": remove_func})
+    input_prompt(
+        manager, "remove", [{"prompt": "Remove {}files? Y[es]/n[o]: ".format(file_cnt)}]
+    )
 
 
 def get_path_list(manager):

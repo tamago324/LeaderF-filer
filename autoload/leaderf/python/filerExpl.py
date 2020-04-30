@@ -345,7 +345,13 @@ class FilerExplManager(Manager):
         for line, info in self._getExplorer()._contents.items():
             if info["fullpath"] == os.path.abspath(path):
                 if line in self._content:
-                    self._move_cursor(self._content.index(line) + 1)
+                    lnum = self._content.index(line)
+                    if self._instance._reverse_order:
+                        # Reverse the position.
+                        lnum = len(self._content) - lnum
+                    else:
+                        lnum += 1
+                    self._move_cursor(lnum)
                     break
 
     def _refresh(self, cwd=None, write_history=True, normal_mode=False):

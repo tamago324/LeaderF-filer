@@ -27,7 +27,7 @@ def command__paste(manager):
 
     # *_copy があったら、だめ
     if os.path.exists(to_path):
-        echo_error(" Already exists. '{}'".format(to_path))
+        echo_error(" Already exists. '{}'".format(to_path.replace("\\", "/")))
         manager._refresh()
         return
 

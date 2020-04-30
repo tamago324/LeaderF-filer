@@ -1,15 +1,9 @@
 import os
 
-from filer.commands.input import (
-    get_context,
-    input_prompt,
-    restore_context,
-    save_context,
-    switch_normal_mode,
-)
+from filer.commands.input import do_command, input_prompt, save_context
 from filer.help import _help
 from filer.utils import echo_cancel, echo_error, invalid_line
-from leaderf.utils import lfCmd, lfEval
+from leaderf.utils import lfEval
 
 
 @_help.help("rename files and directories")
@@ -25,47 +19,27 @@ def command__rename(manager):
     from_path = manager._getExplorer()._contents[line]["fullpath"]
     basename = os.path.basename(from_path)
 
-    if manager._instance.getWinPos() not in ("popup", "floatwin"):
-        try:
-            renamed = lfEval("input('Rename: ', '{}')".format(basename))
-        except KeyboardInterrupt:  # Cancel
-            echo_cancel()
-            return
-
-        _rename(manager, from_path, renamed, basename)
-        lfCmd("redraw")
-    else:
-        save_context(manager, **{"from_path": from_path, "basename": basename})
-        # in popup
-        input_prompt(manager, "rename", "Rename: ", basename)
+    save_context(manager, **{"from_path": from_path, "basename": basename})
+    input_prompt(manager, "rename", [{"prompt": "Rename: ", "text": basename}])
 
 
-def command___do_rename(manager):
-    renamed = manager._instance._cli.pattern
-    try:
-        _rename(
-            manager, get_context()["from_path"], renamed, get_context()["basename"],
-        )
-    finally:
-        restore_context(manager, restore_input_pattern=False, restore_cursor_pos=False)
-        switch_normal_mode(manager)
-
-
-def _rename(manager, from_path, renamed, basename):
+@do_command
+def command___do_rename(manager, context, results):
+    renamed = results[0]
     if renamed == "":
         echo_cancel()
         return
 
-    if renamed == basename:
+    if renamed == context["basename"]:
         return
 
-    to_path = os.path.join(os.path.dirname(from_path), renamed)
+    to_path = os.path.join(os.path.dirname(context["from_path"]), renamed)
 
     if os.path.exists(to_path):
-        echo_error(" Already exists. '{}'".format(to_path))
+        echo_error(" Already exists. '{}'".format(to_path.replace("\\", "/")))
         return
 
-    os.rename(from_path, to_path)
+    os.rename(context["from_path"], to_path)
 
     if manager._instance.getWinPos() not in ("popup", "floatwin"):
         manager._refresh()
