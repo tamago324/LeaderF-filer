@@ -3,9 +3,9 @@
 
 import os
 
-from help import _help
+from filer.help import _help
+from filer.utils import cd, nearestAncestor
 from leaderf.utils import lfCmd, lfEval
-from utils import cd, nearestAncestor
 
 
 @_help.help("toggle show hidden files")

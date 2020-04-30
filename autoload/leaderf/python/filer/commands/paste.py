@@ -4,9 +4,9 @@
 import os
 import shutil
 
-from help import _help
+from filer.help import _help
+from filer.utils import echo_error
 from leaderf.utils import lfCmd
-from utils import echo_error
 
 
 @_help.help("paste the file or directory")
@@ -27,7 +27,7 @@ def command__paste(manager):
 
     # *_copy があったら、だめ
     if os.path.exists(to_path):
-        echo_error(" Already exists. '{}'".format(to_path))
+        echo_error(" Already exists. '{}'".format(to_path.replace("\\", "/")))
         manager._refresh()
         return
 

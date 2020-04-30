@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from help import _help
+from filer.help import _help
 from leaderf.utils import lfCmd, lfEval
 
 
