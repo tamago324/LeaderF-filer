@@ -353,14 +353,6 @@ List of command names that can be used in both |g:Lf_FilerInsertMap| and
         The prompt string is cleared and show files files in the parent
         directory.
 
-    open_parent_or_backspace
-        Show files in parent directory or delete the preceding character in
-        the prompt if a pattern wasentered.
-
-    open_parent_or_clear_line
-        Show files in parent directory or clears the prompt if a pattern was
-        entered.
-
     open_current
         Show files in directory under cursor or open the file under the cursor.
 
@@ -384,6 +376,14 @@ List of command names that can be used only by |g:Lf_FilerNormalMap|.
 
     switch_insert_mode
         Switch to insert mode.
+
+    open_parent_or_backspace
+        Show files in parent directory or delete the preceding character in
+        the prompt if a pattern wasentered.
+
+    open_parent_or_clear_line
+        Show files in parent directory or clears the prompt if a pattern was
+        entered.
 
     history_backward
         Go backwards in history.
