@@ -162,7 +162,12 @@ class FilerExplManager(Manager):
 
         if os.path.isdir(path):
             cmd = lfEval("get(g:, 'Lf_FilerAcceptDirSelectionCmd', 'lcd')")
-            lfCmd("%s %s" % (cmd, escSpecial(path)))
+            path = escSpecial(path)
+            if cmd == 'open_dir':
+                lfCmd("%s %s" % ("lcd", path))
+                lfCmd("Leaderf filer")
+                return
+            lfCmd("%s %s" % (cmd, path))
             return
 
         # from manager.py

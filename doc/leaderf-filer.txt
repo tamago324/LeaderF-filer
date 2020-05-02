@@ -25,7 +25,9 @@ g:Lf_FilerShowHiddenFiles                          *g:Lf_FilerShowHiddenFiles*
     Default value: 0
 
 g:Lf_FilerAcceptDirSelectionCmd              *g:Lf_FilerAcceptDirSelectionCmd*
-    Command to execute when accepting selection if directory.
+    Command to execute when accepting selection if directory and its value
+    equal to 'lcd'.
+    Enter that dir when its value equal to 'open_dir'.
 
     Default value: 'lcd'
 

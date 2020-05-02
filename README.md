@@ -43,44 +43,44 @@ If you use `remove_trash` and `remove_trash_force`, you need [Send2Trash](https:
 ### Insert mode
 
 
-| Mapping                     | Command                   | Description                                                                                             |
-|-----------------------------|---------------------------|---------------------------------------------------------------------------------------------------------|
-|                             | nop                       | Does nothing like `<Nop>`.                                                                              |
-| `<Esc>` <br> `<C-c>`        | quit                      | Quit from LeaderF.                                                                                      |
-| `<C-k>`                     | up                        | move the cursor downward in the result window.                                                          |
-| `<C-j>`                     | down                      | move the cursor upward in the result window.                                                            |
-| `<CR>` <br> `<2-LeftMouse>` | accept                    | Open the file under cursor or create a file with the input pattern file name (when empty results).      |
-| `<C-x>`                     | accept_horizontal         | Open the file under cursor in horizontal split window.                                                  |
-| `<C-]>`                     | accept_vertical           | Open the file under cursor in vertical split window.                                                    |
-| `<C-t>`                     | accept_tab                | Open the file under cursor new tabpage.                                                                 |
-| `<C-s>`                     | add_selections            | select multiple result.                                                                                 |
-| `<C-a>`                     | select_all                | select all result.                                                                                      |
-| `<F3>`                      | clear_selections          | clear all selections.                                                                                   |
-| `<C-p>`                     | preview                   | Preview the result.                                                                                     |
-| `<C-Up>`                    | page_up_in_preview        | Scroll up in the popup preview window.                                                                  |
-| `<C-Down>`                  | page_down_in_preview      | Scroll down in the popup preview window.                                                                |
-|                             | close_preview_popup       | Close popup preview window.                                                                             |
-|                             | open_parent               | The prompt string is cleared and show files files in the parent directory.                              |
-| `<C-l>`                     | open_current              | Show files in directory under cursor or open the file under the cursor.                                 |
-| `<C-f>`                     | toggle_hidden_files       | Toggle show hidden files.                                                                               |
-| `<C-g>`                     | goto_root_marker_dir      | Show files of directory where `g:Lf_RootMarkers` exists.                                                |
-|                             | change_directory          | Change the current directory to cwd of LeaderF-filer.                                                   |
-|                             |                           |                                                                                                         |
-| `<C-r>`                     | toggle_regex              | Switch between fuzzy search mode and regex mode.                                                        |
-| `<Tab>`                     | switch_normal_mode        | Switch to normal mode.                                                                                  |
-|                             | open_parent_or_backspace  | Show files in parent directory or delete the preceding character in the prompt if a pattern wasentered. |
-| `<C-h>`                     | open_parent_or_clear_line | Show files in parent directory or clears the prompt if a pattern was entered.                           |
-| `<C-v>` <br> `<S-Insert>`   | paste                     | Paste from clipboard.                                                                                   |
-| `<C-u>`                     | clear_line                | Clear the prompt.                                                                                       |
-| `<C-w>`                     | delete_left_word          | Delete the word before the cursor in the prompt.                                                        |
-| `<Up>`                      | prev_history              | Recall last input pattern from history.                                                                 |
-| `<Down>`                    | next_history              | Recall next input pattern from history.                                                                 |
-| `<BS>`                      | backspace                 | Delete the preceding character in the prompt.                                                           |
-| `<Del>`                     | delete                    | Delete the current character in the prompt.                                                             |
-| `<C-a>` <br> `<Home>`       | home                      | Move the cursor to the begin of the prompt.                                                             |
-| `<C-e>` <br> `<End>`        | end                       | Move the cursor to the end of the prompt.                                                               |
-| `<Left>`                    | left                      | Move the cursor one character to the left.                                                              |
-| `<Right>`                   | right                     | Move the cursor one character to the right.                                                             |
+| Mapping                     | Command                   | Description                                                                                                     |
+|-----------------------------|---------------------------|---------------------------------------------------------------------------------------------------------        |
+| | nop                       | Does nothing like `<Nop>`.                                                                                                                  |
+| `<Esc>` <br> `<C-c>`        | quit                      | Quit from LeaderF.                                                                                              |
+| `<C-k>`                     | up                        | move the cursor downward in the result window.                                                                  |
+| `<C-j>`                     | down                      | move the cursor upward in the result window.                                                                    |
+| `<CR>` <br> `<2-LeftMouse>` | accept                    | Open the file or enter dir under cursor or create a file with the input pattern file name (when empty results). |
+| `<C-x>`                     | accept_horizontal         | Open the file under cursor in horizontal split window.                                                          |
+| `<C-]>`                     | accept_vertical           | Open the file under cursor in vertical split window.                                                            |
+| `<C-t>`                     | accept_tab                | Open the file under cursor new tabpage.                                                                         |
+| `<C-s>`                     | add_selections            | select multiple result.                                                                                         |
+| `<C-a>`                     | select_all                | select all result.                                                                                              |
+| `<F3>`                      | clear_selections          | clear all selections.                                                                                           |
+| `<C-p>`                     | preview                   | Preview the result.                                                                                             |
+| `<C-Up>`                    | page_up_in_preview        | Scroll up in the popup preview window.                                                                          |
+| `<C-Down>`                  | page_down_in_preview      | Scroll down in the popup preview window.                                                                        |
+| | close_preview_popup       | Close popup preview window.                                                                                                                 |
+| | open_parent               | The prompt string is cleared and show files files in the parent directory.                                                                  |
+| `<C-l>`                     | open_current              | Show files in directory under cursor or open the file under the cursor.                                         |
+| `<C-f>`                     | toggle_hidden_files       | Toggle show hidden files.                                                                                       |
+| `<C-g>`                     | goto_root_marker_dir      | Show files of directory where `g:Lf_RootMarkers` exists.                                                        |
+| | change_directory          | Change the current directory to cwd of LeaderF-filer.                                                                                       |
+| |                           |                                                                                                                                             |
+| `<C-r>`                     | toggle_regex              | Switch between fuzzy search mode and regex mode.                                                                |
+| `<Tab>`                     | switch_normal_mode        | Switch to normal mode.                                                                                          |
+| | open_parent_or_backspace  | Show files in parent directory or delete the preceding character in the prompt if a pattern wasentered.                                     |
+| `<C-h>`                     | open_parent_or_clear_line | Show files in parent directory or clears the prompt if a pattern was entered.                                   |
+| `<C-v>` <br> `<S-Insert>`   | paste                     | Paste from clipboard.                                                                                           |
+| `<C-u>`                     | clear_line                | Clear the prompt.                                                                                               |
+| `<C-w>`                     | delete_left_word          | Delete the word before the cursor in the prompt.                                                                |
+| `<Up>`                      | prev_history              | Recall last input pattern from history.                                                                         |
+| `<Down>`                    | next_history              | Recall next input pattern from history.                                                                         |
+| `<BS>`                      | backspace                 | Delete the preceding character in the prompt.                                                                   |
+| `<Del>`                     | delete                    | Delete the current character in the prompt.                                                                     |
+| `<C-a>` <br> `<Home>`       | home                      | Move the cursor to the begin of the prompt.                                                                     |
+| `<C-e>` <br> `<End>`        | end                       | Move the cursor to the end of the prompt.                                                                       |
+| `<Left>`                    | left                      | Move the cursor one character to the left.                                                                      |
+| `<Right>`                   | right                     | Move the cursor one character to the right.                                                                     |
 
 
 ### Normal mode
