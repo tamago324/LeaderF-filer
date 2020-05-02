@@ -5,7 +5,7 @@ This Plugin use [LeaderF](https://github.com/Yggdroot/LeaderF) to navigate the f
 Inspired by [vim-clap's filer provider](https://github.com/liuchengxu/vim-clap/pull/272), [helm's find-files](https://github.com/emacs-helm/helm).
 
 <p align="center">
-  <img src="./images/leaderf.gif" alt="leaderf-filer-gif" width="700" style=""/>
+  <img src="https://github.com/tamago324/images/blob/master/leaderf_filer/leaderf-filer.gif" alt="leaderf-filer-gif" width="700" style=""/>
 </p>
 
 ## Installation
@@ -28,15 +28,15 @@ If you use `remove_trash` and `remove_trash_force`, you need [Send2Trash](https:
 
 `:Leaderf filer`
 
-<img src="./images/buffer.png" alt="buffer" />
+<img src="https://github.com/tamago324/images/blob/master/leaderf_filer/buffer.png" alt="buffer" />
 
 `:Leaderf filer --popup`
 
-<img src="./images/popup.png" alt="popup" />
+<img src="https://github.com/tamago324/images/blob/master/leaderf_filer/popup.png" alt="popup" />
 
 `let g:Lf_FilerShowPromptPath = 1`
 
-<img src="./images/popup_show_path.png" alt="popup-show-path-in-prompt" />
+<img src="https://github.com/tamago324/images/blob/master/leaderf_filer/popup_show_path.png" alt="popup-show-path-in-prompt" />
 
 ## Mappings
 
