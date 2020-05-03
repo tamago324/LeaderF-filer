@@ -3,6 +3,7 @@
 
 import os
 import os.path
+import re
 
 from filer.cmd import Cmd
 from filer.help import _help
@@ -295,6 +296,13 @@ class FilerExplManager(Manager):
         _dir = ""
         if kwargs.get("arguments", {}).get("directory"):
             _dir = kwargs.get("arguments", {}).get("directory")[0]
+            # Get a quoted path
+            # e,g,
+            #   :Leaderf filer 'C:\Program Files'
+            #   :Leaderf filer "C:\Program Files"
+            m = re.match(r"""("[^"]+"|'[^']+')""", _dir)
+            if m:
+                _dir = m.groups()[0][1:-1]
             _dir = os.path.expanduser(lfDecode(_dir))
             _dir = os.path.expandvars(_dir)
             _dir = os.path.abspath(_dir)

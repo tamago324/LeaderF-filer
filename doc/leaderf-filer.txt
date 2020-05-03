@@ -470,15 +470,27 @@ List of command names that can be used only by |g:Lf_FilerInsertMap|.
 ------------------------------------------------------------------------------
 HIGHLIGHTS~
 
-Lf_hl_filerPath                                 *Lf_hl_filerPath*
+Lf_hl_filerPath                                              *Lf_hl_filerPath*
     default: `highlight def link Lf_hl_filerPath Normal`
 
-Lf_hl_filerDir                                  *Lf_hl_filerDir*
+Lf_hl_filerDir                                                *Lf_hl_filerDir*
     default: `highlight def link Lf_hl_filerDir Identifier`
 
-Lf_hl_filerNoContent                            *Lf_hl_filerNoContent*
+Lf_hl_filerNoContent                                    *Lf_hl_filerNoContent*
     default: `highlight def link Lf_hl_filerNoContent Comment`
 
+
+==============================================================================
+FAQ                                                        *LeaderF-filer-faq*
+
+Q: I get an error when the path contains spaces, what should I do?
+
+A: Please surround it with a `""` or `''`.
+   e.g.)
+>
+        nnoremap <silent> <C-e> :<C-u><C-r>=printf(
+        \       'Leaderf filer "%s"', expand('%:p:h'))<CR><CR>
+<
 
 ==============================================================================
 CHANGELOG                                            *LeaderF-filer-changelog*
