@@ -489,7 +489,8 @@ A: Please surround it with a `""` or `''`.
    e.g.)
 >
         nnoremap <silent> <C-e> :<C-u><C-r>=printf(
-        \       'Leaderf filer "%s"', expand('%:p:h'))<CR><CR>
+        \       "Leaderf filer '%s'",
+        \       substitute(expand('%:p:h'), '\\', '/', 'g'))<CR><CR>
 <
 
 ==============================================================================
