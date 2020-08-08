@@ -61,6 +61,7 @@ class FilerExplorer(Explorer):
                 k += "/"
             self._contents[k] = v
 
+        self._prefix_length = 0
         if self._show_devicons:
             self._prefix_length = webDevIconsStrLen()
             # Remove icon
@@ -214,7 +215,15 @@ class FilerExplManager(Manager):
         return line[prefix_len:]
 
     def _getDigestStartPos(self, line, mode):
-        return webDevIconsBytesLen()
+        if self._getExplorer()._show_devicons:
+            prefix_len = (
+                self._getExplorer().getPrefixLength()
+                - webDevIconsStrLen()
+                + webDevIconsBytesLen()
+            )
+        else:
+            prefix_len = self._getExplorer().getPrefixLength()
+        return prefix_len
 
     def _beforeEnter(self):
         super(FilerExplManager, self)._beforeEnter()
