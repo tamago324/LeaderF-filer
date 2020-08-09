@@ -21,7 +21,7 @@ def invalid_line(line):
 
 
 def echo_cancel():
-    lfCmd("echon ' Canceled.'")
+    lfCmd("redraw | echon ' Canceled.'")
 
 
 def echo_error(msg):

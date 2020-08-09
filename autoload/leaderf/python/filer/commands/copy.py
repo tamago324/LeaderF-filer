@@ -18,7 +18,7 @@ def command__copy(manager):
 
     manager._copy_file = manager._getExplorer()._contents[line]["fullpath"]
     manager._copy_mode = True
-    lfCmd("echon ' Copied.'")
+    lfCmd("redraw | echon ' Copied.'")
     # Updat estatus line
     manager._getExplorer().setCommandMode("COPY")
     manager._redrawStlCwd()

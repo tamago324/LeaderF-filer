@@ -28,7 +28,7 @@ def command__goto_root_marker_dir(manager):
 @_help.help("change the current directory to cwd of LeaderF-filer")
 def command__change_directory(manager):
     cd(manager._getExplorer().cwd)
-    lfCmd("echon ' cd {}'".format(manager._getExplorer().cwd))
+    lfCmd("redraw | echon ' cd {}'".format(manager._getExplorer().cwd))
 
 
 @_help.help("go backwards in history")

@@ -39,4 +39,4 @@ def command__paste(manager):
 
     manager._refresh()
     manager._move_cursor_if_fullpath_match(to_path)
-    lfCmd("echon ' Pasted.'")
+    lfCmd("redraw | echon ' Pasted.'")
