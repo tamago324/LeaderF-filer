@@ -10,7 +10,7 @@ class Cmd:
         self._manager = manager
         self._command_names = set()
 
-    def exec(self, cmd_name):
+    def execute_command(self, cmd_name):
         return eval("command__" + cmd_name)(self._manager)
 
     @property
@@ -18,7 +18,7 @@ class Cmd:
         if len(self._command_names) == 0:
             self._command_names = {
                 x[len("command__") :]
-                for x in filer.commands.__dir__()
+                for x in dir(filer.commands)
                 if x.startswith("command__")
             }
         return self._command_names

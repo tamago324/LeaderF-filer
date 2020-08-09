@@ -193,7 +193,7 @@ class FilerExplManager(Manager):
 
     def do_command(self, cmd_name):
         if self._command.contains(cmd_name):
-            return self._command.exec(cmd_name)
+            return self._command.execute_command(cmd_name)
         else:
             echo_error("Not found command: {}".format(cmd_name))
 
