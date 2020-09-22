@@ -4,7 +4,7 @@
 import os
 
 from filer.help import _help
-from filer.utils import cd, nearestAncestor
+from filer.utils import cd, echo_error, nearestAncestor
 from leaderf.utils import lfCmd, lfEval
 
 
@@ -12,6 +12,19 @@ from leaderf.utils import lfCmd, lfEval
 def command__toggle_hidden_files(manager):
     manager._getExplorer()._show_hidden_files = (
         not manager._getExplorer()._show_hidden_files
+    )
+    manager.refresh(normal_mode=False)
+
+
+@_help.help("toggle show .gitignore files")
+def command__toggle_gitignore_files(manager):
+    try:
+        import igittigitt
+    except ModuleNotFoundError:
+        echo_error('"igittigitt" is not installed')
+        return
+    manager._getExplorer()._show_gitignore_files = (
+        not manager._getExplorer()._show_gitignore_files
     )
     manager.refresh(normal_mode=False)
 

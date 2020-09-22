@@ -15,7 +15,9 @@ Plug 'Yggdroot/LeaderF'
 Plug 'tamago324/LeaderF-filer'
 ```
 
-If you use `remove_trash` and `remove_trash_force`, you need [Send2Trash](https://pypi.org/project/Send2Trash/).
+* If you use `remove_trash` and `remove_trash_force`, you need [Send2Trash](https://pypi.org/project/Send2Trash/).
+* If you use `toggle_gitignore_files`, you need [igittigitt](https://github.com/bitranox/igittigitt). (Python version required: 3.6.0 or newer)
+
 
 ## Usage
 
@@ -123,13 +125,16 @@ You can view help in F1.
 |                                      | remove_force         | Remove files without confirmation.                                                                 |
 |                                      | remove_trash         | Remove files and put in the trash.                                                                 |
 |                                      | remove_trash_force   | Remove files and put in the trash without confirmation.                                            |
+| `,`                                  | toggle_gitignore_files   | Toggle show .gitignore files.                                            |
 
 
 
 ## Credit
 
-* LeaderF-filer uses some code from [defx.nvim](https://github.com/Shougo/defx.nvim), [ranger](https://github.com/ranger/ranger).
+* LeaderF-filer uses some code from [defx.nvim](https://github.com/Shougo/defx.nvim), [ranger](https://github.com/ranger/ranger), [ripgrep](https://github.com/BurntSushi/ripgrep).
 * Thanks [Send2Trash](https://pypi.org/project/Send2Trash/).
+* Thanks [igittigitt](https://github.com/bitranox/igittigitt).
+*
 
 ## License
 

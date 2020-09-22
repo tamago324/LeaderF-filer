@@ -24,6 +24,11 @@ g:Lf_FilerShowHiddenFiles                          *g:Lf_FilerShowHiddenFiles*
 
     Default value: 0
 
+g:Lf_FilerShowGitIgnoreFiles                    *g:Lf_FilerShowGitIgnoreFiles*
+    When enabled, shows .gitignore files by default.
+
+    Default value: 1
+
 g:Lf_FilerAcceptDirSelectionCmd              *g:Lf_FilerAcceptDirSelectionCmd*
     Command to execute when accepting selection if directory.
 
@@ -136,6 +141,7 @@ Default mappings:                              *LeaderF-filer-default-mapping*
     \   '@':             'change_directory',
     \   'H':             'history_backward',
     \   'L':             'history_forward',
+    \   ',':             'toggle_gitignore_files',
     \}
 
     " insert mode:
@@ -245,6 +251,7 @@ For example, to map everything yourself without using the default mapping:
     \   'L':             'history_forward',
     \   'd':             'remove_trash',
     \   'D':             'remove_trash_force',
+    \   ',':             'toggle_gitignore_files',
     \}
 
     let g:Lf_FilerUseDefaultInsertMap = 0
@@ -425,6 +432,13 @@ List of command names that can be used only by |g:Lf_FilerNormalMap|.
         NOTE: Required Send2Trash (https://pypi.org/project/Send2Trash/)
         If you add `_force`, it will be removed without confirmation.
 
+    toggle_gitignore_files
+        Toggle show .gitignore files.
+        See https://git-scm.com/docs/gitignore
+
+        NOTE: Required igittigitt (https://github.com/bitranox/igittigitt)
+              (Python version required: 3.6.0 or newer)
+
 
 
 INSERT MODE ONLY                           *LeaderF-filer-map-commands-insert*
@@ -496,8 +510,12 @@ A: Please surround it with a `""` or `''`.
 ==============================================================================
 CHANGELOG                                            *LeaderF-filer-changelog*
 
+1.0.1   2020-09-22
+    - Add `toggle_gitignore_files` command.
+    - Add |g:Lf_FilerShowGitIgnoreFiles| option.
+
 0.1.2   2020-04-30
-    - Add |Lf_FilerOnlyIconHighlight| options.
+    - Add |g:Lf_FilerOnlyIconHighlight| options.
 
 0.1.1   2020-04-24
     - Add `remove` command.

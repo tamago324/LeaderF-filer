@@ -4,17 +4,26 @@
 import os
 import os.path
 import re
+from os.path import join
 
 from filer.cmd import Cmd
 from filer.help import _help
 from filer.history import History
-from filer.utils import NO_CONTENT_MSG, accessable, cd, echo_error
+from filer.utils import NO_CONTENT_MSG, accessable, cd, echo_error, nearestAncestor
+from gitignore import gitconfig_excludes_path
 from leaderf.devicons import *
 from leaderf.explorer import *
 from leaderf.manager import *
 from leaderf.utils import *
 
 MODE_DICT = {"NORMAL": "", "COPY": "[COPY] "}
+
+try:
+    import igittigitt
+
+    SUPPORT_GITIGNORE_FILES = True
+except ModuleNotFoundError:
+    SUPPORT_GITIGNORE_FILES = False
 
 
 # *****************************************************
@@ -33,6 +42,10 @@ class FilerExplorer(Explorer):
         # NORMAL or COPY
         self._command_mode = "NORMAL"
         self._prefix_length = 0
+        # hide files regexps
+        self._show_gitignore_files = (
+            lfEval("get(g:, 'Lf_FilerShowGitIgnoreFiles', 1)") == "1"
+        )
 
     def getContent(self, *args, **kwargs):
         self.cwd = self.cwd or os.getcwd()
@@ -43,8 +56,8 @@ class FilerExplorer(Explorer):
 
         contents = {
             lfEncode(f): {
-                "isdir": os.path.isdir(os.path.join(self.cwd, f)),
-                "fullpath": os.path.abspath(os.path.join(self.cwd, f)),
+                "isdir": os.path.isdir(join(self.cwd, f)),
+                "fullpath": os.path.abspath(join(self.cwd, f)),
             }
             for f in os.listdir(self.cwd)
         }
@@ -52,6 +65,32 @@ class FilerExplorer(Explorer):
         # hide dotfiles
         if not self._show_hidden_files:
             contents = {k: v for k, v in contents.items() if not k.startswith(".")}
+
+        # hide .gitignore files
+        if SUPPORT_GITIGNORE_FILES and not self._show_gitignore_files:
+            root_marker_dir = self._getRootMarkerDir()
+            if root_marker_dir:
+                parser = igittigitt.IgnoreParser()
+                # global ignore
+                global_exclude_path = gitconfig_excludes_path()
+                if os.path.exists(global_exclude_path):
+                    parser._parse_rule_file(
+                        rule_file=global_exclude_path, base_dir=root_marker_dir
+                    )
+
+                # .gitignore
+                path = join(root_marker_dir, ".gitignore")
+                if os.path.exists(path):
+                    parser._parse_rule_file(rule_file=path, base_dir=root_marker_dir)
+
+                # .git/info/exclude
+                path = join(join(join(root_marker_dir, ".git"), "info"), "exclude")
+                if os.path.exists(path):
+                    parser._parse_rule_file(rule_file=path, base_dir=root_marker_dir)
+
+                contents = {
+                    k: v for k, v in contents.items() if not parser.match(v["fullpath"])
+                }
 
         for k, v in contents.items():
             if self._show_devicons:
@@ -109,6 +148,12 @@ class FilerExplorer(Explorer):
     def getPrefixLength(self):
         return self._prefix_length
 
+    def _getRootMarkerDir(self):
+        """ .gitignore path in rootmarker """
+        root_markers = lfEval("get(g:, 'Lf_RootMarkers', [])")
+        rootMarkersDir = nearestAncestor(root_markers, self.cwd)
+        return rootMarkersDir
+
 
 # *****************************************************
 # FilerExplManager
@@ -141,7 +186,7 @@ class FilerExplManager(Manager):
 
         if line in ("", NO_CONTENT_MSG):
             # edit (new file)
-            path = os.path.join(self._getExplorer().cwd, pattern)
+            path = join(self._getExplorer().cwd, pattern)
             self._getInstance().exitBuffer()
             lfCmd("edit %s" % path)
             return
@@ -159,7 +204,7 @@ class FilerExplManager(Manager):
             path = self._getDigest(path, 0)
 
         if not os.path.isabs(path):
-            path = os.path.join(self._getExplorer().cwd, lfDecode(path))
+            path = join(self._getExplorer().cwd, lfDecode(path))
             path = os.path.normpath(lfEncode(path))
 
         if os.path.isdir(path):

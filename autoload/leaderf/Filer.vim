@@ -55,6 +55,7 @@ function! leaderf#Filer#NormalMap() abort
         \   '@':             'change_directory',
         \   'H':             'history_backward',
         \   'L':             'history_forward',
+        \   ',':             'toggle_gitignore_files',
         \}
         " \   '<PageUp>':      'page_up',
         " \   '<PageDown>':    'page_down',
