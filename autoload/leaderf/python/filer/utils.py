@@ -17,7 +17,7 @@ def accessable(path):
 
 
 def invalid_line(line):
-    return line in (".", NO_CONTENT_MSG)
+    return line in (".", NO_CONTENT_MSG, "")
 
 
 def echo_cancel():
