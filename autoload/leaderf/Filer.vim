@@ -14,7 +14,6 @@ endif
 exec g:Lf_py "import vim, sys, os.path"
 exec g:Lf_py "cwd = vim.eval('expand(\"<sfile>:p:h\")')"
 exec g:Lf_py "sys.path.insert(0, os.path.join(cwd, 'python'))"
-exec g:Lf_py "from filerExpl import *"
 exec g:Lf_py "from leaderf.utils import *"
 
 function! leaderf#Filer#NormalMap() abort
@@ -66,6 +65,7 @@ endfunction
 let s:normal_map = leaderf#Filer#NormalMap()
 
 function! leaderf#Filer#Maps()
+    exec g:Lf_py "from filerExpl import *"
     nmapclear <buffer>
     for [l:key, l:cmd] in items(s:normal_map)
         if l:cmd ==? 'nop'
@@ -173,6 +173,7 @@ function! leaderf#Filer#InsertMap() abort
 endfunction
 
 function! leaderf#Filer#managerId()
+    exec g:Lf_py "from filerExpl import *"
     " pyxeval() has bug
     if g:Lf_PythonVersion == 2
         return pyeval("id(filerExplManager)")
@@ -182,6 +183,7 @@ function! leaderf#Filer#managerId()
 endfunction
 
 function! leaderf#Filer#NormalModeFilter(winid, key) abort
+    exec g:Lf_py "from filerExpl import *"
     " Converted to uppercase just in case
     let l:key = get(g:Lf_KeyMap, a:key, a:key)
     let l:cmd = get(s:normal_map, l:key, '')
