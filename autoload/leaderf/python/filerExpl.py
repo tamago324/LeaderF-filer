@@ -407,11 +407,11 @@ class FilerExplManager(Manager):
 
     def _previewInPopup(self, *args, **kwargs):
         line = args[0]
-        if line == ".":
-            return
-        fullpath = self._getExplorer()._contents[line]["fullpath"]
-        buf_number = lfEval("bufadd('{}')".format(escQuote(fullpath)))
-        self._createPopupPreview(line, buf_number, 0)
+        if lfEval("bufloaded('%s')" % escQuote(line)) == '1':
+            source = int(lfEval("bufadd('%s')" % escQuote(line)))
+        else:
+            source = line
+        self._createPopupPreview(line, source, 0)
 
     def _redrawStlCwd(self, cwd=None):
         if cwd is None:

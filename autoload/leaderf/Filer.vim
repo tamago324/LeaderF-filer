@@ -113,7 +113,6 @@ function! leaderf#Filer#InsertMap() abort
         \   '<C-k>':        'up',
         \   '<Up>':         'prev_history',
         \   '<Down>':       'next_history',
-        \   '<C-p>':        'preview',
         \   '<Tab>':        'switch_normal_mode',
         \   '<C-Up>':       'page_up_in_preview',
         \   '<C-Down>':     'page_down_in_preview',
@@ -151,7 +150,6 @@ function! leaderf#Filer#InsertMap() abort
     \   'up3': '<ScroollWhellUp>',
     \   'down3': '<ScroollWhellDown>',
     \   'switch_normal_mode': '<Tab>',
-    \   'preview': '<C-p>',
     \   'page_up_in_preview': '<C-Up>',
     \   'page_down_in_preview': '<C-Down>',
     \   'add_selections': '<C-s>',
@@ -266,8 +264,6 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         call leaderf#Filer#NormalModeFilter(a:winid, "j")
     elseif l:cmd ==? 'toggle_help'
         exec g:Lf_py "filerExplManager.toggleHelp()"
-    elseif l:cmd ==? 'preview'
-        exec g:Lf_py "filerExplManager._previewResult(True)"
     elseif l:key ==? "<C-Up>"
         exec g:Lf_py "filerExplManager._toUpInPopup()"
     elseif l:key ==? "<C-Down>"
