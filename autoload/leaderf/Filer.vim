@@ -192,12 +192,12 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         call win_execute(a:winid, "let g:Lf_Filer_is_g_pressed = 0")
     endif
 
-    if l:cmd ==? "down"
+    if l:cmd ==? "down"  || l:key ==? '<DOWN>'
         call win_execute(a:winid, "norm! j")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         "redraw
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
-    elseif l:cmd ==? "up"
+    elseif l:cmd ==? "up" || l:key ==? '<UP>'
         call win_execute(a:winid, "norm! k")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         "redraw
@@ -248,7 +248,7 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         redraw
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
-    elseif l:cmd ==? "quit"
+    elseif l:cmd ==? "quit" || l:key ==? "<ESC>"
         exec g:Lf_py "filerExplManager.quit()"
     elseif l:cmd ==? "switch_insert_mode"
         call leaderf#ResetPopupOptions(a:winid, 'filter', 'leaderf#PopupFilter')
