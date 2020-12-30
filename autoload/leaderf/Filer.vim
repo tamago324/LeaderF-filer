@@ -261,6 +261,9 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager.accept('v')"
     elseif l:cmd ==? "accept_tab"
         exec g:Lf_py "filerExplManager.accept('t')"
+    elseif l:key ==? "<Space>" || l:key ==? "<SPACE>"
+        exec g:Lf_py "filerExplManager.addSelections()"
+        call leaderf#Filer#NormalModeFilter(a:winid, "j")
     elseif l:cmd ==? 'toggle_help'
         exec g:Lf_py "filerExplManager.toggleHelp()"
     elseif l:cmd ==? 'preview'
