@@ -406,12 +406,24 @@ class FilerExplManager(Manager):
             cd(path)
 
     def _previewInPopup(self, *args, **kwargs):
+        if len(args) == 0:
+            return
         line = args[0]
-        if lfEval("bufloaded('%s')" % escQuote(line)) == '1':
-            source = int(lfEval("bufadd('%s')" % escQuote(line)))
+
+        # do not show preview for directories
+        if line[-1] == "/":
+            return
+
+        file = line
+        if not os.path.isabs(file):
+            file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+            file = os.path.normpath(lfEncode(file))
+
+        if lfEval("bufloaded('%s')" % escQuote(file)) == '1':
+            source = int(lfEval("bufadd('%s')" % escQuote(file)))
         else:
-            source = line
-        self._createPopupPreview(line, source, 0)
+            source = file
+        self._createPopupPreview(file, source, 0)
 
     def _redrawStlCwd(self, cwd=None):
         if cwd is None:

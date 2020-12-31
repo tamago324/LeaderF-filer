@@ -195,19 +195,23 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         "redraw
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
+        exec g:Lf_py "filerExplManager._previewResult(False)"
     elseif l:cmd ==? "up" || l:key ==? '<UP>'
         call win_execute(a:winid, "norm! k")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         "redraw
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
+        exec g:Lf_py "filerExplManager._previewResult(False)"
     elseif l:cmd ==? "page_up"
         call win_execute(a:winid, "norm! \<PageUp>")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
+        exec g:Lf_py "filerExplManager._previewResult(False)"
     elseif l:cmd ==? "page_down"
         call win_execute(a:winid, "norm! \<PageDown>")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
+        exec g:Lf_py "filerExplManager._previewResult(False)"
     elseif l:key ==# "g"
         if get(g:, "Lf_Filer_is_g_pressed", 0) == 0
             let g:Lf_Filer_is_g_pressed = 1
@@ -264,6 +268,8 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         call leaderf#Filer#NormalModeFilter(a:winid, "j")
     elseif l:cmd ==? 'toggle_help'
         exec g:Lf_py "filerExplManager.toggleHelp()"
+    elseif l:cmd ==? 'preview'
+        exec g:Lf_py "filerExplManager._previewResult(True)"
     elseif l:key ==? "<C-Up>"
         exec g:Lf_py "filerExplManager._toUpInPopup()"
     elseif l:key ==? "<C-Down>"
