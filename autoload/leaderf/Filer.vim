@@ -20,12 +20,8 @@ function! leaderf#Filer#NormalMap() abort
     let l:default_map = {}
     if get(g:, 'Lf_FilerUseDefaultNormalMap', v:true)
         let l:default_map = {
-        \   'h':             'open_parent',
-        \   'l':             'open_current',
-        \   '<C-h>':         'open_parent',
-        \   '<C-l>':         'open_current',
         \   '<C-g>':         'goto_root_marker_dir',
-        \   'I':             'toggle_hidden_files',
+        \   '<C-h>':         'toggle_hidden_files',
         \   'j':             'down',
         \   'k':             'up',
         \   '<Down>':        'down',
@@ -34,16 +30,14 @@ function! leaderf#Filer#NormalMap() abort
         \   '<Tab>':         'switch_insert_mode',
         \   'p':             'preview',
         \   'q':             'quit',
-        \   'o':             'accept',
-        \   '<CR>':          'accept',
-        \   '<2-LeftMouse>': 'accept',
-        \   'x':             'accept_horizontal',
+        \   '<CR>':          'open_current',
+        \   's':             'accept_horizontal',
         \   'v':             'accept_vertical',
         \   't':             'accept_tab',
-        \   '<Pageup>':        'page_up_in_preview',
-        \   '<Pagedown>':      'page_down_in_preview',
+        \   '<Pageup>':      'page_up_in_preview',
+        \   '<Pagedown>':    'page_down_in_preview',
         \   '<Esc>':         'close_preview_popup',
-        \   's':             'add_selections',
+        \   '<Space>':       'add_selections',
         \   'a':             'select_all',
         \   'c':             'clear_selections',
         \   'K':             'mkdir',
@@ -52,8 +46,6 @@ function! leaderf#Filer#NormalMap() abort
         \   'R':             'rename',
         \   'O':             'create_file',
         \   '@':             'change_directory',
-        \   'H':             'history_backward',
-        \   'L':             'history_forward',
         \}
     endif
     return extend(l:default_map, get(g:, 'Lf_FilerNormalMap', {}))
@@ -82,23 +74,14 @@ function! leaderf#Filer#InsertMap() abort
     let l:default_map = {}
     if get(g:, 'Lf_FilerUseDefaultInsertMap', v:true)
         let l:default_map = {
-        \   '<C-h>':        'open_parent_or_clear_line',
-        \   '<C-l>':        'open_current',
-        \   '<C-f>':        'toggle_hidden_files',
+        \   '<C-h>':        'toggle_hidden_files',
         \   '<C-g>':        'goto_root_marker_dir',
         \   '<Esc>':        'quit',
-        \   '<C-c>':        'quit',
-        \   '<CR>':         'accept',
-        \   '<C-x>':        'accept_horizontal',
-        \   '<C-]>':        'accept_vertical',
-        \   '<C-t>':        'accept_tab',
+        \   '<CR>':         'open_current',
         \   '<C-r>':        'toggle_regex',
         \   '<BS>':         'backspace',
-        \   '<C-u>':        'clear_line',
-        \   '<C-w>':        'delete_left_word',
         \   '<Del>':        'delete',
         \   '<C-v>':        'paste',
-        \   '<S-Insert>':   'paste',
         \   '<Home>':       'home',
         \   '<C-b>':        'home',
         \   '<End>':        'end',
@@ -110,9 +93,6 @@ function! leaderf#Filer#InsertMap() abort
         \   '<Tab>':        'switch_normal_mode',
         \   '<Pageup>':     'page_up_in_preview',
         \   '<Pagedown>':   'page_down_in_preview',
-        \   '<C-s>':        'add_selections',
-        \   '<C-a>':        'select_all',
-        \   '<F3>':         'clear_selections',
         \}
     endif
 
@@ -122,13 +102,8 @@ function! leaderf#Filer#InsertMap() abort
     let l:cli_map = {
     \   'quit': '<Esc>',
     \   'accept': '<CR>',
-    \   'accept_horizontal': '<C-x>',
-    \   'accept_vertical': '<C-]>',
-    \   'accept_tab': '<C-t>',
     \   'toggle_regex': '<C-r>',
     \   'backspace': '<BS>',
-    \   'clear_line': '<C-u>',
-    \   'delete_left_word': '<C-w>',
     \   'delete': '<Del>',
     \   'paste': '<C-v>',
     \   'home': '<Home>',
@@ -140,9 +115,6 @@ function! leaderf#Filer#InsertMap() abort
     \   'switch_normal_mode': '<Tab>',
     \   'page_up_in_preview': '<Pageup>',
     \   'page_down_in_preview': '<Pagedown>',
-    \   'add_selections': '<C-s>',
-    \   'select_all': '<C-a>',
-    \   'clear_selections': '<F3>',
     \}
 
     " { '<C-e>': 'end' } => { '<C-e>': '<End>' }
@@ -209,14 +181,6 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         endif
     elseif l:key ==# "G"
         call win_execute(a:winid, "norm! G")
-        exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
-        redraw
-    elseif l:key ==? "<C-U>"
-        call win_execute(a:winid, "norm! \<C-U>")
-        exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
-        redraw
-    elseif l:key ==? "<C-D>"
-        call win_execute(a:winid, "norm! \<C-D>")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         redraw
     elseif l:cmd ==? "quit" || l:key ==? "<ESC>"
