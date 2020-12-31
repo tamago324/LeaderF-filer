@@ -40,8 +40,8 @@ function! leaderf#Filer#NormalMap() abort
         \   'x':             'accept_horizontal',
         \   'v':             'accept_vertical',
         \   't':             'accept_tab',
-        \   '<C-Up>':        'page_up_in_preview',
-        \   '<C-Down>':      'page_down_in_preview',
+        \   '<Pageup>':        'page_up_in_preview',
+        \   '<Pagedown>':      'page_down_in_preview',
         \   '<Esc>':         'close_preview_popup',
         \   's':             'add_selections',
         \   'a':             'select_all',
@@ -55,9 +55,6 @@ function! leaderf#Filer#NormalMap() abort
         \   'H':             'history_backward',
         \   'L':             'history_forward',
         \}
-        " \   '<PageUp>':      'page_up',
-        " \   '<PageDown>':    'page_down',
-        " \   '<LeftMouse>':   'left_mouse',
     endif
     return extend(l:default_map, get(g:, 'Lf_FilerNormalMap', {}))
 endfunction
@@ -92,7 +89,6 @@ function! leaderf#Filer#InsertMap() abort
         \   '<Esc>':        'quit',
         \   '<C-c>':        'quit',
         \   '<CR>':         'accept',
-        \   '<2-LeftMouse>': 'accept',
         \   '<C-x>':        'accept_horizontal',
         \   '<C-]>':        'accept_vertical',
         \   '<C-t>':        'accept_tab',
@@ -109,15 +105,11 @@ function! leaderf#Filer#InsertMap() abort
         \   '<C-e>':        'end',
         \   '<Left>':       'left',
         \   '<Right>':      'right',
-        \   '<C-j>':        'down',
-        \   '<C-k>':        'up',
-        \   '<Up>':         'prev_history',
-        \   '<Down>':       'next_history',
+        \   '<Down>':       'down',
+        \   '<Up>':         'up',
         \   '<Tab>':        'switch_normal_mode',
-        \   '<C-Up>':       'page_up_in_preview',
-        \   '<C-Down>':     'page_down_in_preview',
-        \   '<ScroollWhellUp>': 'up3',
-        \   '<ScroollWhellDown>': 'down3',
+        \   '<Pageup>':     'page_up_in_preview',
+        \   '<Pagedown>':   'page_down_in_preview',
         \   '<C-s>':        'add_selections',
         \   '<C-a>':        'select_all',
         \   '<F3>':         'clear_selections',
@@ -143,15 +135,11 @@ function! leaderf#Filer#InsertMap() abort
     \   'end': '<End>',
     \   'left': '<Left>',
     \   'right': '<Right>',
-    \   'up': '<C-k>',
-    \   'down': '<C-j>',
-    \   'prev_history': '<Up>',
-    \   'next_history': '<Down>',
-    \   'up3': '<ScroollWhellUp>',
-    \   'down3': '<ScroollWhellDown>',
+    \   'up': '<Up>',
+    \   'down': '<Down>',
     \   'switch_normal_mode': '<Tab>',
-    \   'page_up_in_preview': '<C-Up>',
-    \   'page_down_in_preview': '<C-Down>',
+    \   'page_up_in_preview': '<Pageup>',
+    \   'page_down_in_preview': '<Pagedown>',
     \   'add_selections': '<C-s>',
     \   'select_all': '<C-a>',
     \   'clear_selections': '<F3>',
@@ -202,16 +190,14 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         "redraw
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
         exec g:Lf_py "filerExplManager._previewResult(False)"
-    elseif l:cmd ==? "page_up"
-        call win_execute(a:winid, "norm! \<PageUp>")
-        exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
-        exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
-        exec g:Lf_py "filerExplManager._previewResult(False)"
-    elseif l:cmd ==? "page_down"
-        call win_execute(a:winid, "norm! \<PageDown>")
-        exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
-        exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
-        exec g:Lf_py "filerExplManager._previewResult(False)"
+    elseif l:cmd ==? "page_up" || l:key ==? "<Pageup>" || l:key ==? "<PAGEUP>"
+        for i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            exec g:Lf_py "filerExplManager._toUpInPopup()"
+        endfor
+    elseif l:cmd ==? "page_down" || l:key ==? "<Pagedown>" || l:key ==? "<PAGEDOWN>"
+        for i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            exec g:Lf_py "filerExplManager._toDownInPopup()"
+        endfor
     elseif l:key ==# "g"
         if get(g:, "Lf_Filer_is_g_pressed", 0) == 0
             let g:Lf_Filer_is_g_pressed = 1
@@ -233,28 +219,12 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         call win_execute(a:winid, "norm! \<C-D>")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         redraw
-    elseif l:key ==? "<LeftMouse>"
-        if has('patch-8.1.2266')
-            call win_execute(a:winid, "exec v:mouse_lnum")
-            call win_execute(a:winid, "exec 'norm!'.v:mouse_col.'|'")
-            exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
-            redraw
-        endif
-    elseif l:key ==? "<ScrollWheelUp>"
-        call win_execute(a:winid, "norm! 3k")
-        exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
-        redraw
-        exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
-    elseif l:key ==? "<ScrollWheelDown>"
-        call win_execute(a:winid, "norm! 3j")
-        exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
-        redraw
-        exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
     elseif l:cmd ==? "quit" || l:key ==? "<ESC>"
         exec g:Lf_py "filerExplManager.quit()"
-    elseif l:cmd ==? "switch_insert_mode"
+    elseif l:cmd ==? "switch_insert_mode" || l:cmd ==? "<TAB>"
         call leaderf#ResetPopupOptions(a:winid, 'filter', 'leaderf#PopupFilter')
         exec g:Lf_py "filerExplManager.input()"
+        exec g:Lf_py "filerExplManager._previewResult(False)"
     elseif l:cmd ==? "accept"
         exec g:Lf_py "filerExplManager.accept()"
     elseif l:cmd ==? "accept_horizontal"
@@ -270,10 +240,6 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager.toggleHelp()"
     elseif l:cmd ==? 'preview'
         exec g:Lf_py "filerExplManager._previewResult(True)"
-    elseif l:key ==? "<C-Up>"
-        exec g:Lf_py "filerExplManager._toUpInPopup()"
-    elseif l:key ==? "<C-Down>"
-        exec g:Lf_py "filerExplManager._toDownInPopup()"
     else
         " customize l:key mappings
         for [l:custom_key, l:func] in items(s:normal_map)
