@@ -11,6 +11,9 @@ from leaderf.utils import lfCmd
 
 @_help.help("open file/dir under cursor")
 def command__open_current(manager):
+    if manager._cli.pattern == "..":
+        _open_parent(manager)
+        return
     line = manager._getInstance().currentLine
     if line == NO_CONTENT_MSG:
         return
