@@ -410,19 +410,15 @@ class FilerExplManager(Manager):
             return
 
         line = args[0]
-        if line == ".":
+        if line == "." or line[-1] == "/":
             return
 
-        file = line
-        if not os.path.isabs(file):
-            file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
-            file = os.path.normpath(lfEncode(file))
-
-        if lfEval("bufloaded('%s')" % escQuote(file)) == '1':
-            source = int(lfEval("bufadd('%s')" % escQuote(file)))
-        else:
-            source = file
-        self._createPopupPreview(file, source, 0)
+        file = self._getDigest(line, 0)
+        file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+        file = os.path.normpath(lfEncode(file))
+        buf_number = int(lfEval("bufadd('%s')" % escQuote(file)))
+        lfCmd("echomsg '{}'".format(file))
+        self._createPopupPreview(file, buf_number, 0)
 
     def _redrawStlCwd(self, cwd=None):
         if cwd is None:
