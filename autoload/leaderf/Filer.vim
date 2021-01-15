@@ -256,11 +256,11 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
     elseif l:cmd ==? "accept"
         exec g:Lf_py "filerExplManager.accept()"
     elseif l:cmd ==? "accept_horizontal"
-        exec g:Lf_py "fileExplManager.accept('h')"
+        exec g:Lf_py "filerExplManager.accept('h')"
     elseif l:cmd ==? "accept_vertical"
-        exec g:Lf_py "fileExplManager.accept('v')"
+        exec g:Lf_py "filerExplManager.accept('v')"
     elseif l:cmd ==? "accept_tab"
-        exec g:Lf_py "fileExplManager.accept('t')"
+        exec g:Lf_py "filerExplManager.accept('t')"
     elseif l:cmd ==? 'toggle_help'
         exec g:Lf_py "filerExplManager.toggleHelp()"
     elseif l:cmd ==? 'preview'
