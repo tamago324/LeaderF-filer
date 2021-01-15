@@ -197,19 +197,23 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         "redraw
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
+        exec g:Lf_py "gtagsExplManager._previewResult(False)"
     elseif l:cmd ==? "up"
         call win_execute(a:winid, "norm! k")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         "redraw
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
+        exec g:Lf_py "gtagsExplManager._previewResult(False)"
     elseif l:cmd ==? "page_up"
         call win_execute(a:winid, "norm! \<PageUp>")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
+        exec g:Lf_py "gtagsExplManager._previewResult(False)"
     elseif l:cmd ==? "page_down"
         call win_execute(a:winid, "norm! \<PageDown>")
         exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
         exec g:Lf_py "filerExplManager._getInstance().refreshPopupStatusline()"
+        exec g:Lf_py "gtagsExplManager._previewResult(False)"
     elseif l:key ==# "g"
         if get(g:, "Lf_Filer_is_g_pressed", 0) == 0
             let g:Lf_Filer_is_g_pressed = 1
@@ -237,6 +241,7 @@ function! leaderf#Filer#NormalModeFilter(winid, key) abort
             call win_execute(a:winid, "exec 'norm!'.v:mouse_col.'|'")
             exec g:Lf_py "filerExplManager._cli._buildPopupPrompt()"
             redraw
+            exec g:Lf_py "gtagsExplManager._previewResult(False)"
         endif
     elseif l:key ==? "<ScrollWheelUp>"
         call win_execute(a:winid, "norm! 3k")
